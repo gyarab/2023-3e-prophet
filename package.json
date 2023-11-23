@@ -4,6 +4,7 @@
   "description": "Frontend pro rocnikovy projekt",
   "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Prochazka, Petrik, Travnicek",
