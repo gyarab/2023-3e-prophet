@@ -1,5 +1,9 @@
 const { app, BrowserWindow } = require('electron')
 
+//for dual graphics user
+app.commandLine.appendSwitch('force_high_performance_gpu', '1')
+app.commandLine.appendSwitch('no-sandbox')
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
@@ -11,8 +15,6 @@ function createWindow() {
 
   win.loadFile('index.html')
 
-  // Open the DevTools.
-  win.webContents.openDevTools()
 }
 
 app.whenReady().then(createWindow)
