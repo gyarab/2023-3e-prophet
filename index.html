@@ -8,8 +8,30 @@
      <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+ 
     <h1>Prophet</h1>
     <button>Cudlik</button>
     <p1>Cena btc:</p1>
+
+    <button id="cenaBtcButton">Cudlik</button>
+    <p1>Cena btc: <span id="btcValue">0</span></p1>
+
+    <script>
+      // Add an event listener to the button
+      document.getElementById('cenaBtcButton').addEventListener('click', function() {
+        // Send a request to the Flask server when the button is clicked
+        fetch('/increment_btc_value')
+          .then(response => response.json())
+          .then(data => {
+            // Update the displayed BTC value
+            document.getElementById('btcValue').innerText = data.btc_value;
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    </script>
+ 
+ 
+ 
+    
   </body>
 </html>
