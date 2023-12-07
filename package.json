@@ -10,6 +10,6 @@
   "author": "Prochazka, Petrik, Travnicek",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^27.1.2"
+    "electron": "^27.1.3"
   }
 }
