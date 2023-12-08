@@ -15,5 +15,6 @@ def increment_btc_value():
     btc_value += 1
     return jsonify({'btc_value': btc_value})
 
+#if this script is being run directly, run it in debbug mode( detailed errors + some other features)
 if __name__ == '__main__':
     app.run(debug=True)

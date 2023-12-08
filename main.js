@@ -1,6 +1,6 @@
 const { app, BrowserWindow } = require('electron')
 
-//for dual graphics user
+//for dual graphics computers
 app.commandLine.appendSwitch('force_high_performance_gpu', '1')
 app.commandLine.appendSwitch('no-sandbox')
 
@@ -15,10 +15,7 @@ function createWindow() {
   })
 
   win.loadURL('http://127.0.0.1:5000/'); // Update with your Flask app URL
-
-  // Open the DevTools.
-  // win.webContents.openDevTools();
-
+  
   win.on('closed', () => {
     win.destroy();
   });
