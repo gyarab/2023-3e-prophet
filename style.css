@@ -1,0 +1,118 @@
+.wireframe {
+    background-color: #2b2b33;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .wireframe .div {
+    background-color: #2b2b33;
+    width: 1440px;
+    height: 1024px;
+    position: relative;
+  }
+  
+  .wireframe .overlap {
+    top: 485px;
+    position: absolute;
+    width: 380px;
+    height: 55px;
+    left: 530px;
+    background-color: #393d54;
+    border-radius: 10px;
+  }
+  
+  .wireframe .text-wrapper {
+    position: absolute;
+    width: 360px;
+    top: 9px;
+    left: 11px;
+    font-family: "Asap-Regular", Helvetica;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: 30px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .wireframe .overlap-group {
+    top: 417px;
+    position: absolute;
+    width: 380px;
+    height: 55px;
+    left: 530px;
+    background-color: #393d54;
+    border-radius: 10px;
+  }
+  
+  .wireframe .text-wrapper-2 {
+    position: absolute;
+    width: 360px;
+    top: 8px;
+    left: 11px;
+    font-family: "Asap-Regular", Helvetica;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: 30px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .wireframe .div-wrapper {
+    top: 623px;
+    position: absolute;
+    width: 380px;
+    height: 55px;
+    left: 530px;
+    background-color: #393d54;
+    border-radius: 10px;
+  }
+  
+  .wireframe .overlap-2 {
+    top: 554px;
+    position: absolute;
+    width: 380px;
+    height: 55px;
+    left: 530px;
+    background-color: #393d54;
+    border-radius: 10px;
+  }
+  
+  .wireframe .text-wrapper-3 {
+    position: absolute;
+    width: 150px;
+    top: 351px;
+    left: 645px;
+    font-family: "Asap-Regular", Helvetica;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: 50px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .wireframe .already-have-an {
+    position: absolute;
+    width: 331px;
+    top: 690px;
+    left: 555px;
+    font-family: "Asap-Regular", Helvetica;
+    font-weight: 400;
+    color: transparent;
+    font-size: 20px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .wireframe .span {
+    color: #ffffff;
+  }
+  
+  .wireframe .text-wrapper-4 {
+    color: #f54b4b;
+  }
+  
