@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify
+import bot_logic
 
 app = Flask(__name__)
 
@@ -12,7 +13,7 @@ def index():
 @app.route('/increment_btc_value')
 def increment_btc_value():
     global btc_value
-    btc_value += 1
+    btc_value = bot_logic.get_btc_price()
     return jsonify({'btc_value': btc_value})
 
 #if this script is being run directly, run it in debbug mode( detailed errors + some other features)
