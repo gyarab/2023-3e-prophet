@@ -1,3 +1,20 @@
+#
+#python part
+#
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+#
+#nodejs part
+#
+
 # Logs
 logs
 *.log
