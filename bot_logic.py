@@ -47,7 +47,7 @@ print(model)
 
 # Prepare for Training
 loss_fn = nn.BCELoss()  # binary cross entropy
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.002)
 
 
 # Training a Model
@@ -71,3 +71,14 @@ with torch.no_grad():
 
 accuracy = (y_pred.round() == y).float().mean()
 print(f"Accuracy {accuracy}")    
+
+
+# make probability predictions with the model
+predictions = model(X)
+# round predictions
+rounded = predictions.round()
+
+# make class predictions with the model
+predictions = (model(X) > 0.5).int()
+for i in range(5):
+    print('%s => %d (expected %d)' % (X[i].tolist(), predictions[i], y[i]))
