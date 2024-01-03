@@ -85,11 +85,15 @@ def get_balance():
 
     return balance
 
+def get_markets():
+    markets = exchange.load_markets()
+
+    return list(markets.keys())
 
 if __name__ == '__main__':
     # print(get_btc_price())
     # print("CoinEx Account Balance:")
     # for currency, details in get_balance()['total'].items():
-    #     print(f"{currency}: {details}")
-    neco_cinskyho()
+    # print(f"{currency}: {details}")
+    print(get_btc_price())
 
