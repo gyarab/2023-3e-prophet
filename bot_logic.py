@@ -13,9 +13,9 @@ exchange = ccxt.bingx({
     })
 def neco_cinskyho():
     # load the dataset, split into input (X) and output (y) variables
-    dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',')
-    X = dataset[:,0:8] #all values in one row
-    y = dataset[:,8] #only last value - will be 0 or 1
+    dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',') #loads as numpy array
+    X = dataset[:,0:8] #in all rows columns 0-7
+    y = dataset[:,8] #only last value (8th column) - will be 0 or 1
 
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
