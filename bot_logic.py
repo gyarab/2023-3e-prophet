@@ -12,10 +12,10 @@ exchange = ccxt.bingx({
         'secret': 'h0IMzxFfpalGFIMvV3KIjqGEDZFYZmqDmC3Bd2dgx58CyxtDyvHu52qRnkqQ9JAyjRGbFDKvUC71fq3bFGg',
     })
 def neco_cinskyho():
-        # load the dataset, split into input (X) and output (y) variables
+    # load the dataset, split into input (X) and output (y) variables
     dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',')
-    X = dataset[:,0:8]
-    y = dataset[:,8]
+    X = dataset[:,0:8] #all values in one row
+    y = dataset[:,8] #only last value - will be 0 or 1
 
     X = torch.tensor(X, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
@@ -39,7 +39,7 @@ def neco_cinskyho():
 
 
     # Training a Model
-    n_epochs = 100 # Epoch: Passes the entire training dataset to the model once
+    n_epochs = 100 # Epoch: Passes the entire training dataset to the model once, number
     batch_size = 10 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
 
     for epoch in range(n_epochs):
