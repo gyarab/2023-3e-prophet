@@ -7,9 +7,9 @@ import torch.nn as nn
 import torch.optim as optim
 
 
-exchange = ccxt.bingx({
-        'apiKey': 'AZ8tdIuipJSfumjWyQb6ZWscupjrKXfV5IYmcoIy8xCrzI8ykI1LkyesbmjNOcg2BYK1UU9OKA4w9RqJsw',
-        'secret': 'h0IMzxFfpalGFIMvV3KIjqGEDZFYZmqDmC3Bd2dgx58CyxtDyvHu52qRnkqQ9JAyjRGbFDKvUC71fq3bFGg',
+exchange = ccxt.coinex({
+        'apiKey': '01566309D7D54F6B83CD7BD57090B485',
+        'secret': 'FF1A020B10EC704972C034475F2BBA140F814F87B401F37B',
     })
 def neco_cinskyho():
     # load the dataset, split into input (X) and output (y) variables
@@ -78,9 +78,10 @@ def get_btc_price():
     last_price = ticker['last']
     
     return last_price
-
+#returns account balance as dictoniary
 def get_balance():
     
+    # Fetch your account balance
     balance = exchange.fetch_balance()
 
     return balance
@@ -92,8 +93,7 @@ def get_markets():
 
 if __name__ == '__main__':
     # print(get_btc_price())
-    # print("CoinEx Account Balance:")
-    # for currency, details in get_balance()['total'].items():
-    # print(f"{currency}: {details}")
-    print(get_btc_price())
+    print("CoinEx Account Balance:")
+    print(get_balance())
+    #print(get_btc_price())
 
