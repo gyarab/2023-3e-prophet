@@ -103,7 +103,7 @@ def get_btc_price():
     
     return last_price
 
-def get_last30_btc_price():
+def get_last_30_btc_price():
     symbol = 'BTC/USDT'
     
     # Fetch historical OHLCV data with 1-minute timeframe
@@ -132,15 +132,9 @@ if __name__ == '__main__':
     #print("CoinEx Account Balance:")
     #print(get_balance())
     
-    for candle in get_btc_price():
+    for candle in get_last_30_btc_price():
         timestamp, open_, high, low, close, volume = candle
         print(f'Timestamp: {timestamp}, Close Price: {close}')
-
-
-
-
-if __name__ == '__main__':
-    #print(get_btc_price())
      
     # Load the dataset
     X, y = load_data()
