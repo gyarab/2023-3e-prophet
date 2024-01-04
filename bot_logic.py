@@ -11,14 +11,13 @@ exchange = ccxt.coinex({
         'apiKey': '01566309D7D54F6B83CD7BD57090B485',
         'secret': 'FF1A020B10EC704972C034475F2BBA140F814F87B401F37B',
     })
-def neco_cinskyho():
-    # load the dataset, split into input (X) and output (y) variables
-    dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',') #loads as numpy array
-    X = dataset[:,0:8] #in all rows columns 0-7
-    y = dataset[:,8] #only last value (8th column) - will be 0 or 1
 
-    X = torch.tensor(X, dtype=torch.float32)
-    y = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
+# Function to load the dataset
+def load_data():
+    dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',')
+    X = torch.tensor(dataset[:, 0:8], dtype=torch.float32)
+    y = torch.tensor(dataset[:, 8], dtype=torch.float32).reshape(-1, 1)
+    return X, y
 
 
 
@@ -118,6 +117,8 @@ if __name__ == '__main__':
     print("CoinEx Account Balance:")
     print(get_balance())
     #print(get_btc_price())
+
+
 
 
 if __name__ == '__main__':
