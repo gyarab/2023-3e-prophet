@@ -6,10 +6,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+APIKEY = '01566309D7D54F6B83CD7BD57090B485'
+SECRETKEY = 'FF1A020B10EC704972C034475F2BBA140F814F87B401F37B'
 
 exchange = ccxt.coinex({
-        'apiKey': '01566309D7D54F6B83CD7BD57090B485',
-        'secret': 'FF1A020B10EC704972C034475F2BBA140F814F87B401F37B',
+        'apiKey': APIKEY,
+        'secret': SECRETKEY,
     })
 def neco_cinskyho():
     # load the dataset, split into input (X) and output (y) variables
@@ -71,13 +73,26 @@ def neco_cinskyho():
     for i in range(5):
         print('%s => %d (expected %d)' % (X[i].tolist(), predictions[i], y[i]))
 def get_btc_price():
-    
-    # Fetch ticker information for BTC/USDT (you can change the symbol based on your needs)
-    ticker = exchange.fetch_ticker('BTC/USDT')
-    # Extract the last price from the ticker data
+    symbol = 'BTC/USDT'
+    # Fetch ticker information for BTC/USDT pair
+    ticker = exchange.fetch_ticker(symbol)
+
+    # Extract and print the last price
     last_price = ticker['last']
     
     return last_price
+
+def get_last30_btc_price():
+    symbol = 'BTC/USDT'
+    
+    # Fetch historical OHLCV data with 1-minute timeframe
+    #OHLCV stands for: open, high, low, close, volume
+    ohlcv = exchange.fetch_ohlcv(symbol, '1m') # Use '1m' for 1-minute timeframe
+
+    # last 30 minutes as ?list?
+    last_30_prices = ohlcv[-30:]
+    
+    return last_30_prices
 #returns account balance as dictoniary
 def get_balance():
     
@@ -93,7 +108,10 @@ def get_markets():
 
 if __name__ == '__main__':
     # print(get_btc_price())
-    print("CoinEx Account Balance:")
-    print(get_balance())
-    #print(get_btc_price())
+    #print("CoinEx Account Balance:")
+    #print(get_balance())
+    
+    for candle in get_btc_price():
+        timestamp, open_, high, low, close, volume = candle
+        print(f'Timestamp: {timestamp}, Close Price: {close}')
 
