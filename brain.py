@@ -79,10 +79,7 @@ def reset_model(model):
             layer.reset_parameters()
 
 if __name__ == '__main__':
-    # print(get_btc_price())
-    #print("CoinEx Account Balance:")
-    #print(get_balance())
-    
+ 
     # Load the dataset
     X, y = load_data()
 
@@ -91,7 +88,6 @@ if __name__ == '__main__':
 
     # Reset the trained model
     #reset_model(model)
-
 
     # Load the trained model
     model = load_model(model)
@@ -104,8 +100,6 @@ if __name__ == '__main__':
 
     # Save the trained model
     save_model(model)
-
-    
 
     # Test the loaded model without retraining
     test_model(model, X, y)
