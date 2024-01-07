@@ -30,8 +30,8 @@ def create_new_csv(input_file, output_file):
             concatenated_row = [item for sublist in data[i:i+60] for item in sublist]
             
             # Determine if to append 0 or 1 based on 'close' values
-            current_close_value = float(data[i+59][2])  # 'close' value from current set of 60
-            upcoming_close_value = float(data[i+60][2])  # 'close' value from upcoming set of 60
+            current_close_value = float(data[i+59][4])  # 'close' value from current set of 60
+            upcoming_close_value = float(data[i+60][4])  # 'close' value from upcoming set of 60
 
             # Append 0 or 1 to the concatenated row
             appended_value = 0 if current_close_value > upcoming_close_value else 1 # if upcoming value is same or bigger -> 1
@@ -43,8 +43,8 @@ def create_new_csv(input_file, output_file):
 
 if __name__ == '__main__':
     # Specify your input and output file paths
-    input_csv_file = 'test_BTCUSDT.csv'
-    output_csv_file = 'test_60BTCUSDT.csv'
+    input_csv_file = 'BTCUSDT.csv'
+    output_csv_file = '60BTCUSDT.csv'
 
     # Call the function to create the new CSV file
     create_new_csv(input_csv_file, output_csv_file)
