@@ -1,6 +1,9 @@
 #
-#python part
+# python part
 #
+
+# folder for containg large csv files for training
+dataset/data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -12,7 +15,7 @@ instance/
 .webassets-cache
 
 #
-#nodejs part
+# nodejs part
 #
 
 # Logs
