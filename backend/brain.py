@@ -21,7 +21,7 @@ def build_model():
         nn.Linear(128, 8),
         nn.ReLU(),
         nn.Linear(8, 1),
-        nn.Sigmoid()
+        nn.Sigmoid()# 0 or 1
     )
     return model
 
