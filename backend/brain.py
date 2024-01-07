@@ -4,9 +4,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import os
+from tqdm import tqdm
 
 # Function to load the dataset
 def load_data():
+    print('loading data')
         # Get the current script's directory
     script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,6 +28,7 @@ def load_data():
 
 # Build the neural network model
 def build_model():
+    print('building model')
     model = nn.Sequential(
         nn.Linear(360, 256),
         nn.ReLU(),
@@ -40,10 +43,11 @@ def build_model():
 
 # Train the neural network model
 def train_model(model, X, y, n_epochs, batch_size):
+    print('training model')
     loss_fn = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    for epoch in range(n_epochs):
+    for epoch in tqdm(range(n_epochs),desc="Processing epochs"):
         for i in range(0, len(X), batch_size):
             Xbatch = X[i:i + batch_size]
             y_pred = model(Xbatch)
@@ -60,6 +64,7 @@ def train_model(model, X, y, n_epochs, batch_size):
 
 # Function to test the neural network model
 def test_model(model, X, y):
+    print('testing model')
     with torch.no_grad():
         y_pred = model(X)
 
@@ -75,11 +80,13 @@ def test_model(model, X, y):
 
 # Function to save the trained model
 def save_model(model, filename='trained_model.pth'):
+    print('saving model')
     torch.save(model.state_dict(), filename)
     print(f"Model saved as {filename}")
 
 # Function to load the trained model
 def load_model(model, filename='trained_model.pth'):
+    print('loading model')
     loaded_model = build_model()
     loaded_model.load_state_dict(torch.load(filename))
     print(f"Model loaded from {filename}")
@@ -94,25 +101,25 @@ def reset_model(model):
 if __name__ == '__main__':
  
     # Load the dataset
-   # X, y = load_data()
+    X, y = load_data()
 
     # Build the model
     model = build_model()
 
     # Reset the trained model
-    reset_model(model)
+    #reset_model(model)
 
     # Load the trained model
     #model = load_model(model)
 
 
     # Train the model
-    #n_epochs = 100 # Epoch: Passes the entire training dataset to the model once
-    #batch_size = 10 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
-    #model = train_model(model, X, y, n_epochs, batch_size)
+    n_epochs = 100 # Epoch: Passes the entire training dataset to the model once
+    batch_size = 10 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
+    model = train_model(model, X, y, n_epochs, batch_size)
 
     # Save the trained model
-    #save_model(model)
+    save_model(model)
 
     # Test the loaded model without retraining
-    #test_model(model, X, y)
+    test_model(model, X, y)
