@@ -7,18 +7,18 @@ import torch.optim as optim
 # Function to load the dataset
 def load_data():
     dataset = np.loadtxt('pima-indians-diabetes.csv', delimiter=',')
-    X = torch.tensor(dataset[:, 0:8], dtype=torch.float32)
-    y = torch.tensor(dataset[:, 8], dtype=torch.float32).reshape(-1, 1)
+    X = torch.tensor(dataset[:, 0:360], dtype=torch.float32)
+    y = torch.tensor(dataset[:, 360], dtype=torch.float32).reshape(-1, 1)
     return X, y
 
 # Build the neural network model
 def build_model():
     model = nn.Sequential(
-        nn.Linear(8, 12),
+        nn.Linear(360, 256),
         nn.ReLU(),
-        nn.Linear(12, 20),
+        nn.Linear(256, 128),
         nn.ReLU(),
-        nn.Linear(20, 8),
+        nn.Linear(128, 8),
         nn.ReLU(),
         nn.Linear(8, 1),
         nn.Sigmoid()
