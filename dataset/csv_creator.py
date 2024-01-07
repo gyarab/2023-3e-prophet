@@ -1,8 +1,12 @@
+# this script servers as creator of training data
+# note that u have to have a "data" folder relative to this script - the script reads from it and writes into it
+
 import csv # csv file manipulation
 from tqdm import tqdm # progress bars, from the specific module import specific class
 import os # file paths 
 
-
+# this function will create a new csv file that will put 0-59 row into one row and will add 0 or 1 at the end based upcoming close value
+# the order example : 0 - 59 , 1 - 60 , 2 - 61 , 3 - 62 and so on
 def create_new_csv(input_file, output_file):
     
     # Get the absolute path of the input CSV file
