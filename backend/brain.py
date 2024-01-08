@@ -19,24 +19,40 @@ def load_data():
     data_folder = os.path.join(dataset_folder, 'data')
 
     # Construct the full path to the CSV file
+    #csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
     csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
-    
-    dataset = np.loadtxt(csv_file_path, delimiter=',')
-    X = torch.tensor(dataset[:, 0:360], dtype=torch.float32)
+
+    #2251812
+    dataset = np.loadtxt(csv_file_path, delimiter=',',skiprows=812, max_rows=500)
+    X = torch.tensor(dataset[:, 330:360], dtype=torch.float32)
     y = torch.tensor(dataset[:, 360], dtype=torch.float32).reshape(-1, 1)
+    
+    
+    #dataset = np.loadtxt(csv_file_path, delimiter=',')
+    #X = torch.tensor(dataset[:, 0:6], dtype=torch.float32)
+    #y = torch.tensor(dataset[:, 6], dtype=torch.float32).reshape(-1, 1)
+    
+    
+    
     return X, y
+
+
 
 # Build the neural network model
 def build_model():
     print('building model')
     model = nn.Sequential(
-        nn.Linear(360, 256),
+        nn.Linear(30, 64),
         nn.ReLU(),
-        nn.Linear(256, 128),
+        nn.Linear(64, 128),
         nn.ReLU(),
-        nn.Linear(128, 8),
+        nn.Linear(128, 128),
         nn.ReLU(),
-        nn.Linear(64, 1),
+        nn.Linear(128, 64),
+        nn.ReLU(),
+        nn.Linear(64, 16),
+        nn.ReLU(),
+        nn.Linear(16, 1),
         nn.Sigmoid()# 0 or 1
     )
     return model
@@ -45,7 +61,7 @@ def build_model():
 def train_model(model, X, y, n_epochs, batch_size):
     print('training model')
     loss_fn = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     for epoch in tqdm(range(n_epochs),desc="Processing epochs"):
         for i in range(0, len(X), batch_size):
@@ -114,7 +130,7 @@ if __name__ == '__main__':
 
 
     # Train the model
-    n_epochs = 100 # Epoch: Passes the entire training dataset to the model once
+    n_epochs = 200 # Epoch: Passes the entire training dataset to the model once
     batch_size = 10 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
     model = train_model(model, X, y, n_epochs, batch_size)
 
