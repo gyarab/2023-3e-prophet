@@ -53,8 +53,10 @@ def anotate_target_difference(input_file, output_file):
             upcoming_close_value = float(data[i+1][4])  # 'close' value from upcoming set of 60
             # substract the current close valye with the upcoming close value
             close_diffrence = float(current_row[4]) - upcoming_close_value
+            # rounds close_difference to three decimal digits (most data will be rounded to just two)
+            rounded_close_difference = round (close_diffrence, 5)
             #append at the end oh the row upcoming close valye
-            current_row.append(close_diffrence) # add the 0 or 1 at the end of the file
+            current_row.append(rounded_close_difference) # add the 0 or 1 at the end of the file
             # Writing the concatenated row to the CSV file
             writer.writerow(current_row)
     
