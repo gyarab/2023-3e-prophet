@@ -113,7 +113,9 @@ def reset_model(model):
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
-
+def get_device():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return device
 if __name__ == '__main__':
  
     # Load the dataset
@@ -121,7 +123,7 @@ if __name__ == '__main__':
 
     # Build the model
     model = build_model()
-
+    model = model.to(get_device())
     # Reset the trained model
     #reset_model(model)
 
@@ -132,6 +134,7 @@ if __name__ == '__main__':
     # Train the model
     n_epochs = 200 # Epoch: Passes the entire training dataset to the model once
     batch_size = 10 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
+    
     model = train_model(model, X, y, n_epochs, batch_size)
 
     # Save the trained model
