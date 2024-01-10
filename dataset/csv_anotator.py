@@ -52,7 +52,7 @@ def anotate_target_difference(input_file, output_file):
             # gets upcoming close value
             upcoming_close_value = float(data[i+1][4])  # 'close' value from upcoming set of 60
             # substract the current close valye with the upcoming close value
-            close_diffrence = current_row[4] - upcoming_close_value
+            close_diffrence = float(current_row[4]) - upcoming_close_value
             #append at the end oh the row upcoming close valye
             current_row.append(close_diffrence) # add the 0 or 1 at the end of the file
             # Writing the concatenated row to the CSV file
@@ -60,6 +60,6 @@ def anotate_target_difference(input_file, output_file):
     
 
 if __name__ == '__main__':
-    input_csv_file = 'test_BTCUSDT.csv'
-    output_csv_file = 'test_target_v_BTCUSDT.csv'
+    input_csv_file = 'test_target_v_BTCUSDT.csv'
+    output_csv_file = 'test_target_v_BTCUSDT2.csv'
     anotate_target_difference(input_csv_file, output_csv_file)
