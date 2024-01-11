@@ -112,4 +112,4 @@ def create_new_csv(input_file, output_file):
 if __name__ == '__main__':
     input_csv_file = 'test_target_v_BTCUSDT.csv'
     output_csv_file = 'test_target_v_BTCUSDT2.csv'
-    anotate_target_difference(input_csv_file, output_csv_file)
+    fully_anotate(input_csv_file, output_csv_file)
