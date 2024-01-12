@@ -3,31 +3,64 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+import os
+import pandas as pd
+
+
+
+
 #prepare sequence
 def prepare_sequence(seq, to_ix):
     idxs = [to_ix[w] for w in seq]
     return torch.tensor(idxs, dtype=torch.long)
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
+    # Construct the path to the "dataset" folder relative to the script
+dataset_folder = os.path.join(script_dir, '..', 'dataset')
+
+    # Construct the path to the "data" folder within the "dataset" folder
+data_folder = os.path.join(dataset_folder, 'data')
+
+    # Construct the full path to the CSV file
+    #csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
+csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
+dataset_folder = os.path.join(script_dir, '..', 'dataset')
+
+    # Construct the path to the "data" folder within the "dataset" folder
+data_folder = os.path.join(dataset_folder, 'data')
+
+    # Construct the full path to the CSV file
+    #csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
+csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
+
+# Load data from CSV file
+csv_file_path = os.path.join(data_folder, '60BTCUSDT.csv')
+df = pd.read_csv(csv_file_path)
+
+# Extract relevant columns (timestamp, close, low, high)
+timestamp_sequence = df['timestamp'].astype(float).tolist()
+close_prices_sequence = df['close'].astype(float).tolist()
+low_prices_sequence = df['low'].astype(float).tolist()
+high_prices_sequence = df['high'].astype(float).tolist()
+
+# Create word-to-index dictionaries for each sequence
+timestamp_to_ix = {word: idx for idx, word in enumerate(timestamp_sequence)}
+close_prices_to_ix = {word: idx for idx, word in enumerate(close_prices_sequence)}
+low_prices_to_ix = {word: idx for idx, word in enumerate(low_prices_sequence)}
+high_prices_to_ix = {word: idx for idx, word in enumerate(high_prices_sequence)}
+
+# Example usage:
+# Replace the following lines with the appropriate sequences and dictionaries
+# For example, use timestamp_to_ix for timestamp_sequence
+# Use close_prices_to_ix for close_prices_sequence, and so on.
+# Replace the training_data with your sequences and numerical values
 training_data = [
-    # Tags are: DET - determiner; NN - noun; V - verb
-    # For example, the word "The" is a determiner
-    ("The dog ate the apple".split(), ["DET", "NN", "V", "DET", "NN"]),
-    ("Everybody read that book".split(), ["NN", "V", "DET", "NN"])
+    (timestamp_sequence, close_prices_sequence, low_prices_sequence, high_prices_sequence),
+    # Add more tuples as needed
 ]
-word_to_ix = {}
-# For each words-list (sentence) and tags-list in each tuple of training_data
-for sent, tags in training_data:
-    for word in sent:
-        if word not in word_to_ix:  # word has not been assigned an index yet
-            word_to_ix[word] = len(word_to_ix)  # Assign each word with a unique index
-print(word_to_ix)
-tag_to_ix = {"DET": 0, "NN": 1, "V": 2}  # Assign each tag with a unique index
 
-# These will usually be more like 32 or 64 dimensional.
-# We will keep them small, so we can see how the weights change as we train.
-EMBEDDING_DIM = 6
-HIDDEN_DIM = 6
+
 
 
 #create model
@@ -54,7 +87,7 @@ class LSTMTagger(nn.Module):
         return tag_scores
     
 
-
+#! ---------------------------------------------- Needs to be update to work with out values instead of words --------------------------------------------------------------
 model = LSTMTagger(EMBEDDING_DIM, HIDDEN_DIM, len(word_to_ix), len(tag_to_ix))
 loss_function = nn.NLLLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.1)
