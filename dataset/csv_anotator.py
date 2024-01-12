@@ -4,18 +4,59 @@
 import csv # lib for csv files access
 from tqdm import tqdm # loop progress bar in terminal
 import os # file paths
+import pandas as pd
+import ta
 
 
-def fully_anotate(input_file, output_file):
-    # <anotate technical factors>
-    anotate_target_value(input_file, output_file)
-    anotate_target_difference(input_file, output_file)
+
+# def fully_anotate(input_file, output_file):
+#     # <anotate technical factors>
+#     anotate_target_value(input_file, output_file)
+#     anotate_target_difference(input_file, output_file)
+
+
 # returns an absolute path of file that is contained in data folder
 # data folder has to be relative to this script
 def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__),'data', input_file)
     return input_file_path
 
+# adds anotation off technical indicators
+def fully_anotate(csv_file, output_file):
+    
+    input_file_path = get_absolute_path(csv_file)
+    output_file_path = get_absolute_path(output_file)
+    # Load your OHLCV CSV file
+    df = pd.read_csv(input_file_path)
+
+    # Convert the 'timestamp' column to datetime if it's not already
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+
+    # Sort the dataframe by timestamp in ascending order
+    df = df.sort_values(by='timestamp')
+
+    # Add technical indicators
+    df['ema_14'] = ta.trend.EMAIndicator(close=df['close'], window=14).ema_indicator()
+    df['rsi_14'] = ta.momentum.RSIIndicator(close=df['close'], window=14).rsi()
+    df['macd'] = ta.trend.MACD(close=df['close']).macd()
+    df['bollinger_upper'] = ta.volatility.BollingerBands(close=df['close']).bollinger_hband()
+    df['bollinger_lower'] = ta.volatility.BollingerBands(close=df['close']).bollinger_lband()
+    df['atr'] = ta.volatility.AverageTrueRange(high=df['high'], low=df['low'], close=df['close']).average_true_range()
+    df['ichimoku_a'] = ta.trend.IchimokuIndicator(high=df['high'], low=df['low']).ichimoku_a()
+    df['ichimoku_b'] = ta.trend.IchimokuIndicator(high=df['high'], low=df['low']).ichimoku_b()
+    df['obv'] = ta.volume.OnBalanceVolumeIndicator(close=df['close'], volume=df['volume']).on_balance_volume()
+    df['williams_r'] = ta.momentum.WilliamsRIndicator(close=df['close'], high=df['high'], low=df['low']).williams_r()
+    df['adx'] = ta.trend.ADXIndicator(high=df['high'], low=df['low'], close=df['close']).adx()
+    
+    # Add target_value and target_value_difference columns
+    df['target_value'] = df['close'].shift(-1)  # Next close value
+    df['target_value_difference'] = df['target_value'] - df['close']  # Difference between next close and current close
+    # Drop rows with missing values
+    df.dropna(inplace=True)
+    
+    # Save the modified dataframe with technical indicators to a new CSV file
+    df.to_csv(output_file_path, index=False)
+   
 # adds to every row (candle) an anotation of next row (candle) close value
 def anotate_target_value(input_file, output_file):
 
@@ -110,6 +151,8 @@ def write_60rows_on1row(input_file, output_file):
             writer.writerow(concatenated_row)
             
 if __name__ == '__main__':
-    input_csv_file = 'test_target_v_BTCUSDT.csv'
-    output_csv_file = 'test_target_v_BTCUSDT2.csv'
+    input_csv_file = 'test_BTCUSDT.csv'
+    output_csv_file = 'technical_indicators_test_BTCUSDT.csv'
+    
     fully_anotate(input_csv_file, output_csv_file)
+    
