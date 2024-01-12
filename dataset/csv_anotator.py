@@ -76,7 +76,7 @@ def anotate_target_difference(input_file, output_file):
     
 # this function will create a new csv file that will put 0-59 row into one row and will add 0 or 1 at the end based upcoming close value
 # the order example : 0 - 59 , 1 - 60 , 2 - 61 , 3 - 62 and so on
-def create_new_csv(input_file, output_file):
+def write_60rows_on1row(input_file, output_file):
     
     # Get the absolute path of the input CSV file
     input_file_path = get_absolute_path(input_file)
