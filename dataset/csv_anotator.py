@@ -4,75 +4,49 @@
 import csv # lib for csv files access
 from tqdm import tqdm # loop progress bar in terminal
 import os # file paths
+import pandas as pd
+import ta
 
-
-def fully_anotate(input_file, output_file):
-    # <anotate technical factors>
-    anotate_target_value(input_file, output_file)
-    anotate_target_difference(input_file, output_file)
-# returns an absolute path of file that is contained in data folder
-# data folder has to be relative to this script
 def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__),'data', input_file)
     return input_file_path
 
-# adds to every row (candle) an anotation of next row (candle) close value
-def anotate_target_value(input_file, output_file):
 
-    # Get the absolute path of the input CSV file
-    input_file_path = get_absolute_path(input_file)
-    output_file_path = get_absolute_path(output_file)
-
-    # Reading the input CSV file
-    with open(input_file_path, 'r') as infile:
-        reader = csv.reader(infile)
-        data = list(reader)
-
-    # Creating a new CSV file
-    with open(output_file_path, 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
-        
-        # Writing rows to the new CSV file
-        for i in tqdm(range(len(data) - 1), desc="Processing rows"):
-            # loads curent row
-            current_row = data[i]
-            # gets upcoming close value
-            upcoming_close_value = float(data[i+1][4])  # 'close' value from upcoming set of 60
-            # append at the end oh the row upcoming close valye
-            current_row.append(upcoming_close_value) # add the 0 or 1 at the end of the file
-            # Writing the concatenated row to the CSV file
-            writer.writerow(current_row)
-
-# adds to every row (candle) an anotation of next row (candle) close value difference
-def anotate_target_difference(input_file, output_file):
+# adds anotation off technical indicators and target values and their differences
+def fully_anotate(csv_file, output_file):
     
-    # Get the absolute path of the input CSV file
-    input_file_path = get_absolute_path(input_file)
+    input_file_path = get_absolute_path(csv_file)
     output_file_path = get_absolute_path(output_file)
+    # Load your OHLCV CSV file
+    df = pd.read_csv(input_file_path)
 
-    # Reading the input CSV file
-    with open(input_file_path, 'r') as infile:
-        reader = csv.reader(infile)
-        data = list(reader)
+    # Convert the 'timestamp' column to datetime if it's not already
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
 
-    # Creating a new CSV file
-    with open(output_file_path, 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
-        
-        # Writing rows to the new CSV file
-        for i in tqdm(range(len(data) - 1), desc="Processing rows"):
-            # loads curent row
-            current_row = data[i]
-            # gets upcoming close value
-            upcoming_close_value = float(data[i+1][4])  # 'close' value from upcoming set of 60
-            # substract the current close valye with the upcoming close value
-            close_diffrence = float(current_row[4]) - upcoming_close_value
-            # rounds close_difference to three decimal digits (most data will be rounded to just two)
-            rounded_close_difference = round (close_diffrence, 5)
-            #append at the end oh the row upcoming close valye
-            current_row.append(rounded_close_difference) # add the 0 or 1 at the end of the file
-            # Writing the concatenated row to the CSV file
-            writer.writerow(current_row)
+    # Sort the dataframe by timestamp in ascending order
+    df = df.sort_values(by='timestamp')
+
+    # Add technical indicators
+    df['ema_14'] = ta.trend.EMAIndicator(close=df['close'], window=14).ema_indicator()
+    df['rsi_14'] = ta.momentum.RSIIndicator(close=df['close'], window=14).rsi()
+    df['macd'] = ta.trend.MACD(close=df['close']).macd()
+    df['bollinger_upper'] = ta.volatility.BollingerBands(close=df['close']).bollinger_hband()
+    df['bollinger_lower'] = ta.volatility.BollingerBands(close=df['close']).bollinger_lband()
+    df['atr'] = ta.volatility.AverageTrueRange(high=df['high'], low=df['low'], close=df['close']).average_true_range()
+    df['ichimoku_a'] = ta.trend.IchimokuIndicator(high=df['high'], low=df['low']).ichimoku_a()
+    df['ichimoku_b'] = ta.trend.IchimokuIndicator(high=df['high'], low=df['low']).ichimoku_b()
+    df['obv'] = ta.volume.OnBalanceVolumeIndicator(close=df['close'], volume=df['volume']).on_balance_volume()
+    df['williams_r'] = ta.momentum.WilliamsRIndicator(close=df['close'], high=df['high'], low=df['low']).williams_r()
+    df['adx'] = ta.trend.ADXIndicator(high=df['high'], low=df['low'], close=df['close']).adx()
+    
+    # Add target_value and target_value_difference columns
+    df['target_value'] = df['close'].shift(-1)  # Next close value
+    df['target_value_difference'] = df['target_value'] - df['close']  # Difference between next close and current close
+    # Drop rows with missing values
+    df.dropna(inplace=True)
+    
+    # Save the modified dataframe with technical indicators to a new CSV file
+    df.to_csv(output_file_path, index=False)
     
 # this function will create a new csv file that will put 0-59 row into one row and will add 0 or 1 at the end based upcoming close value
 # the order example : 0 - 59 , 1 - 60 , 2 - 61 , 3 - 62 and so on
@@ -110,6 +84,8 @@ def write_60rows_on1row(input_file, output_file):
             writer.writerow(concatenated_row)
             
 if __name__ == '__main__':
-    input_csv_file = 'test_target_v_BTCUSDT.csv'
-    output_csv_file = 'test_target_v_BTCUSDT2.csv'
+    input_csv_file = 'test_BTCUSDT.csv'
+    output_csv_file = 'technical_indicators_test_BTCUSDT.csv'
+    
     fully_anotate(input_csv_file, output_csv_file)
+    

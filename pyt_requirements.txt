@@ -3,3 +3,5 @@ ccxt
 numpy
 torch
 tqdm
+pandas
+ta
