@@ -32,7 +32,7 @@ def load_data(csv_file):
         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
 
-    target_column = 'TargetValue'
+    target_column = 'target_value'
 
     # Use MinMaxScaler to normalize the feature and target columns
     scaler = MinMaxScaler()
@@ -52,15 +52,25 @@ def load_data(csv_file):
     # Return the training and testing data along with timestamps
     return train_sequences, train_labels, test_sequences, test_labels, timestamps
 
-# Function to create sequences and labels
 def create_sequences_and_labels(data, sequence_length):
+    # Initialize empty lists to store sequences and labels
     sequences, labels = [], []
+    
+    # Iterate through the data to create sequences and labels
     for i in range(len(data) - sequence_length):
+        # Extract a sequence of length 'sequence_length' from the data
         sequence = data[i:i+sequence_length].values
-        label = data.iloc[i+sequence_length]['Close']
+        
+        # Extract the target value (label) for the current sequence
+        label = data.iloc[i+sequence_length]['target_value']
+        
+        # Append the sequence and label to their respective lists
         sequences.append(sequence)
         labels.append(label)
+    
+    # Convert lists to PyTorch tensors and return them
     return torch.tensor(sequences), torch.tensor(labels)
+
 
 # Function to build the LSTM model
 def build_model(input_size, hidden_size, num_layers, output_size):
@@ -134,7 +144,7 @@ def get_device():
 # Main part of the script
 if __name__ == '__main__':
     file_path = 'technical_indicators_test_BTCUSDT.csv'
-    train_sequences, train_labels, test_sequences, test_labels = load_data(file_path)
+    train_sequences, train_labels, test_sequences, test_labels, timestamps = load_data(file_path)
 
     input_size = len(train_sequences[0][0])
     hidden_size = 50
@@ -149,6 +159,8 @@ if __name__ == '__main__':
 
     # Create a new MinMaxScaler and fit it only on the training data
     scaler = MinMaxScaler()
+
+    # Exclude timestamp column from normalization
     train_sequences = scaler.fit_transform(train_sequences.reshape(-1, input_size)).reshape(train_sequences.shape)
     train_labels = scaler.fit_transform(train_labels.reshape(-1, 1)).reshape(train_labels.shape)
 
