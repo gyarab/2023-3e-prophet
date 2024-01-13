@@ -9,7 +9,7 @@ import os
 
 # Helper function to get the absolute file path
 def get_absolute_path(input_file):
-    input_file_path = os.path.join(os.path.dirname(__file__), 'data', 'dataset', input_file)
+    input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', input_file)
     return input_file_path
 
 # Function to load data from a CSV file
@@ -23,9 +23,11 @@ def load_data(csv_file):
     df = pd.read_csv(file_path)
     
     # Define the columns for features and the target
-    features_columns = ['timestamp', 'Open', 'High', 'Low', 'Close', 'Volume', 
-                        'EMA_14', 'RSI_14', 'MACD','BollingerUpper', 'BollingerLower',
-                        'ATR', 'IchimokuA', 'IchimokuB', 'OBV', 'WilliamsR', 'ADX']
+    features_columns = [
+        "timestamp", "open", "high", "low", "close", "volume",
+        "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+        "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
+
     target_column = 'TargetValue'
 
     # Use MinMaxScaler to normalize the feature and target columns
@@ -127,7 +129,7 @@ def get_device():
 
 # Main part of the script
 if __name__ == '__main__':
-    file_path = 'your_data.csv'
+    file_path = 'technical_indicators_test_BTCUSDT.csv'
     train_sequences, train_labels, test_sequences, test_labels = load_data(file_path)
 
     input_size = len(train_sequences[0][0])
