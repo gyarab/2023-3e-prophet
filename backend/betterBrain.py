@@ -18,10 +18,8 @@ def load_data(csv_file):
     file_path = get_absolute_path(csv_file)
     # Print a message indicating data loading
     print('Loading data')
-    
     # Read the CSV file into a Pandas DataFrame
     df = pd.read_csv(file_path)
-    
     # Save the 'timestamp' column for later use
     timestamps = df['timestamp']
     
@@ -36,13 +34,12 @@ def load_data(csv_file):
 
     # Use MinMaxScaler to normalize the feature and target columns
     scaler = MinMaxScaler()
-    df[features_columns] = scaler.fit_transform(df[features_columns])
-    df[target_column] = scaler.fit_transform(df[[target_column]])
+    df[features_columns + [target_column]] = scaler.fit_transform(df[features_columns + [target_column]])
 
     # Create sequences and labels for the LSTM model
     sequence_length = 60
-    sequences, labels = create_sequences_and_labels(df[features_columns], sequence_length)
-
+    sequences, labels = create_sequences_and_labels(df[features_columns + [target_column]], sequence_length) #includes target_value_column
+    
     # Split the data into training and testing sets
     # -- randomization needs to be added--
     train_size = int(len(sequences) * 0.8)
@@ -68,17 +65,26 @@ def create_sequences_and_labels(data, sequence_length):
         sequences.append(sequence)
         labels.append(label)
     
-    # Convert lists to PyTorch tensors and return them
-    return torch.tensor(sequences), torch.tensor(labels)
-
+    # Convert lists to NumPy arrays
+    sequences = np.array(sequences)
+    labels = np.array(labels)
+    
+    # Convert NumPy arrays to a single PyTorch tensor
+    sequences = torch.tensor(sequences, dtype=torch.float32)
+    labels = torch.tensor(labels, dtype=torch.float32)
+    
+    # Return the sequences and labels as PyTorch tensors
+    return sequences, labels
 
 # Function to build the LSTM model
-def build_model(input_size, hidden_size, num_layers, output_size):
+def build_model(input_size, hidden_size, num_layers, output_size, sequence_length):
     print('Building model')
     model = nn.Sequential(
-        nn.LSTM(input_size, hidden_size, num_layers, batch_first=True),
-        nn.Linear(hidden_size, output_size)
-    )
+        nn.LSTM(input_size, hidden_size, num_layers, batch_first=True),      
+        nn.Linear(hidden_size * sequence_length, output_size)
+            )
+
+    
     return model
 
 # Function to train the LSTM model
@@ -87,9 +93,13 @@ def train_model(model, X, y, n_epochs, batch_size, learning_rate):
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-    # Convert X and y to PyTorch tensors
-    X_tensor = torch.tensor(X, dtype=torch.float32)
-    y_tensor = torch.tensor(y, dtype=torch.float32)
+    # Move the model to the appropriate device
+    device = get_device()
+    model = model.to(device)
+
+    # Convert X and y to PyTorch tensors and move them to the device
+    X_tensor = torch.tensor(X, dtype=torch.float32).to(device)
+    y_tensor = torch.tensor(y, dtype=torch.float32).to(device)
 
     # Calculate the number of batches
     num_batches = len(X_tensor) // batch_size
@@ -114,7 +124,6 @@ def train_model(model, X, y, n_epochs, batch_size, learning_rate):
             print(f'Epoch [{epoch+1}/{n_epochs}], Loss: {loss.item():.4f}')
 
     return model
-
 
 # Function to test the trained LSTM model
 def test_model(model, X, y, scaler):
@@ -146,15 +155,23 @@ if __name__ == '__main__':
     file_path = 'technical_indicators_test_BTCUSDT.csv'
     train_sequences, train_labels, test_sequences, test_labels, timestamps = load_data(file_path)
 
+    # Define the input size based on the shape of the first sequence in the training data
     input_size = len(train_sequences[0][0])
+    # Define the size of the hidden layer in the LSTM model
     hidden_size = 50
+    # Specify the number of layers in the LSTM model
     num_layers = 2
+    # Define the output size of the model
     output_size = 1
+    # Set the number of epochs for training
     n_epochs = 100
+    # Specify the batch size for training
     batch_size = 10
+    # Set the learning rate for the optimizer
     learning_rate = 0.001
 
-    model = build_model(input_size, hidden_size, num_layers, output_size)
+
+    model = build_model(input_size, hidden_size, num_layers, output_size, 60)
     model = model.to(get_device())
 
     # Create a new MinMaxScaler and fit it only on the training data
