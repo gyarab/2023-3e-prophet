@@ -1,0 +1,144 @@
+.wireframe {
+    background-color: #041c32;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .wireframe .div {
+    background-color: #041c32;
+    overflow: hidden;
+    width: 1440px;
+    height: 1024px;
+    position: relative;
+  }
+  
+  .wireframe .image {
+    width: 65px;
+    height: 66px;
+    top: 31px;
+    left: 26px;
+    mix-blend-mode: difference;
+    position: absolute;
+    object-fit: cover;
+  }
+  
+  .wireframe .text-wrapper {
+    position: absolute;
+    width: 318px;
+    top: 30px;
+    left: 95px;
+    font-family: "Bruno Ace SC-Regular", Helvetica;
+    font-weight: 400;
+    color: #04293a;
+    font-size: 50px;
+    letter-spacing: 0;
+    line-height: normal;
+  }
+  
+  .wireframe .overlap-group {
+    position: absolute;
+    width: 150px;
+    height: 1024px;
+    top: 0;
+    left: 1293px;
+    background-color: #04293a;
+  }
+  
+  .wireframe .rectangle {
+    top: 148px;
+    position: absolute;
+    width: 150px;
+    height: 30px;
+    left: 0;
+    background-color: #ecb365;
+    border-radius: 10px;
+  }
+  
+  .wireframe .rectangle-2 {
+    top: 192px;
+    position: absolute;
+    width: 150px;
+    height: 30px;
+    left: 0;
+    background-color: #ecb365;
+    border-radius: 10px;
+  }
+  
+  .wireframe .rectangle-3 {
+    top: 236px;
+    position: absolute;
+    width: 150px;
+    height: 30px;
+    left: 0;
+    background-color: #ecb365;
+    border-radius: 10px;
+  }
+  
+  .wireframe .img {
+    width: 80px;
+    height: 80px;
+    top: 22px;
+    left: 35px;
+    position: absolute;
+    object-fit: cover;
+  }
+  
+  .wireframe .text-wrapper-2 {
+    position: absolute;
+    width: 623px;
+    top: 323px;
+    left: 355px;
+    font-family: "Bruno Ace SC-Regular", Helvetica;
+    font-weight: 400;
+    color: #ecb365;
+    font-size: 80px;
+    letter-spacing: 0;
+    line-height: normal;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+  
+  .wireframe .text-wrapper-3 {
+    position: absolute;
+    width: 353px;
+    top: 424px;
+    left: 490px;
+    font-family: "Bruno Ace SC-Regular", Helvetica;
+    font-weight: 400;
+    color: #ecb365;
+    font-size: 50px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .wireframe .p {
+    position: absolute;
+    width: 413px;
+    top: 489px;
+    left: 460px;
+    font-family: "Asap-Regular", Helvetica;
+    font-weight: 400;
+    color: #ecb365;
+    font-size: 40px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
+  .wireframe .text-wrapper-4 {
+    position: absolute;
+    width: 276px;
+    top: 546px;
+    left: 528px;
+    font-family: "Asap-Regular", Helvetica;
+    font-weight: 400;
+    color: #ecb365;
+    font-size: 40px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+  }
+  
