@@ -22,6 +22,9 @@ def load_data(csv_file):
     # Read the CSV file into a Pandas DataFrame
     df = pd.read_csv(file_path)
     
+    # Save the 'timestamp' column for later use
+    timestamps = df['timestamp']
+    
     # Define the columns for features and the target
     features_columns = [
         "timestamp", "open", "high", "low", "close", "volume",
@@ -45,8 +48,8 @@ def load_data(csv_file):
     train_sequences, test_sequences = sequences[:train_size], sequences[train_size:]
     train_labels, test_labels = labels[:train_size], labels[train_size:]
 
-    # Return the training and testing data
-    return train_sequences, train_labels, test_sequences, test_labels
+    # Return the training and testing data along with timestamps
+    return train_sequences, train_labels, test_sequences, test_labels, timestamps
 
 # Function to create sequences and labels
 def create_sequences_and_labels(data, sequence_length):
