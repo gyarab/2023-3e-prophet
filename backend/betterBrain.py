@@ -26,8 +26,9 @@ def load_data(csv_file):
     timestamps = df['timestamp']
     
     # Define the columns for features and the target
+    # It excludes the timestamp from normalization
     features_columns = [
-        "timestamp", "open", "high", "low", "close", "volume",
+        "open", "high", "low", "close", "volume",
         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
 
