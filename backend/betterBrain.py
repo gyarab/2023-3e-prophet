@@ -163,6 +163,8 @@ if __name__ == '__main__':
     num_layers = 2
     # Define the output size of the model
     output_size = 1
+    # Define the sequnece lenght of each data, how many candles in the past
+    sequence_length = 60
     # Set the number of epochs for training
     n_epochs = 100
     # Specify the batch size for training
@@ -171,7 +173,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
 
 
-    model = build_model(input_size, hidden_size, num_layers, output_size, 60)
+    model = build_model(input_size, hidden_size, num_layers, output_size, sequence_length)
     model = model.to(get_device())
 
     # Create a new MinMaxScaler and fit it only on the training data
