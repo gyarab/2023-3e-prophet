@@ -221,6 +221,7 @@ def reset_model(model):
 
 if __name__ == '__main__':
     device = get_device()
+    batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
 
     
     # Load the dataset   
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, 0.80)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
-    train_loader, test_loader = to_dataLoader(train_dataset, test_dataset)
+    train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     # x_batch, y_batch = create_batches(train_loader)
     
     # Build the model
@@ -248,7 +249,7 @@ if __name__ == '__main__':
     # Train the model
     learning_rate = 0.001
     num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
-    batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
+    # k cemu je ?
     
     # starts training
     train_model(train_loader, test_loader, num_epochs)
