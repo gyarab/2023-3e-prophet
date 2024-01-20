@@ -21,11 +21,19 @@ def fully_anotate(csv_file, output_file):
     df = pd.read_csv(input_file_path)
 
     # Convert the 'timestamp' column to datetime if it's not already
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df['date'] = pd.to_datetime(df['timestamp'], unit='ms')
 
     # Sort the dataframe by timestamp in ascending order
-    df = df.sort_values(by='timestamp')
+    df = df.sort_values(by='date')
 
+    # Add target_value and target_value_difference columns
+    df['target_value'] = df['close'].shift(-1)  # Next close value
+    df['target_value_difference'] = df['target_value'] - df['close']  # Difference between next close and current close
+    
+    # Reorder columns
+    columns_order = ['date', 'target_value', 'target_value_difference', 'open', 'high', 'low', 'close', 'volume']
+    columns_order.extend([col for col in df.columns if col not in columns_order])
+    df = df[columns_order]
     # Add technical indicators
     df['ema_14'] = ta.trend.EMAIndicator(close=df['close'], window=14).ema_indicator()
     df['rsi_14'] = ta.momentum.RSIIndicator(close=df['close'], window=14).rsi()
@@ -39,9 +47,6 @@ def fully_anotate(csv_file, output_file):
     df['williams_r'] = ta.momentum.WilliamsRIndicator(close=df['close'], high=df['high'], low=df['low']).williams_r()
     df['adx'] = ta.trend.ADXIndicator(high=df['high'], low=df['low'], close=df['close']).adx()
     
-    # Add target_value and target_value_difference columns
-    df['target_value'] = df['close'].shift(-1)  # Next close value
-    df['target_value_difference'] = df['target_value'] - df['close']  # Difference between next close and current close
     # Drop rows with missing values
     df.dropna(inplace=True)
     
