@@ -85,6 +85,7 @@ def prepare_dataframe_for_lstm(dataframe, n_steps):
     return dataframe
 # loads data in acording format
 def load_data(file_name, look_back):
+    print("loading raw data")
     data = pd.read_csv(get_absolute_path(file_name))
     shifted_data_frame = prepare_dataframe_for_lstm(data, look_back)
     # shifted_data_frame.to_csv("test.csv")
@@ -94,14 +95,15 @@ def load_data(file_name, look_back):
 
 # scales the data
 def scale_data(shifted_df_as_np):
-    # scales the data
+    print("scaling data to range -1 .. 1")
     scaler = MinMaxScaler(feature_range=(-1, 1))
     shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
     return shifted_df_as_np
 
 # splits data to training and 
 def split_data(shifted_df_as_np, percentage_of_train_data):
-    # splits the data into the target value - y and the data based on whic y is predicted X
+    print("spliting data")
+    # splits the data into the target value - y and the data based on which y is predicted X
     X = shifted_df_as_np[:, 2:] # upper scale X is correct
     y = shifted_df_as_np[:, 0] # lower scale y - vector ?
     X = dc(np.flip(X, axis=1)) # now the data are in corect time order - older to newer
@@ -117,6 +119,7 @@ def split_data(shifted_df_as_np, percentage_of_train_data):
     return X_train, X_test, y_train, y_test
 
 def to_tensor(X_train,X_test,y_train,y_test):
+    print("reshaping data to tensors")
     # reshpaes because LSTM wants 3 dimensional tensors
     X_train = X_train.reshape((-1, 100 * 16 + 16 , 1)) # hard coded!!!!, it is not responsive to lenght of data!!
     X_test = X_test.reshape((-1, 100 * 16 + 16, 1)) # hard coded!!!!, it is not responsive to lenght of data!!
@@ -132,17 +135,20 @@ def to_tensor(X_train,X_test,y_train,y_test):
     return X_train,X_test,y_train,y_test
 
 def to_dataset(X_train,X_test,y_train,y_test):
+    print("to_dataset")
     train_dataset = TimeSeriesDataset(X_train, y_train)
     test_dataset = TimeSeriesDataset(X_test, y_test)
     return train_dataset, test_dataset
 
 def to_dataLoader(train_dataset,test_dataset,batch_size):
+    print("to_dataloader")
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     return train_loader, test_loader
 
 def create_batches(train_loader):
+    print("creating batches")
     for _, batch in enumerate(train_loader):
         x_batch, y_batch = batch[0].to(device), batch[1].to(device)
         # why break ??
@@ -215,6 +221,7 @@ def load_model(model, filename='trained_model.pth'):
 
 # Function to reset models parametres
 def reset_model(model):
+    print("reseting models parameters")
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
