@@ -20,7 +20,7 @@ def fully_anotate(csv_file, output_file):
     # Load your OHLCV CSV file
     df = pd.read_csv(input_file_path)
 
-    # Convert the 'timestamp' column to datetime if it's not already
+    # Convert the 'timestamp' column to date if it's not already
     df['date'] = pd.to_datetime(df['timestamp'], unit='ms')
 
     # Sort the dataframe by timestamp in ascending order
@@ -29,7 +29,8 @@ def fully_anotate(csv_file, output_file):
     # Add target_value and target_value_difference columns
     df['target_value'] = df['close'].shift(-1)  # Next close value
     df['target_value_difference'] = df['target_value'] - df['close']  # Difference between next close and current close
-    
+    # Drop the 'timestamp' column
+    df.drop('timestamp', axis=1, inplace=True)  
     # Reorder columns
     columns_order = ['date', 'target_value', 'target_value_difference', 'open', 'high', 'low', 'close', 'volume']
     columns_order.extend([col for col in df.columns if col not in columns_order])
