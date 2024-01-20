@@ -180,6 +180,6 @@ num_epochs = 10
 loss_function = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-for epoch in range(num_epochs):
+for epoch in tqdm(range(num_epochs), desc="Processing epochs"):
     train_one_epoch()
     validate_one_epoch()
