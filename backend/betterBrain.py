@@ -159,7 +159,7 @@ if __name__ == '__main__':
     input_size = len(train_sequences[0][0])
     # Define the size of the hidden layer in the LSTM model
     hidden_size = 50
-    # Specify the number of layers in the LSTM model
+    # Specify the number of LSTM layers in the LSTM model
     num_layers = 2
     # Define the output size of the model
     output_size = 1
