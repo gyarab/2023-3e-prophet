@@ -28,8 +28,8 @@ def prepare_dataframe_for_lstm(dataframe, n_steps):
     dataframe = dc(dataframe)
     
     dataframe.set_index('date', inplace=True)
-    
-        # Add lag features for the entire OHLCV columns
+    print(dataframe.shape)
+    # Add lag features for the entire OHLCV columns
     features_columns = [
         "open", "high", "low", "close", "volume",
         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
@@ -37,6 +37,9 @@ def prepare_dataframe_for_lstm(dataframe, n_steps):
 
     
     lag_columns = []
+    # for i in range(1, n_steps + 1):
+    #         for col in features_columns:
+    #             dataframe[f'{col}(t-{i})'] = dataframe[col].shift(i)
 
     for i in range(1, n_steps + 1):
         for col in features_columns:
@@ -49,18 +52,20 @@ def prepare_dataframe_for_lstm(dataframe, n_steps):
     # removes possible blank lines
     dataframe.dropna(inplace=True)
     
+    print(dataframe.shape)
     return dataframe
 # how many candles will it look into the past
 look_back = 100
 shifted_data_frame = prepare_dataframe_for_lstm(data, look_back)
+# shifted_data_frame.to_csv("test.csv")
 shifted_df_as_np = shifted_data_frame.to_numpy()
 
 # scales the data
 scaler = MinMaxScaler(feature_range=(-1, 1))
 shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
 # splits the data into the target value - y and the data based on whic y is predicted X
-X = shifted_df_as_np[:, 1:] # upper scale is correct
-y = shifted_df_as_np[:, 0] # lower scale - vector ?
+X = shifted_df_as_np[:, 2:] # upper scale X is correct
+y = shifted_df_as_np[:, 0] # lower scale y - vector ?
 
 X = dc(np.flip(X, axis=1)) # now the data are in corect time order - older to newer
 
@@ -71,10 +76,11 @@ X_test = X[split_index:]
 
 y_train = y[:split_index]
 y_test = y[split_index:]
-
+print(X_train)
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 # reshpaes because LSTM wants 3 dimensional tensors
-X_train = X_train.reshape((-1, look_back, 1))
-X_test = X_test.reshape((-1, look_back, 1))
+X_train = X_train.reshape((-1, look_back * 16 + 16 , 1)) # hard coded!!!!, it is not responsive to lenght of data!!
+X_test = X_test.reshape((-1, look_back * 16 + 16, 1)) # hard coded!!!!, it is not responsive to lenght of data!!
 
 y_train = y_train.reshape((-1, 1))
 y_test = y_test.reshape((-1, 1))
