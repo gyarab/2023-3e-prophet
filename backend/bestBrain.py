@@ -226,18 +226,18 @@ def reset_model(model):
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
-def create_graph(X_train, y_train, scaler, lookback, device):
-    print('creating graph')
+def create_train_graph(X_train, y_train, scaler, look_back, device):
+    print('creating train graph')
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
 
-    dummies = np.zeros((X_train.shape[0], lookback * 16 + 16 + 2))
+    dummies = np.zeros((X_train.shape[0], look_back * 16 + 16 + 2))
     dummies[:, 0] = train_predictions
     dummies = scaler.inverse_transform(dummies)
     train_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_train.shape[0], lookback * 16 + 16 + 2))
+    dummies = np.zeros((X_train.shape[0], look_back * 16 + 16 + 2))
     dummies[:, 0] = y_train.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
@@ -248,7 +248,26 @@ def create_graph(X_train, y_train, scaler, lookback, device):
     plt.ylabel('Close')
     plt.legend()
     plt.show()
-
+def create_test_graph(X_test, y_test, scaler, look_back, device):
+    print('creating validate graph')
+    
+    test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten()
+    dummies = np.zeros((X_test.shape[0], look_back * 16 + 16 + 2))
+    dummies[:, 0] = test_predictions
+    dummies = scaler.inverse_transform(dummies)
+    test_predictions = dc(dummies[:, 0])
+    
+    dummies = np.zeros((X_test.shape[0], look_back * 16 + 16 + 2))
+    dummies[:, 0] = y_test.flatten()
+    dummies = scaler.inverse_transform(dummies)
+    new_y_test = dc(dummies[:, 0])
+    
+    plt.plot(new_y_test, label='Actual Close')
+    plt.plot(test_predictions, label='Predicted Close')
+    plt.xlabel('Day')
+    plt.ylabel('Close')
+    plt.legend()
+    plt.show()
 if __name__ == '__main__':
     
     device = get_device()
@@ -285,7 +304,8 @@ if __name__ == '__main__':
     
     # starts training
     # train_model(train_loader, test_loader, num_epochs)
-    create_graph(X_train, y_train, scaler, look_back, device)
+    # create_train_graph(X_train, y_train, scaler, look_back, device)
+    create_test_graph(X_test, y_test, scaler, look_back, device)
     # Save the trained model
     # save_model(model)  #!mozna funguje
 
