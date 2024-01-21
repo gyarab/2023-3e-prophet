@@ -46,6 +46,7 @@ class TimeSeriesDataset(Dataset):
 
 def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    print(device)
     return device
 # Helper function to get the absolute file path
 def get_absolute_path(input_file):
@@ -227,13 +228,16 @@ def reset_model(model):
             layer.reset_parameters()
 
 if __name__ == '__main__':
+    
     device = get_device()
+    
+    # k cemu je ?
     batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
 
     
     # Load the dataset   
     look_back = 100 # how many candles will it look into the past
-    shifted_df_as_np = load_data('technical_indicators_test_BTCUSDT.csv')
+    shifted_df_as_np = load_data('technical_indicators_test_BTCUSDT.csv', look_back)
     shifted_df_as_np = scale_data(shifted_df_as_np)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, 0.80)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test)
@@ -247,16 +251,15 @@ if __name__ == '__main__':
     
     
     # Reset the trained model
-    reset_model(model)   #!mozna funguje
+    # reset_model(model)   #!mozna funguje
 
     # Load the trained model
-    load_model(model)   #!mozna funguje
+    # load_model(model)   #!mozna funguje
 
 
     # Train the model
     learning_rate = 0.001
     num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
-    # k cemu je ?
     
     # starts training
     train_model(train_loader, test_loader, num_epochs)
