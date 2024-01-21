@@ -115,7 +115,7 @@ def split_data(shifted_df_as_np, percentage_of_train_data):
     
     return X_train, X_test, y_train, y_test
 
-def to_tensor(X_train,X_test,y_train,y_test):
+def to_tensor(X_train,X_test,y_train,y_test, look_back, nu):
     print("reshaping data to tensors")
     # reshpaes because LSTM wants 3 dimensional tensors
     X_train = X_train.reshape((-1, 100 * 16 + 16 , 1)) # hard coded!!!!, it is not responsive to lenght of data!!
@@ -277,7 +277,7 @@ if __name__ == '__main__':
         "open", "high", "low", "close", "volume",
         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
-    
+    number_of_columns = len(features_columns)
     # Load the dataset   
     shifted_df_as_np = load_data(file_name, look_back, features_columns)
     shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
