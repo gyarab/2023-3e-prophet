@@ -249,7 +249,7 @@ def create_train_graph(X_train, y_train, scaler, look_back, device):
     plt.legend()
     plt.show()
 def create_test_graph(X_test, y_test, scaler, look_back, device):
-    print('creating validate graph')
+    print('creating test graph')
     
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten()
     dummies = np.zeros((X_test.shape[0], look_back * 16 + 16 + 2))
