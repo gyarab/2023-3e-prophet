@@ -53,18 +53,14 @@ def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', input_file)
     return input_file_path
 
-def prepare_dataframe_for_lstm(dataframe, n_steps):
+def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # created deepcopy of dataframe - to not edit original data
     dataframe = dc(dataframe)
     
     dataframe.set_index('date', inplace=True)
     print(dataframe.shape)
     # Add lag features for the entire OHLCV columns
-    features_columns = [
-        "open", "high", "low", "close", "volume",
-        "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-        "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
-
+    
     
     lag_columns = []
     # for i in range(1, n_steps + 1):
@@ -248,6 +244,7 @@ def create_train_graph(X_train, y_train, scaler, look_back, device):
     plt.ylabel('Close')
     plt.legend()
     plt.show()
+    
 def create_test_graph(X_test, y_test, scaler, look_back, device):
     print('creating test graph')
     
@@ -274,11 +271,15 @@ if __name__ == '__main__':
     
     # k cemu je ?
     batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
-
+    look_back = 100 # how many candles will it look into the past
+    file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
+    features_columns = [
+        "open", "high", "low", "close", "volume",
+        "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+        "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
     
     # Load the dataset   
-    look_back = 100 # how many candles will it look into the past
-    shifted_df_as_np = load_data('technical_indicators_test_BTCUSDT.csv', look_back)
+    shifted_df_as_np = load_data(file_name, look_back, features_columns)
     shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, 0.80)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test)
@@ -297,13 +298,12 @@ if __name__ == '__main__':
     # Load the trained model
     load_model(model)   #!mozna funguje
 
-
     # Train the model
     learning_rate = 0.001
     num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    # train_model(train_loader, test_loader, num_epochs)
+    train_model(train_loader, test_loader, num_epochs)
     # create_train_graph(X_train, y_train, scaler, look_back, device)
     create_test_graph(X_test, y_test, scaler, look_back, device)
     # Save the trained model
