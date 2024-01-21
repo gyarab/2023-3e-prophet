@@ -99,7 +99,7 @@ def scale_data(shifted_df_as_np):
     print("scaling data to range -1 .. 1")
     scaler = MinMaxScaler(feature_range=(-1, 1))
     shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
-    return shifted_df_as_np
+    return shifted_df_as_np, scaler
 
 # splits data to training and 
 def split_data(shifted_df_as_np, percentage_of_train_data):
@@ -226,6 +226,28 @@ def reset_model(model):
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
+def create_graph(X_train, y_train, scaler, lookback, device):
+    print('creating graph')
+    with torch.no_grad():
+        predicted = model(X_train.to(device)).to('cpu').numpy()
+    train_predictions = predicted.flatten()
+
+    dummies = np.zeros((X_train.shape[0], lookback * 16 + 16 + 2))
+    dummies[:, 0] = train_predictions
+    dummies = scaler.inverse_transform(dummies)
+    train_predictions = dc(dummies[:, 0])
+    
+    dummies = np.zeros((X_train.shape[0], lookback * 16 + 16 + 2))
+    dummies[:, 0] = y_train.flatten()
+    dummies = scaler.inverse_transform(dummies)
+    new_y_train = dc(dummies[:, 0])
+    
+    plt.plot(new_y_train, label='Actual Close')
+    plt.plot(train_predictions, label='Predicted Close')
+    plt.xlabel('Day')
+    plt.ylabel('Close')
+    plt.legend()
+    plt.show()
 
 if __name__ == '__main__':
     
@@ -238,7 +260,7 @@ if __name__ == '__main__':
     # Load the dataset   
     look_back = 100 # how many candles will it look into the past
     shifted_df_as_np = load_data('technical_indicators_test_BTCUSDT.csv', look_back)
-    shifted_df_as_np = scale_data(shifted_df_as_np)
+    shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, 0.80)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
@@ -254,18 +276,18 @@ if __name__ == '__main__':
     # reset_model(model)   #!mozna funguje
 
     # Load the trained model
-    # load_model(model)   #!mozna funguje
+    load_model(model)   #!mozna funguje
 
 
     # Train the model
     learning_rate = 0.001
-    num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    train_model(train_loader, test_loader, num_epochs)
-
+    # train_model(train_loader, test_loader, num_epochs)
+    create_graph(X_train, y_train, scaler, look_back, device)
     # Save the trained model
-    save_model(model)  #!mozna funguje
+    # save_model(model)  #!mozna funguje
 
     # Test the loaded model without retraining
     #test_model(model, X, y)    
