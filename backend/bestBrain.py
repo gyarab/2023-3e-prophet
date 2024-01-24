@@ -223,7 +223,7 @@ def reset_model(model):
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
-def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,  device):
+def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns, device):
     print('creating train graph')
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
@@ -301,7 +301,7 @@ if __name__ == '__main__':
     load_model(model)
     
     # Reset the trained model
-    reset_model(model)
+    # reset_model(model)
 
 
     # Train the model
@@ -310,7 +310,7 @@ if __name__ == '__main__':
     
     # starts training
     train_model(train_loader, test_loader, num_epochs)
-    # create_train_graph(X_train, y_train, scaler, look_back, device)
+    # create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
     create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
     # Save the trained model
     # save_model(model)  #!mozna funguje
