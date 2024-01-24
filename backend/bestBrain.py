@@ -66,6 +66,7 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # for i in range(1, n_steps + 1):
     #         for col in features_columns:
     #             dataframe[f'{col}(t-{i})'] = dataframe[col].shift(i)
+    
     # adds t-<1;look_back (n_steps)> columns of data from previous rows
     for i in range(1, n_steps + 1):
         for col in features_columns:
@@ -98,11 +99,11 @@ def scale_data(shifted_df_as_np):
     return shifted_df_as_np, scaler
 
 # splits data to training and 
-def split_data(shifted_df_as_np, percentage_of_train_data):
+def split_data(shifted_df_as_np, percentage_of_train_data, target_value_index):
     print("spliting data")
     # splits the data into the target value - y and the data based on which y is predicted X
     X = shifted_df_as_np[:, 2:] # upper scale X is correct
-    y = shifted_df_as_np[:, 0] # lower scale y - vector ?
+    y = shifted_df_as_np[:, target_value_index] # lower scale y - vector ?
     X = dc(np.flip(X, axis=1)) # now the data are in corect time order - older to newer
 
     split_index = int(len(X) * percentage_of_train_data)
@@ -272,16 +273,21 @@ if __name__ == '__main__':
     # k cemu je ?
     batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
     look_back = 100 # how many candles will it look into the past
+    precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
+    # which columns will be included in training data - X
     features_columns = [
         "open", "high", "low", "close", "volume",
         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
     num_of_data_columns = len(features_columns)
+    target_value_index = 1 # what is the target values index (most likely 0 or 1)
+
+    
     # Load the dataset   
     shifted_df_as_np = load_data(file_name, look_back, features_columns)
     shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
-    X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, 0.80)
+    X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
@@ -293,7 +299,7 @@ if __name__ == '__main__':
     
     
     # Reset the trained model
-    # reset_model(model)   #!mozna funguje
+    reset_model(model)   #!mozna funguje
 
     # Load the trained model
     load_model(model)   #!mozna funguje
