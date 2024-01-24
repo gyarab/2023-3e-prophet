@@ -297,12 +297,12 @@ if __name__ == '__main__':
     model = LSTM(1, 4, 1)
     model.to(device)
     
+    # Load the trained model
+    load_model(model)
     
     # Reset the trained model
-    reset_model(model)   #!mozna funguje
+    reset_model(model)
 
-    # Load the trained model
-    load_model(model)   #!mozna funguje
 
     # Train the model
     learning_rate = 0.001
