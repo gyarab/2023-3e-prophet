@@ -66,7 +66,7 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # for i in range(1, n_steps + 1):
     #         for col in features_columns:
     #             dataframe[f'{col}(t-{i})'] = dataframe[col].shift(i)
-
+    # adds t-<1;look_back (n_steps)> columns of data from previous rows
     for i in range(1, n_steps + 1):
         for col in features_columns:
             lag_col_name = f'{col}(t-{i})'
