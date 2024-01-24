@@ -81,10 +81,10 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     print(dataframe.shape)
     return dataframe
 # loads data in acording format
-def load_data(file_name, look_back):
+def load_data(file_name, look_back, features_columns):
     print("loading raw data")
     data = pd.read_csv(get_absolute_path(file_name))
-    shifted_data_frame = prepare_dataframe_for_lstm(data, look_back)
+    shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns)
     # shifted_data_frame.to_csv("test.csv")
     shifted_df_as_np = shifted_data_frame.to_numpy()
     
@@ -115,11 +115,11 @@ def split_data(shifted_df_as_np, percentage_of_train_data):
     
     return X_train, X_test, y_train, y_test
 
-def to_tensor(X_train,X_test,y_train,y_test, look_back, nu):
+def to_tensor(X_train,X_test,y_train,y_test, look_back, num_of_data_columns):
     print("reshaping data to tensors")
     # reshpaes because LSTM wants 3 dimensional tensors
-    X_train = X_train.reshape((-1, 100 * 16 + 16 , 1)) # hard coded!!!!, it is not responsive to lenght of data!!
-    X_test = X_test.reshape((-1, 100 * 16 + 16, 1)) # hard coded!!!!, it is not responsive to lenght of data!!
+    X_train = X_train.reshape((-1, look_back * num_of_data_columns + num_of_data_columns , 1)) 
+    X_test = X_test.reshape((-1, look_back * num_of_data_columns + num_of_data_columns , 1))
 
     y_train = y_train.reshape((-1, 1))
     y_test = y_test.reshape((-1, 1))
@@ -189,13 +189,13 @@ def validate_one_epoch(test_loader, loss_function):
     avg_loss_across_batches = running_loss / len(test_loader)
     
     print('Val Loss: {0:.3f}'.format(avg_loss_across_batches))
-    print('***************************************************')
-    print()    
+    #print('***************************************************')
+    #print()    
     
     
 
 # train all data
-def train_model(train_loader,test_loader, num_epochs):
+def train_model(train_loader, test_loader, num_epochs):
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in tqdm(range(num_epochs), desc="Processing epochs"):
@@ -222,18 +222,18 @@ def reset_model(model):
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
-def create_train_graph(X_train, y_train, scaler, look_back, device):
+def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,  device):
     print('creating train graph')
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
 
-    dummies = np.zeros((X_train.shape[0], look_back * 16 + 16 + 2))
+    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2)) # the 2 value is still hard coded
     dummies[:, 0] = train_predictions
     dummies = scaler.inverse_transform(dummies)
     train_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_train.shape[0], look_back * 16 + 16 + 2))
+    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = y_train.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
@@ -245,16 +245,16 @@ def create_train_graph(X_train, y_train, scaler, look_back, device):
     plt.legend()
     plt.show()
     
-def create_test_graph(X_test, y_test, scaler, look_back, device):
+def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device):
     print('creating test graph')
     
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten()
-    dummies = np.zeros((X_test.shape[0], look_back * 16 + 16 + 2))
+    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = test_predictions
     dummies = scaler.inverse_transform(dummies)
     test_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_test.shape[0], look_back * 16 + 16 + 2))
+    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = y_test.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
@@ -277,12 +277,12 @@ if __name__ == '__main__':
         "open", "high", "low", "close", "volume",
         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
-    number_of_columns = len(features_columns)
+    num_of_data_columns = len(features_columns)
     # Load the dataset   
     shifted_df_as_np = load_data(file_name, look_back, features_columns)
     shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, 0.80)
-    X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test)
+    X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     # x_batch, y_batch = create_batches(train_loader)
@@ -305,7 +305,7 @@ if __name__ == '__main__':
     # starts training
     train_model(train_loader, test_loader, num_epochs)
     # create_train_graph(X_train, y_train, scaler, look_back, device)
-    create_test_graph(X_test, y_test, scaler, look_back, device)
+    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
     # Save the trained model
     # save_model(model)  #!mozna funguje
 
