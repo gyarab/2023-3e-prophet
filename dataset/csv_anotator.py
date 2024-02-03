@@ -90,8 +90,8 @@ def write_60rows_on1row(input_file, output_file):
             writer.writerow(concatenated_row)
             
 if __name__ == '__main__':
-    input_csv_file = 'test_BTCUSDT.csv'
-    output_csv_file = 'technical_indicators_test_BTCUSDT.csv'
+    input_csv_file = 'BTCUSDT.csv'
+    output_csv_file = 'technical_indicators_BTCUSDT.csv'
     
     fully_anotate(input_csv_file, output_csv_file)
     
