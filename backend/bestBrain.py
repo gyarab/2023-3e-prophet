@@ -12,24 +12,36 @@ import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
 
 class LSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, num_stacked_layers):
-        super().__init__()
+    def __init__(self, input_size, hidden_size, num_stacked_layers, dropout_rate=0.5):
+        super(LSTM, self).__init__()
         self.hidden_size = hidden_size
         self.num_stacked_layers = num_stacked_layers
 
-        self.lstm = nn.LSTM(input_size, hidden_size, num_stacked_layers, 
-                            batch_first=True)
-        
+        # Define LSTM layers
+        self.lstm = nn.LSTM(input_size, hidden_size, num_stacked_layers, batch_first=True, dropout=dropout_rate)
+
+        # Define dropout layer for regularization
+        self.dropout = nn.Dropout(dropout_rate)
+
+        # Define fully connected layer
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
-        # hodne skifi, asi neresit
         batch_size = x.size(0)
-        h0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
-        c0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
-        
+
+        # Initialize hidden and cell states
+        h0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(x.device)
+        c0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(x.device)
+
+        # LSTM forward pass
         out, _ = self.lstm(x, (h0, c0))
+
+        # Apply dropout for regularization
+        out = self.dropout(out)
+
+        # Take the output from the last time step and pass it through the fully connected layer
         out = self.fc(out[:, -1, :])
+
         return out
     
 # class for creating dataset
@@ -55,10 +67,11 @@ def get_absolute_path(input_file):
 
 def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # created deepcopy of dataframe - to not edit original data
-    dataframe = dc(dataframe)
+    selected_columns = features_columns + ['date']
+    dataframe = dc(dataframe[selected_columns])
     
     dataframe.set_index('date', inplace=True)
-    print(dataframe.shape)
+    print(f"shape of loadet data {dataframe.shape}")
     # Add lag features for the entire OHLCV columns
     
     
@@ -79,7 +92,7 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # removes possible blank lines
     dataframe.dropna(inplace=True)
     
-    print(dataframe.shape)
+    print(f"shape of prepared data{dataframe.shape}")
     return dataframe
 # loads data in acording format
 def load_data(file_name, look_back, features_columns):
@@ -113,7 +126,8 @@ def split_data(shifted_df_as_np, percentage_of_train_data, target_value_index):
 
     y_train = y[:split_index]
     y_test = y[split_index:]
-    
+    print(f"shape of X_train {X_train.shape}")
+    print(f"shape of X_test {X_test.shape}")
     return X_train, X_test, y_train, y_test
 
 def to_tensor(X_train,X_test,y_train,y_test, look_back, num_of_data_columns):
@@ -199,7 +213,7 @@ def validate_one_epoch(test_loader, loss_function):
 def train_model(train_loader, test_loader, num_epochs):
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    for epoch in tqdm(range(num_epochs), desc="Processing epochs"):
+    for epoch in range(num_epochs):
         train_one_epoch(train_loader, epoch, loss_function, optimizer)
         validate_one_epoch(test_loader, loss_function)
 
@@ -246,18 +260,19 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
     plt.legend()
     plt.show()
     
-def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device):
+def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     print('creating test graph')
     
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten()
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = test_predictions
-    dummies = scaler.inverse_transform(dummies)
+    # dummies = scaler.inverse_transform(dummies)
     test_predictions = dc(dummies[:, 0])
+    # test_predictions = test_predictions * 100 # all values will be multiplied by 100
     
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = y_test.flatten()
-    dummies = scaler.inverse_transform(dummies)
+    # dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
     
     plt.plot(new_y_test, label='Actual Close')
@@ -270,23 +285,23 @@ if __name__ == '__main__':
     
     device = get_device()
     
-    # k cemu je ?
     batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = [
-        "open", "high", "low", "close", "volume",
-        "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-        "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"]
+        "open", "high", "low", "close", "volume"
+        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+        ]
     num_of_data_columns = len(features_columns)
     target_value_index = 1 # what is the target values index (most likely 0 or 1)
 
     
     # Load the dataset   
     shifted_df_as_np = load_data(file_name, look_back, features_columns)
-    shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
+    # shifted_df_as_np, scaler = scale_data(shifted_df_as_np) - scaling is not recommended (the price can get higher than current maximum)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
@@ -294,11 +309,11 @@ if __name__ == '__main__':
     # x_batch, y_batch = create_batches(train_loader)
     
     # Build the model
-    model = LSTM(1, 4, 1)
+    model = LSTM(1, 4, 4)
     model.to(device)
     
     # Load the trained model
-    load_model(model)
+    # load_model(model)
     
     # Reset the trained model
     # reset_model(model)
@@ -311,7 +326,7 @@ if __name__ == '__main__':
     # starts training
     train_model(train_loader, test_loader, num_epochs)
     # create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
     # Save the trained model
     # save_model(model)  #!mozna funguje
 
