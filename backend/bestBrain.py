@@ -67,7 +67,7 @@ def get_absolute_path(input_file):
 
 def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # created deepcopy of dataframe - to not edit original data
-    selected_columns = features_columns + ['date']
+    selected_columns = ['date', 'target_value','target_value_difference'] + features_columns
     dataframe = dc(dataframe[selected_columns])
     
     dataframe.set_index('date', inplace=True)
