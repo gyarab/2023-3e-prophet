@@ -310,7 +310,7 @@ if __name__ == '__main__':
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     # x_batch, y_batch = create_batches(train_loader)
     # Build the model
-    model = LSTM(1, 4, 2)
+    model = LSTM(1, 4, 1)
     model.to(device)
     
     # Load the trained model
