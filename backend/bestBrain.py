@@ -103,7 +103,9 @@ def load_data(file_name, look_back, features_columns):
     shifted_df_as_np = shifted_data_frame.to_numpy()
     
     return shifted_df_as_np
-
+def absolute_scale_data(shifted_df_as_np):
+    shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
+    return shifted_df_as_np
 # scales the data
 def scale_data(shifted_df_as_np):
     print("scaling data to range -1 .. 1")
@@ -290,8 +292,8 @@ if __name__ == '__main__':
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
-    features_columns = [
-        "open", "high", "low", "close", "volume"
+    features_columns = ["close"
+        #"open", "high", "low", "close", "volume"
         # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
