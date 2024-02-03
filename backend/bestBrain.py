@@ -11,6 +11,7 @@ import os
 import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
 
+
 class LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, num_stacked_layers, dropout_rate=0.5):
         super(LSTM, self).__init__()
@@ -43,7 +44,7 @@ class LSTM(nn.Module):
         out = self.fc(out[:, -1, :])
 
         return out
-    
+  
 # class for creating dataset
 class TimeSeriesDataset(Dataset):
     def __init__(self, X, y):
@@ -67,9 +68,8 @@ def get_absolute_path(input_file):
 
 def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # created deepcopy of dataframe - to not edit original data
-    selected_columns = ['date', 'target_value','target_value_difference'] + features_columns
+    selected_columns = ['date', 'target_value', 'target_value_difference'] + features_columns
     dataframe = dc(dataframe[selected_columns])
-    
     dataframe.set_index('date', inplace=True)
     print(f"shape of loadet data {dataframe.shape}")
     # Add lag features for the entire OHLCV columns
@@ -262,19 +262,18 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
     plt.legend()
     plt.show()
     
-def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
+def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device):
     print('creating test graph')
     
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten()
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = test_predictions
-    # dummies = scaler.inverse_transform(dummies)
+    dummies = scaler.inverse_transform(dummies)
     test_predictions = dc(dummies[:, 0])
-    # test_predictions = test_predictions * 100 # all values will be multiplied by 100
     
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = y_test.flatten()
-    # dummies = scaler.inverse_transform(dummies)
+    dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
     
     plt.plot(new_y_test, label='Actual Close')
@@ -292,26 +291,26 @@ if __name__ == '__main__':
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
-    features_columns = ["close"
-        #"open", "high", "low", "close", "volume"
+    features_columns = [
+        "open", "high", "low", "close", "volume"
         # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns)
-    target_value_index = 1 # what is the target values index (most likely 0 or 1)
+    target_value_index = 0 # what is the target values index (most likely 0 or 1)
 
     
     # Load the dataset   
     shifted_df_as_np = load_data(file_name, look_back, features_columns)
-    # shifted_df_as_np, scaler = scale_data(shifted_df_as_np) - scaling is not recommended (the price can get higher than current maximum)
+    shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
+    # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     # x_batch, y_batch = create_batches(train_loader)
-    
     # Build the model
-    model = LSTM(1, 4, 4)
+    model = LSTM(1, 4, 2)
     model.to(device)
     
     # Load the trained model
@@ -322,13 +321,13 @@ if __name__ == '__main__':
 
 
     # Train the model
-    learning_rate = 0.001
+    learning_rate = 0.008
     num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     train_model(train_loader, test_loader, num_epochs)
     # create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
+    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
     # Save the trained model
     # save_model(model)  #!mozna funguje
 
