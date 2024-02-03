@@ -8,7 +8,7 @@ btc_value = 0
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('prophet.html')
 
 @app.route('/increment_btc_value')
 def increment_btc_value():
