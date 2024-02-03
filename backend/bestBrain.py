@@ -13,36 +13,24 @@ from copy import deepcopy as dc
 
 
 class LSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, num_stacked_layers, dropout_rate=0.5):
-        super(LSTM, self).__init__()
+    def __init__(self, input_size, hidden_size, num_stacked_layers):
+        super().__init__()
         self.hidden_size = hidden_size
         self.num_stacked_layers = num_stacked_layers
 
-        # Define LSTM layers
-        self.lstm = nn.LSTM(input_size, hidden_size, num_stacked_layers, batch_first=True, dropout=dropout_rate)
-
-        # Define dropout layer for regularization
-        self.dropout = nn.Dropout(dropout_rate)
-
-        # Define fully connected layer
+        self.lstm = nn.LSTM(input_size, hidden_size, num_stacked_layers, 
+                            batch_first=True)
+        
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x):
+        # hodne skifi, asi neresit
         batch_size = x.size(0)
-
-        # Initialize hidden and cell states
-        h0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(x.device)
-        c0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(x.device)
-
-        # LSTM forward pass
+        h0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
+        c0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
+        
         out, _ = self.lstm(x, (h0, c0))
-
-        # Apply dropout for regularization
-        out = self.dropout(out)
-
-        # Take the output from the last time step and pass it through the fully connected layer
         out = self.fc(out[:, -1, :])
-
         return out
   
 # class for creating dataset
@@ -292,11 +280,11 @@ if __name__ == '__main__':
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = [
-        "open", "high", "low", "close", "volume"
-        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+        "open", "high", "low", "close", "volume",
+         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
-    num_of_data_columns = len(features_columns)
+    num_of_data_columns = len(features_columns) 
     target_value_index = 0 # what is the target values index (most likely 0 or 1)
 
     
@@ -310,7 +298,7 @@ if __name__ == '__main__':
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     # x_batch, y_batch = create_batches(train_loader)
     # Build the model
-    model = LSTM(1, 4, 1)
+    model = LSTM(1, 36, 1)
     model.to(device)
     
     # Load the trained model
@@ -321,8 +309,8 @@ if __name__ == '__main__':
 
 
     # Train the model
-    learning_rate = 0.008
-    num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
+    learning_rate = 0.001
+    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     train_model(train_loader, test_loader, num_epochs)
