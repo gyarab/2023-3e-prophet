@@ -159,6 +159,7 @@ def create_batches(train_loader):
 
 def train_one_epoch(train_loader, epoch, loss_function, optimizer):
     model.train(True)
+    print()
     print(f'Epoch: {epoch + 1}')
     running_loss = 0.0
     
@@ -178,7 +179,6 @@ def train_one_epoch(train_loader, epoch, loss_function, optimizer):
             print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
                                                     avg_loss_across_batches))
             running_loss = 0.0
-    print()
 def validate_one_epoch(test_loader, loss_function):
     model.train(False)
     running_loss = 0.0
@@ -285,7 +285,7 @@ if __name__ == '__main__':
          "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
-    target_value_index = 0 # what is the target values index (most likely 0 or 1)
+    target_value_index = 1 # what is the target values index (most likely 0 or 1)
 
     
     # Load the dataset   
@@ -298,7 +298,7 @@ if __name__ == '__main__':
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     # x_batch, y_batch = create_batches(train_loader)
     # Build the model
-    model = LSTM(1, 36, 1)
+    model = LSTM(1, 64, 1)
     model.to(device)
     
     # Load the trained model
@@ -317,7 +317,7 @@ if __name__ == '__main__':
     # create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
     create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
     # Save the trained model
-    # save_model(model)  #!mozna funguje
+    save_model(model)  #!mozna funguje
 
     # Test the loaded model without retraining
     #test_model(model, X, y)    

@@ -5,7 +5,7 @@ import csv # lib for csv files access
 from tqdm import tqdm # loop progress bar in terminal
 import os # file paths
 import pandas as pd
-import ta
+import ta # technical indicators
 
 def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__),'data', input_file)
