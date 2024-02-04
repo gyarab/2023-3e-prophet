@@ -273,10 +273,13 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
 if __name__ == '__main__':
     
     device = get_device()
-    
-    batch_size = 16 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
+    # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
+    # after each batch is completed the parameteres of the model will be updated
+    # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
+    # we have: min-batch gradient descent
+    batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
-    precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
+    precentage_of_train_data = 0.95 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = [
@@ -302,22 +305,25 @@ if __name__ == '__main__':
     model.to(device)
     
     # Load the trained model
-    # load_model(model)
+    load_model(model)
     
     # Reset the trained model
     # reset_model(model)
 
 
-    # Train the model
+    # Train parameters
     learning_rate = 0.001
-    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 2 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    train_model(train_loader, test_loader, num_epochs)
-    # create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    #train_model(train_loader, test_loader, num_epochs)
+    
+    #shows graphs
+    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
     create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    
     # Save the trained model
-    save_model(model)  #!mozna funguje
+    # save_model(model)  #!mozna funguje
 
     # Test the loaded model without retraining
     #test_model(model, X, y)    
