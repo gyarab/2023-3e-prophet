@@ -35,73 +35,85 @@ def get_last_100_btc_price():
     ohlcv = EXCHANGE.fetch_ohlcv(symbol, '1m') # Use '1m' for 1-minute timeframe
 
     # last 100 minutes as ?list?
-    last_100_prices = ohlcv[-100:]
-    
+    last_100_prices = ohlcv[-100:]    
     return last_100_prices
+
 #returns account balance as dictoniary
 def get_balance():
-    
     # Fetch your account balance
     balance = EXCHANGE.fetch_balance()
-
     return balance
 
 def get_markets():
     markets = EXCHANGE.load_markets()
-
     return list(markets.keys())
 
-
-
-
-
-
-
-# adds anotation off technical indicators and target values and their differences
-def AddTechnicalIndicators(csv_file, output_file):
-    
-
-    # Add target_value and target_value_difference columns
-    df['target_value'] = df['close'].shift(-1)  # Next close value
-    df['target_value_difference'] = df['target_value'] - df['close']  # Difference between next close and current close
-    # Drop the 'timestamp' column
-    df.drop('timestamp', axis=1, inplace=True)  
-    # Reorder columns
-    columns_order = ['date', 'target_value', 'target_value_difference', 'open', 'high', 'low', 'close', 'volume']
-    columns_order.extend([col for col in df.columns if col not in columns_order])
-    df = df[columns_order]
-   
-   
-    # Add technical indicators
-    df['ema_14'] = ta.trend.EMAIndicator(close=df['close'], window=14).ema_indicator()
-    df['rsi_14'] = ta.momentum.RSIIndicator(close=df['close'], window=14).rsi()
-    df['macd'] = ta.trend.MACD(close=df['close']).macd()
-    df['bollinger_upper'] = ta.volatility.BollingerBands(close=df['close']).bollinger_hband()
-    df['bollinger_lower'] = ta.volatility.BollingerBands(close=df['close']).bollinger_lband()
-    df['atr'] = ta.volatility.AverageTrueRange(high=df['high'], low=df['low'], close=df['close']).average_true_range()
-    df['ichimoku_a'] = ta.trend.IchimokuIndicator(high=df['high'], low=df['low']).ichimoku_a()
-    df['ichimoku_b'] = ta.trend.IchimokuIndicator(high=df['high'], low=df['low']).ichimoku_b()
-    df['obv'] = ta.volume.OnBalanceVolumeIndicator(close=df['close'], volume=df['volume']).on_balance_volume()
-    df['williams_r'] = ta.momentum.WilliamsRIndicator(close=df['close'], high=df['high'], low=df['low']).williams_r()
-    df['adx'] = ta.trend.ADXIndicator(high=df['high'], low=df['low'], close=df['close']).adx()
-    
-   
     
     
+def Create_price_arr():
+    
 
+    # Create an empty list to store rows of the array
+    array_data = []
+
+    for candle in get_last_100_btc_price():
+        timestamp, open_, high, low, close, volume = candle
+
+        # Convert values to Pandas Series
+        close_series = pd.Series(close)
+        high_series = pd.Series(high)
+        low_series = pd.Series(low)
+        volume_series = pd.Series(volume)
+
+        # Calculate technical indicators
+        ema_14 = ta.trend.EMAIndicator(close=close_series, window=14).ema_indicator()
+        rsi_14 = ta.momentum.RSIIndicator(close=close_series, window=14).rsi()
+        macd = ta.trend.MACD(close=close_series).macd()
+        bollinger_upper = ta.volatility.BollingerBands(close=close_series).bollinger_hband()
+        bollinger_lower = ta.volatility.BollingerBands(close=close_series).bollinger_lband()
+
+        # Check if there are enough data points for ATR calculation
+        if len(close_series) >= 14:
+            atr = ta.volatility.AverageTrueRange(high=high_series, low=low_series, close=close_series).average_true_range()
+        else:
+            atr = None  # Set to None if not enough data
+        
+        # Check if there are enough data points for ADXIndicator calculation
+        if len(close_series) >= 2:
+            adx = ta.trend.ADXIndicator(high=high_series, low=low_series, close=close_series).adx()
+        else:
+            adx = None  # Set to None if not enough data
+
+        ichimoku_a = ta.trend.IchimokuIndicator(high=high_series, low=low_series).ichimoku_a()
+        ichimoku_b = ta.trend.IchimokuIndicator(high=high_series, low=low_series).ichimoku_b()
+        obv = ta.volume.OnBalanceVolumeIndicator(close=close_series, volume=volume_series).on_balance_volume()
+        williams_r = ta.momentum.WilliamsRIndicator(close=close_series, high=high_series, low=low_series).williams_r()
+        
+
+        # Create a row with all values
+        row = [timestamp, open_, high, low, close, volume, ema_14, rsi_14, macd, bollinger_upper, bollinger_lower, atr, ichimoku_a, ichimoku_b, obv, williams_r, adx]
+
+        # Append the row to the array_data list
+        array_data.append(row)
+
+    return array_data
+    
 
 if __name__ == '__main__':
     # print(get_btc_price())
     #print("CoinEx Account Balance:")
     #print(get_balance())
     
+
+    last_prices = Create_price_arr()
+    print('Array output:')
+    for row in last_prices:
+        print(row)
+
+
     for candle in get_last_100_btc_price():
         timestamp, open_, high, low, close, volume = candle
-        print(f'Timestamp: {timestamp}, Close Price: {close}')
-     
+        #print(f'Timestamp: {timestamp}, Close Price: {close}')
+        
+   
 
-
-
-
-last_100_edited_prices = get_last_100_btc_price
-    
