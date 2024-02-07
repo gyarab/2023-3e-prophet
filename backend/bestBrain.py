@@ -82,6 +82,7 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     
     print(f"shape of prepared data{dataframe.shape}")
     return dataframe
+
 # loads data in acording format
 def load_data(file_name, look_back, features_columns):
     print("loading raw data")
@@ -197,7 +198,6 @@ def validate_one_epoch(test_loader, loss_function):
     #print('***************************************************')
     #print()    
     
-    
 
 # train all data
 def train_model(train_loader, test_loader, num_epochs):
@@ -227,6 +227,7 @@ def reset_model(model):
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
+
 def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns, device):
     print('creating train graph')
     with torch.no_grad():
@@ -270,8 +271,56 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
     plt.ylabel('Close')
     plt.legend()
     plt.show()
+
+
+
+def prepare_live_data(last_prices, look_back, num_of_data_columns):
+    # Convert last_prices array to a numpy array
+    last_prices_np = np.array(last_prices)
+
+    # Extract relevant columns
+    features_columns = [
+        "open", "high", "low", "close", "volume",
+         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+    ]
+
+    # Get the indices of the features columns
+    features_indices = [last_prices[0].index(col) for col in features_columns]
+
+    # Extract features and target values
+    X = last_prices_np[:, features_indices]
+    target_column_index = last_prices[0].index("close")
+    y = last_prices_np[:, target_column_index]
+
+    # Reshape data for LSTM input
+    num_samples = len(last_prices_np)
+    X = X.reshape((-1, look_back * num_of_data_columns + num_of_data_columns, 1))
+    y = y.reshape((-1, 1))
+
+    # Convert to PyTorch tensors
+    X_tensor = torch.tensor(X).float()
+    y_tensor = torch.tensor(y).float()
+
+    return X_tensor, y_tensor
+
+def predict_next_target_difference(model, input_data, device):
+    model.eval()
+
+    # Convert input data to tensor
+    input_tensor = torch.tensor(input_data).float().to(device)
+
+    # Make the prediction
+    with torch.no_grad():
+        prediction = model(input_tensor).item()
+
+    print(f'Predicted Next Target Difference: {prediction:.6f}')
+
+
 if __name__ == '__main__':
-    
+    use_dataset = 0
+
+
     device = get_device()
     # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
     # after each batch is completed the parameteres of the model will be updated
@@ -290,16 +339,24 @@ if __name__ == '__main__':
     num_of_data_columns = len(features_columns) 
     target_value_index = 1 # what is the target values index (most likely 0 or 1)
 
+    if use_dataset == 1:
+        # Load the dataset   
+        shifted_df_as_np = load_data(file_name, look_back, features_columns)
+        shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
+        # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
+    else:
+        shifted_df_as_np = prepare_live_data()
+        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
     
-    # Load the dataset   
-    shifted_df_as_np = load_data(file_name, look_back, features_columns)
-    shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
-    # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
     X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
     X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
     train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
     train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
-    # x_batch, y_batch = create_batches(train_loader)
+    
+    #x_batch, y_batch = create_batches(train_loader)
+    
+    
+
     # Build the model
     model = LSTM(1, 64, 1)
     model.to(device)
@@ -307,7 +364,7 @@ if __name__ == '__main__':
     # Load the trained model
     load_model(model)
     
-    # Reset the trained model
+    # Resets the trained model
     # reset_model(model)
 
 
@@ -318,12 +375,12 @@ if __name__ == '__main__':
     # starts training
     #train_model(train_loader, test_loader, num_epochs)
     
-    #shows graphs
-    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
     
     # Save the trained model
     # save_model(model)  #!mozna funguje
 
-    # Test the loaded model without retraining
-    #test_model(model, X, y)    
+   
+
+    #shows graphs
+    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
