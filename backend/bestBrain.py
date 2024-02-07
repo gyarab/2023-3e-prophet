@@ -58,11 +58,10 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     # created deepcopy of dataframe - to not edit original data
     selected_columns = ['date', 'target_value', 'target_value_difference'] + features_columns
     dataframe = dc(dataframe[selected_columns])
-    dataframe.set_index('date', inplace=True)
+    dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
     print(f"shape of loadet data {dataframe.shape}")
+    
     # Add lag features for the entire OHLCV columns
-    
-    
     lag_columns = []
     # for i in range(1, n_steps + 1):
     #         for col in features_columns:
@@ -82,13 +81,41 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     
     print(f"shape of prepared data{dataframe.shape}")
     return dataframe
+def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
+    selected_columns = ['date', 'target_value', 'target_value_difference'] + features_columns # it is expected that just the close value will be passed
+    dataframe = dc(dataframe[selected_columns])
+    print(f"shape of loadet data {dataframe.shape}")
+    
+    # Create new DataFrame with 'date' as index
+    new_df = dataframe.set_index('date')[['target_value', 'target_value_difference']]
 
+ 
+    #DOES NOT WORK!!!
+    # Add columns for the sequence of differences in 'close' values
+    for i in range(1, n_steps + 1):
+        new_df[f'return_{i}'] = dataframe['close'].shift(i) - dataframe['close'].shift(i + 1)
+
+    # Drop rows with NaN values (due to shift operation)
+    new_df = new_df.dropna()
+
+    # removes possible blank lines
+    new_df.dropna(inplace=True)
+    
+    
+    print(f"shape of prepared data {new_df.shape}")
+    new_df.to_csv("dataframe_test")
+    return new_df # just a debug tool
 # loads data in acording format
-def load_data(file_name, look_back, features_columns):
+def load_data(file_name, look_back, features_columns, mode):
     print("loading raw data")
     data = pd.read_csv(get_absolute_path(file_name))
-    shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns)
-    # shifted_data_frame.to_csv("test.csv")
+    #different modes of data input
+    if mode == 0:
+        shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
+    if mode == 1:
+        shifted_data_frame = prepare_dataframe_for_lstm2(data, look_back, features_columns) # sequences of returns (differences of values), fea
+    
+   
     shifted_df_as_np = shifted_data_frame.to_numpy()
     
     return shifted_df_as_np
@@ -279,10 +306,10 @@ def prepare_live_data(last_prices, look_back, num_of_data_columns):
     last_prices_np = np.array(last_prices)
 
     # Extract relevant columns
-    features_columns = [
-        "open", "high", "low", "close", "volume",
-         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+    features_columns = ['close'
+        #"open", "high", "low", "close", "volume",
+         #"ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+         #"atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
     ]
 
     # Get the indices of the features columns
@@ -318,7 +345,7 @@ def predict_next_target_difference(model, input_data, device):
 
 
 if __name__ == '__main__':
-    use_dataset = 0
+    use_dataset = 1
 
 
     device = get_device()
@@ -331,17 +358,18 @@ if __name__ == '__main__':
     precentage_of_train_data = 0.95 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
-    features_columns = [
-        "open", "high", "low", "close", "volume",
-         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+    features_columns = ['close'
+        #"open", "high", "low", "close", "volume",
+         #"ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+         #"atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
     target_value_index = 1 # what is the target values index (most likely 0 or 1)
+    load_mode = 1 # modes of loading the data, starts with 0
 
     if use_dataset == 1:
         # Load the dataset   
-        shifted_df_as_np = load_data(file_name, look_back, features_columns)
+        shifted_df_as_np = load_data(file_name, look_back, features_columns, load_mode)
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
     else:
@@ -362,7 +390,7 @@ if __name__ == '__main__':
     model.to(device)
     
     # Load the trained model
-    load_model(model)
+    #load_model(model)
     
     # Resets the trained model
     # reset_model(model)
