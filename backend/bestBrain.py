@@ -89,6 +89,12 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
     # Create new DataFrame with 'date' as index
     new_df = dataframe.set_index('date')[['target_value', 'target_value_difference']]
 
+    # Sample DataFrame creation
+    # data = {'close': [10, 15, 20, 25, 30]}
+    # df = pd.DataFrame(data)
+
+    # # Calculate the difference between upcoming close values
+    # df['return'] = df['close'].diff().shift(-1)
  
     #DOES NOT WORK!!!
     # Add columns for the sequence of differences in 'close' values
