@@ -89,9 +89,7 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
     # Create new DataFrame with 'date' as index
     dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
     dataframe['close_difference'] = dataframe['close'].diff()
-    dataframe = dataframe.dropna()
     
-    #DOES NOT WORK!!!
     # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
     lag_columns = []
     for i in range(1, n_steps + 1):
@@ -100,12 +98,14 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
     # Concatenate all lag columns to the original dataframe
     dataframe = pd.concat([dataframe] + lag_columns, axis=1)
     
-    # Drop rows with NaN values (due to shift operation)
+    # removes possible blank lines
+    dataframe.dropna(inplace=True)
+    # removes close column
     dataframe = dataframe.drop('close', axis=1)
-    
     print(f"shape of prepared data {dataframe.shape}")
     dataframe.to_csv("dataframe_test") # just a debug tool
     return dataframe 
+
 # loads data in acording format
 def load_data(file_name, look_back, features_columns, mode):
     print("loading raw data")
@@ -356,7 +356,7 @@ if __name__ == '__main__':
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
-    precentage_of_train_data = 0.95 # how much data will be used for training, rest will be used for testing
+    precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['close'
@@ -399,17 +399,17 @@ if __name__ == '__main__':
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 2 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    #train_model(train_loader, test_loader, num_epochs)
+    train_model(train_loader, test_loader, num_epochs)
     
     
     # Save the trained model
-    # save_model(model)  #!mozna funguje
+    save_model(model) 
 
    
 
     #shows graphs
-    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
