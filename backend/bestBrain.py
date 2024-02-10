@@ -287,7 +287,7 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
 def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device):
     print('creating test graph')
     
-    test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten()
+    test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
     dummies[:, 0] = test_predictions
     dummies = scaler.inverse_transform(dummies)
