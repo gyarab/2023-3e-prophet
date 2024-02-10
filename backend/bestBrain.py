@@ -313,9 +313,9 @@ def prepare_live_data(last_prices, look_back, num_of_data_columns):
 
     # Extract relevant columns
     features_columns = ['close'
-        #"open", "high", "low", "close", "volume",
-         #"ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-         #"atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+        "open", "high", "low", "close", "volume",
+         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
     ]
 
     # Get the indices of the features columns
