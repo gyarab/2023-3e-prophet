@@ -240,7 +240,7 @@ def train_model(train_loader, test_loader, num_epochs):
 def save_model(model, target_column, features_columns, linear_layers, filename = 'not_given'):
     if filename == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
-        filename = f'model_{target_column[0]}_{inicials_features_columns}_{linear_layers}'
+        filename = f'model_{target_column[0]}_{inicials_features_columns}_l{linear_layers}'
     
     print('saving model')
     torch.save(model.state_dict(), filename)
