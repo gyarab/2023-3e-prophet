@@ -237,7 +237,11 @@ def train_model(train_loader, test_loader, num_epochs):
         validate_one_epoch(test_loader, loss_function)
 
 # Function to save the trained model
-def save_model(model, filename='2000Epoch_low_data_sample_model_alltechnicals.pth'):
+def save_model(model, target_column, features_columns, linear_layers, filename = 'not_given'):
+    if file_name == 'not_given':
+        inicials_features_columns = ''.join([s[0] for s in features_columns])
+        file_name = f'model_{target_column}_{inicials_features_columns}_{linear_layers}'
+    
     print('saving model')
     torch.save(model.state_dict(), filename)
     print(f"Model saved as {filename}")
@@ -397,7 +401,8 @@ if __name__ == '__main__':
     
 
     # Build the model
-    model = LSTM(1, 4, 1)
+    linear_layers = 64
+    model = LSTM(1, linear_layers, 1)
     model.to(device)
     
     #Load the trained model
@@ -418,7 +423,7 @@ if __name__ == '__main__':
     
     
     # Save the trained model
-    save_model(model) 
+    save_model(model, target_column, features_columns, linear_layers) 
 
    
 
