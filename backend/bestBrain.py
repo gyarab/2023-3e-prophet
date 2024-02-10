@@ -104,7 +104,7 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns,target_colu
     # removes close column
     dataframe = dataframe.drop('close', axis=1)
     print(f"shape of prepared data {dataframe.shape}")
-    dataframe.to_csv("dataframe_test") # just a debug tool
+    #dataframe.to_csv("dataframe_test") # just a debug tool
     return dataframe 
 
 # loads data in acording format
