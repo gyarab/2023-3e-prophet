@@ -237,10 +237,10 @@ def train_model(train_loader, test_loader, num_epochs):
         validate_one_epoch(test_loader, loss_function)
 
 # Function to save the trained model
-def save_model(model, target_column, features_columns, linear_layers, filename = 'not_given'):
+def save_model(model, target_column, features_columns, linear_layers, look_back, filename = 'not_given'):
     if filename == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
-        filename = f'model_{target_column[0]}_{inicials_features_columns}_{linear_layers}L'
+        filename = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{linear_layers}L'
     
     print('saving model')
     torch.save(model.state_dict(), filename)
@@ -360,7 +360,7 @@ if __name__ == '__main__':
     # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-    look_back = 100 # how many candles will it look into the past
+    look_back = 10 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
@@ -423,7 +423,7 @@ if __name__ == '__main__':
     
     
     # Save the trained model
-    save_model(model, target_column, features_columns, linear_layers) 
+    save_model(model, target_column, features_columns, look_back, linear_layers) 
 
    
 
