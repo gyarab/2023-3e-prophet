@@ -68,7 +68,7 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     #         for col in features_columns:
     #             dataframe[f'{col}(t-{i})'] = dataframe[col].shift(i)
     
-    # adds t-<1;look_back (n_steps)> columns of data from previous rows
+    # adds t-n;look_back (n_steps)> columns of data from previous rows
     for i in range(1, n_steps + 1):
         for col in features_columns:
             lag_col_name = f'{col}(t-{i})'
@@ -88,30 +88,25 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
     print(f"shape of loadet data {dataframe.shape}")
     
     # Create new DataFrame with 'date' as index
-    new_df = dataframe.set_index('date')[['target_value', 'target_value_difference']]
-
-    # Sample DataFrame creation
-    # data = {'close': [10, 15, 20, 25, 30]}
-    # df = pd.DataFrame(data)
-
-    # # Calculate the difference between upcoming close values
-    # df['return'] = df['close'].diff().shift(-1)
- 
-    #DOES NOT WORK!!!
-    # Add columns for the sequence of differences in 'close' values
+    dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+    dataframe['close_difference'] = dataframe['close'].diff()
+    
+    # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
+    lag_columns = []
     for i in range(1, n_steps + 1):
-        new_df[f'return_{i}'] = dataframe['close'].shift(i) - dataframe['close'].shift(i + 1)
-
-    # Drop rows with NaN values (due to shift operation)
-    new_df = new_df.dropna()
-
+        lag_col_name = f'close_difference(t-{i})'
+        lag_columns.append(dataframe['close_difference'].shift(i).rename(lag_col_name))
+    # Concatenate all lag columns to the original dataframe
+    dataframe = pd.concat([dataframe] + lag_columns, axis=1)
+    
     # removes possible blank lines
-    new_df.dropna(inplace=True)
-    
-    
-    print(f"shape of prepared data {new_df.shape}")
-    new_df.to_csv("dataframe_test")
-    return new_df # just a debug tool
+    dataframe.dropna(inplace=True)
+    # removes close column
+    dataframe = dataframe.drop('close', axis=1)
+    print(f"shape of prepared data {dataframe.shape}")
+    dataframe.to_csv("dataframe_test") # just a debug tool
+    return dataframe 
+
 # loads data in acording format
 def load_data(file_name, look_back, features_columns, mode):
     print("loading raw data")
@@ -362,7 +357,7 @@ if __name__ == '__main__':
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
-    precentage_of_train_data = 0.95 # how much data will be used for training, rest will be used for testing
+    precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['close',
@@ -416,17 +411,17 @@ if __name__ == '__main__':
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 2 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    #train_model(train_loader, test_loader, num_epochs)
+    train_model(train_loader, test_loader, num_epochs)
     
     
     # Save the trained model
-    # save_model(model)  #!mozna funguje
+    save_model(model) 
 
    
 
     #shows graphs
-    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
