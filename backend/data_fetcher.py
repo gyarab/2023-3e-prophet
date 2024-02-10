@@ -95,13 +95,9 @@ def Create_price_arr():
         row = [close]
         
         
-        
-        
-        
+    
         # Append the row to the array_data list
         array_data.append(row)
-
-
     
     return array_data
     
@@ -122,5 +118,3 @@ if __name__ == '__main__':
         timestamp, open_, high, low, close, volume = candle
         #print(f'Timestamp: {timestamp}, Close Price: {close}')
         
-   
-
