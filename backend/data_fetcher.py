@@ -4,7 +4,7 @@ from tqdm import tqdm # loop progress bar in terminal
 import os # file paths
 import pandas as pd
 import ta
-
+import numpy as np
 #Getting values
 import ccxt
 import tqdm
@@ -91,11 +91,18 @@ def Create_price_arr():
         
 
         # Create a row with all values
-        row = [timestamp, open_, high, low, close, volume, ema_14, rsi_14, macd, bollinger_upper, bollinger_lower, atr, ichimoku_a, ichimoku_b, obv, williams_r, adx]
-
+        #row = [timestamp, open_, high, low, close, volume, ema_14, rsi_14, macd, bollinger_upper, bollinger_lower, atr, ichimoku_a, ichimoku_b, obv, williams_r, adx]
+        row = [close]
+        
+        
+        
+        
+        
         # Append the row to the array_data list
         array_data.append(row)
 
+
+    
     return array_data
     
 

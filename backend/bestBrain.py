@@ -10,6 +10,7 @@ from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
+from data_fetcher import Create_price_arr, get_last_100_btc_price
 
 
 class LSTM(nn.Module):
@@ -241,13 +242,13 @@ def train_model(train_loader, test_loader, num_epochs):
         validate_one_epoch(test_loader, loss_function)
 
 # Function to save the trained model
-def save_model(model, filename='trained_model.pth'):
+def save_model(model, filename='2000Epoch_low_data_sample_model_alltechnicals.pth'):
     print('saving model')
     torch.save(model.state_dict(), filename)
     print(f"Model saved as {filename}")
 
 # Function to load the trained model
-def load_model(model, filename='trained_model.pth'):
+def load_model(model, filename='2000Epoch_low_data_sample_model_alltechnicals.pth'):
     print('loading model')
     loaded_model = model #changed
     loaded_model.load_state_dict(torch.load(filename))
@@ -312,12 +313,12 @@ def prepare_live_data(last_prices, look_back, num_of_data_columns):
     last_prices_np = np.array(last_prices)
 
     # Extract relevant columns
-    features_columns = ['close'
-        "open", "high", "low", "close", "volume",
-         "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-         "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+    features_columns = ['close',
+        #"open", "high", "low", "close", "volume",
+        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
     ]
-
+    
     # Get the indices of the features columns
     features_indices = [last_prices[0].index(col) for col in features_columns]
 
@@ -351,7 +352,7 @@ def predict_next_target_difference(model, input_data, device):
 
 
 if __name__ == '__main__':
-    use_dataset = 1
+    use_dataset = 0
 
 
     device = get_device()
@@ -364,10 +365,10 @@ if __name__ == '__main__':
     precentage_of_train_data = 0.95 # how much data will be used for training, rest will be used for testing
     file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
-    features_columns = ['close'
+    features_columns = ['close',
         #"open", "high", "low", "close", "volume",
-         #"ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-         #"atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
     target_value_index = 1 # what is the target values index (most likely 0 or 1)
@@ -378,14 +379,23 @@ if __name__ == '__main__':
         shifted_df_as_np = load_data(file_name, look_back, features_columns, load_mode)
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
-    else:
-        shifted_df_as_np = prepare_live_data()
-        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
+        X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
+        X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
+        train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
+        train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     
-    X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
-    X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
-    train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
-    train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
+    else:
+        # Fetch the last prices
+        last_prices = get_last_100_btc_price()
+
+        # Call the Create_price_arr function and pass last_prices as an argument
+        price_data = Create_price_arr(last_prices)
+
+        
+        shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
+        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
+        X_tensor, _ = shifted_df_as_np
+    
     
     #x_batch, y_batch = create_batches(train_loader)
     
@@ -395,12 +405,14 @@ if __name__ == '__main__':
     model = LSTM(1, 64, 1)
     model.to(device)
     
-    # Load the trained model
-    #load_model(model)
+    #Load the trained model
+    load_model(model)
     
     # Resets the trained model
     # reset_model(model)
-
+    
+    #predict
+    predict_next_target_difference(model, X_tensor, device )
 
     # Train parameters
     learning_rate = 0.001
