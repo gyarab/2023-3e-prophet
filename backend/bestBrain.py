@@ -187,7 +187,7 @@ def create_batches(train_loader):
         break
     return x_batch, y_batch
 
-def train_one_epoch(train_loader, epoch, loss_function, optimizer):
+def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
     model.train(True)
     print()
     print(f'Epoch: {epoch + 1}')
@@ -209,7 +209,7 @@ def train_one_epoch(train_loader, epoch, loss_function, optimizer):
             print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
                                                     avg_loss_across_batches))
             running_loss = 0.0
-def validate_one_epoch(test_loader, loss_function):
+def validate_one_epoch(model, test_loader, loss_function):
     model.train(False)
     running_loss = 0.0
     
@@ -229,12 +229,14 @@ def validate_one_epoch(test_loader, loss_function):
     
 
 # train all data
-def train_model(train_loader, test_loader, num_epochs):
+def train_model(model, train_loader, test_loader, num_epochs, model_name):
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
-        train_one_epoch(train_loader, epoch, loss_function, optimizer)
-        validate_one_epoch(test_loader, loss_function)
+        train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
+        validate_one_epoch(model, test_loader, loss_function)
+        if epoch % 10 == 0:
+            save_model(model, model_name)
 
 # Function to save the trained model
 def save_model(model, model_name):
@@ -423,7 +425,7 @@ if __name__ == '__main__':
     num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    train_model(train_loader, test_loader, num_epochs)
+    train_model(model, train_loader, test_loader, num_epochs, model_name)
     
     
     # Save the trained model
