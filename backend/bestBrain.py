@@ -240,16 +240,16 @@ def train_model(model, train_loader, test_loader, num_epochs, model_name):
 
 # Function to save the trained model
 def save_model(model, model_name):
-    
+    model_name = model_name + '.pth'
     print('saving model')
     torch.save(model.state_dict(), model_name)
     print(f"Model saved as {model_name}")
 
 # Function to load the trained model
-def load_model(model, filename='2000Epoch_low_data_sample_model_alltechnicals.pth'):
+def load_model(model, filename):
     print('loading model')
     loaded_model = model #changed
-    loaded_model.load_state_dict(torch.load(filename))
+    loaded_model.load_state_dict(torch.load(filename + '.pth'))
     print(f"Model loaded from {filename}")
     return loaded_model   
 
@@ -412,7 +412,7 @@ if __name__ == '__main__':
     # Build the model
     
     #Load the trained model
-    #load_model(model)
+    load_model(model, model_name)
     
     # Resets the trained model
     # reset_model(model)
@@ -425,11 +425,11 @@ if __name__ == '__main__':
     num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    train_model(model, train_loader, test_loader, num_epochs, model_name)
+    # train_model(model, train_loader, test_loader, num_epochs, model_name)
     
     
     # Save the trained model
-    save_model(model, model_name) 
+    #save_model(model, model_name) 
 
    
 
