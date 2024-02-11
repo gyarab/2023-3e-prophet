@@ -190,7 +190,7 @@ def create_batches(train_loader):
 def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
     model.train(True)
     print()
-    print(f'Epoch: {epoch + 1}')
+    print(f'Epoch: {epoch}')
     running_loss = 0.0
     
     for batch_index, batch in enumerate(train_loader):
@@ -348,7 +348,7 @@ def predict_next_target_difference(model, input_data, device):
 
     print(f'Predicted Next Target Difference: {prediction:.6f}')
 
-def create_model_name(target_column, features_columns, linear_layers, look_back, model_name = 'not_given'):
+def create_model_name(target_column, features_columns, look_back, linear_layers, model_name = 'not_given'):
     if model_name == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
         model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{linear_layers}L'
