@@ -108,9 +108,9 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns,target_colu
     return dataframe 
 
 # loads data in acording format
-def load_data(file_name, look_back, features_columns,target_column, mode):
+def load_data(input_file_name, look_back, features_columns,target_column, mode):
     print("loading raw data")
-    data = pd.read_csv(get_absolute_path(file_name))
+    data = pd.read_csv(get_absolute_path(input_file_name))
     #different modes of data input
     if mode == 0:
         shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns, target_column) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
@@ -237,14 +237,11 @@ def train_model(train_loader, test_loader, num_epochs):
         validate_one_epoch(test_loader, loss_function)
 
 # Function to save the trained model
-def save_model(model, target_column, features_columns, linear_layers, look_back, filename = 'not_given'):
-    if filename == 'not_given':
-        inicials_features_columns = ''.join([s[0] for s in features_columns])
-        filename = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{linear_layers}L'
+def save_model(model, model_name):
     
     print('saving model')
-    torch.save(model.state_dict(), filename)
-    print(f"Model saved as {filename}")
+    torch.save(model.state_dict(), model_name)
+    print(f"Model saved as {model_name}")
 
 # Function to load the trained model
 def load_model(model, filename='2000Epoch_low_data_sample_model_alltechnicals.pth'):
@@ -349,7 +346,12 @@ def predict_next_target_difference(model, input_data, device):
 
     print(f'Predicted Next Target Difference: {prediction:.6f}')
 
-
+def create_model_name(target_column, features_columns, linear_layers, look_back, model_name = 'not_given'):
+    if model_name == 'not_given':
+        inicials_features_columns = ''.join([s[0] for s in features_columns])
+        model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{linear_layers}L'
+    
+    return model_name
 if __name__ == '__main__':
     use_dataset = 1
 
@@ -360,9 +362,9 @@ if __name__ == '__main__':
     # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-    look_back = 10 # how many candles will it look into the past
+    look_back = 50 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
+    input_file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['close',
         #"open", "high", "low", "close", "volume",
@@ -372,10 +374,15 @@ if __name__ == '__main__':
     num_of_data_columns = len(features_columns) 
     target_column = ['target_value_difference']
     load_mode = 1 # modes of loading the data, starts with 0
-
+    
+    linear_layers = 64
+    model = LSTM(1, linear_layers, 1)
+    model.to(device)
+    model_name = create_model_name(target_column, features_columns, look_back, linear_layers)
+    
     if use_dataset == 1:
         # Load the dataset   
-        shifted_df_as_np = load_data(file_name, look_back, features_columns, target_column, load_mode)
+        shifted_df_as_np = load_data(input_file_name, look_back, features_columns, target_column, load_mode)
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
         X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data)
@@ -401,9 +408,6 @@ if __name__ == '__main__':
     
 
     # Build the model
-    linear_layers = 64
-    model = LSTM(1, linear_layers, 1)
-    model.to(device)
     
     #Load the trained model
     #load_model(model)
@@ -423,7 +427,7 @@ if __name__ == '__main__':
     
     
     # Save the trained model
-    save_model(model, target_column, features_columns, look_back, linear_layers) 
+    save_model(model, model_name) 
 
    
 
