@@ -11,7 +11,7 @@ import os
 import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
 from data_fetcher import Create_price_arr, get_last_100_btc_price
-
+from data_manager import LoaderOHLCV
 
 class LSTM(nn.Module):# this class inherits from nn.Module
     def __init__(self, input_size, hidden_size, num_stacked_layers):
@@ -414,8 +414,9 @@ if __name__ == '__main__':
     model_name = create_model_name(target_column, features_columns, look_back, linear_layers)
     
     if use_dataset == 1:
-        # Load the dataset   
-        shifted_df_as_np = load_data(input_file_name, look_back, features_columns, target_column, load_data_mode)
+        # Load the dataset
+        DataManager = LoaderOHLCV(look_back, features_columns, target_column, load_data_mode, input_file=input_file_name)
+        shifted_df_as_np = DataManager.load_data()
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
         X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data)
@@ -451,7 +452,7 @@ if __name__ == '__main__':
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     train_model(model, train_loader, test_loader, num_epochs, model_name)
