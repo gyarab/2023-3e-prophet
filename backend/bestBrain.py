@@ -55,9 +55,9 @@ def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', input_file)
     return input_file_path
 
-def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
+def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns, target_column):
     # created deepcopy of dataframe - to not edit original data
-    selected_columns = ['date', 'target_value', 'target_value_difference'] + features_columns
+    selected_columns = ['date']+ target_column + features_columns
     dataframe = dc(dataframe[selected_columns])
     dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
     print(f"shape of loadet data {dataframe.shape}")
@@ -82,8 +82,8 @@ def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns):
     
     print(f"shape of prepared data{dataframe.shape}")
     return dataframe
-def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
-    selected_columns = ['date', 'target_value', 'target_value_difference'] + features_columns # it is expected that just the close value will be passed
+def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns,target_column ):
+    selected_columns = ['date'] + target_column + features_columns # it is expected that just the close value will be passed
     dataframe = dc(dataframe[selected_columns])
     print(f"shape of loadet data {dataframe.shape}")
     
@@ -104,18 +104,18 @@ def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns):
     # removes close column
     dataframe = dataframe.drop('close', axis=1)
     print(f"shape of prepared data {dataframe.shape}")
-    dataframe.to_csv("dataframe_test") # just a debug tool
+    #dataframe.to_csv("dataframe_test") # just a debug tool
     return dataframe 
 
 # loads data in acording format
-def load_data(file_name, look_back, features_columns, mode):
+def load_data(file_name, look_back, features_columns,target_column, mode):
     print("loading raw data")
     data = pd.read_csv(get_absolute_path(file_name))
     #different modes of data input
     if mode == 0:
-        shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
+        shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns, target_column) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
     if mode == 1:
-        shifted_data_frame = prepare_dataframe_for_lstm2(data, look_back, features_columns) # sequences of returns (differences of values), fea
+        shifted_data_frame = prepare_dataframe_for_lstm2(data, look_back, features_columns, target_column) # sequences of returns (differences of values), fea
     
    
     shifted_df_as_np = shifted_data_frame.to_numpy()
@@ -132,11 +132,11 @@ def scale_data(shifted_df_as_np):
     return shifted_df_as_np, scaler
 
 # splits data to training and 
-def split_data(shifted_df_as_np, percentage_of_train_data, target_value_index):
+def split_data(shifted_df_as_np, percentage_of_train_data):
     print("spliting data")
     # splits the data into the target value - y and the data based on which y is predicted X
-    X = shifted_df_as_np[:, 2:] # upper scale X is correct
-    y = shifted_df_as_np[:, target_value_index] # lower scale y - vector ?
+    X = shifted_df_as_np[:, 1:] # upper scale X is correct
+    y = shifted_df_as_np[:, 0] # lower scale y - vector ?
     X = dc(np.flip(X, axis=1)) # now the data are in corect time order - older to newer
 
     split_index = int(len(X) * percentage_of_train_data)
@@ -237,7 +237,11 @@ def train_model(train_loader, test_loader, num_epochs):
         validate_one_epoch(test_loader, loss_function)
 
 # Function to save the trained model
-def save_model(model, filename='2000Epoch_low_data_sample_model_alltechnicals.pth'):
+def save_model(model, target_column, features_columns, linear_layers, filename = 'not_given'):
+    if file_name == 'not_given':
+        inicials_features_columns = ''.join([s[0] for s in features_columns])
+        file_name = f'model_{target_column}_{inicials_features_columns}_{linear_layers}'
+    
     print('saving model')
     torch.save(model.state_dict(), filename)
     print(f"Model saved as {filename}")
@@ -263,12 +267,12 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
 
-    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2)) # the 2 value is still hard coded
+    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1)) # !!!!
     dummies[:, 0] = train_predictions
     dummies = scaler.inverse_transform(dummies)
     train_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
+    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = y_train.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
@@ -284,12 +288,12 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
     print('creating test graph')
     
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
-    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
+    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = test_predictions
     dummies = scaler.inverse_transform(dummies)
     test_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 2))
+    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = y_test.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
@@ -352,7 +356,7 @@ def predict_next_target_difference(model, input_data, device):
 
 
 if __name__ == '__main__':
-    use_dataset = 0
+    use_dataset = 1
 
 
     device = get_device()
@@ -371,15 +375,15 @@ if __name__ == '__main__':
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
-    target_value_index = 1 # what is the target values index (most likely 0 or 1)
+    target_column = ['target_value_difference']
     load_mode = 1 # modes of loading the data, starts with 0
 
     if use_dataset == 1:
         # Load the dataset   
-        shifted_df_as_np = load_data(file_name, look_back, features_columns, load_mode)
+        shifted_df_as_np = load_data(file_name, look_back, features_columns, target_column, load_mode)
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
-        X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data, target_value_index)
+        X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data)
         X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
         train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
         train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
@@ -400,28 +404,29 @@ if __name__ == '__main__':
     
 
     # Build the model
-    model = LSTM(1, 64, 1)
+    linear_layers = 64
+    model = LSTM(1, linear_layers, 1)
     model.to(device)
     
     #Load the trained model
-    load_model(model)
+    #load_model(model)
     
     # Resets the trained model
     # reset_model(model)
     
     #predict
-    predict_next_target_difference(model, X_tensor, device )
+    #predict_next_target_difference(model, X_tensor, device )
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     #train_model(train_loader, test_loader, num_epochs)
     
     
     # Save the trained model
-    #save_model(model) 
+    save_model(model, target_column, features_columns, linear_layers) 
 
    
 
