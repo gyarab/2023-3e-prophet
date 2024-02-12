@@ -92,7 +92,7 @@ def Create_price_arr():
 
         # Create a row with all values
         #row = [timestamp, open_, high, low, close, volume, ema_14, rsi_14, macd, bollinger_upper, bollinger_lower, atr, ichimoku_a, ichimoku_b, obv, williams_r, adx]
-        row = [close]
+        row = [timestamp, open_, high, low, close, volume]
         
         
     
