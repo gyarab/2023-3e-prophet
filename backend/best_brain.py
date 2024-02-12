@@ -13,7 +13,7 @@ from copy import deepcopy as dc
 from data_fetcher import Create_price_arr, get_last_100_btc_price
 
 
-class LSTM(nn.Module):
+class LSTM(nn.Module):# this class inherits from nn.Module
     def __init__(self, input_size, hidden_size, num_stacked_layers):
         super().__init__()
         self.hidden_size = hidden_size
@@ -35,7 +35,7 @@ class LSTM(nn.Module):
         return out
   
 # class for creating dataset
-class TimeSeriesDataset(Dataset):
+class TimeSeriesDataset(Dataset):# this class inherits from Dataset
     def __init__(self, X, y):
         self.X = X
         self.y = y
