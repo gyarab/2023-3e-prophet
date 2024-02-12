@@ -335,16 +335,21 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
 def prepare_live_data(last_prices, look_back, num_of_data_columns):
     # Convert last_prices array to a numpy array
     last_prices_np = np.array(last_prices)
-
+    
+    #DEBUG
+    print("Columns in last_prices:", last_prices[0])
     # Extract relevant columns
-    features_columns = ['close',
-        #"open", "high", "low", "close", "volume",
+    features_columns = ['close'
+        #,"open", "high", "low", "close", "volume",
         # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
     ]
     
+    
     # Get the indices of the features columns
     features_indices = [last_prices[0].index(col) for col in features_columns]
+
+    print("Indices of features columns:", features_indices)
 
     # Extract features and target values
     X = last_prices_np[:, features_indices]
@@ -419,17 +424,15 @@ if __name__ == '__main__':
         train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     
     else:
-        # Fetch the last prices
-        last_prices = get_last_100_btc_price()
-
-        # Call the Create_price_arr function and pass last_prices as an argument
-        price_data = Create_price_arr(last_prices)
+        
 
         
+        # Live data preparation
+        price_data = Create_price_arr()
         shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
-        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)
-        X_tensor, _ = shifted_df_as_np
-    
+        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
+        X_tensor, _ = shifted_df_as_np  # Ensure this line correctly unpacks X_tensor
+
     
     #x_batch, y_batch = create_batches(train_loader)
     
@@ -460,5 +463,5 @@ if __name__ == '__main__':
    
 
     #shows graphs
-    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)

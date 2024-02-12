@@ -92,16 +92,12 @@ def Create_price_arr():
 
         # Create a row with all values
         #row = [timestamp, open_, high, low, close, volume, ema_14, rsi_14, macd, bollinger_upper, bollinger_lower, atr, ichimoku_a, ichimoku_b, obv, williams_r, adx]
-        row = [close]
+        row = [timestamp, open_, high, low, close, volume]
         
         
-        
-        
-        
+    
         # Append the row to the array_data list
         array_data.append(row)
-
-
     
     return array_data
     
@@ -122,5 +118,3 @@ if __name__ == '__main__':
         timestamp, open_, high, low, close, volume = candle
         #print(f'Timestamp: {timestamp}, Close Price: {close}')
         
-   
-
