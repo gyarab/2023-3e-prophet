@@ -324,7 +324,7 @@ if __name__ == '__main__':
     if use_dataset == 1:
         # Load the dataset
         DataManager = LoaderOHLCV(look_back, features_columns, target_column, load_data_mode, input_file=input_file_name)
-        shifted_df_as_np = DataManager.load_data()
+        shifted_df_as_np = DataManager.get_data_as_numpy()
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
         X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data)
