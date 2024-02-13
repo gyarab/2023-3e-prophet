@@ -84,13 +84,17 @@ class LoaderOHLCV():
         #dataframe.to_csv("dataframe_test") # just a debug tool
         return dataframe
     def prepare_dataframe_for_lstm3(self, dataframe):
-        selected_columns = ['date'] + self.target_column + self.features_columns # it is expected that just the close value will be passed
-        dataframe = dc(dataframe[selected_columns])
+        # Convert the 'timestamp' column to date if it's not already
+        #selected_columns = ['date'] + self.target_column + self.features_columns # it is expected that just the close value will be passed
+        dataframe = dc(dataframe[['timestamp', 'close']])
         print(f"shape of loadet data {dataframe.shape}")
         
         # Create new DataFrame with 'date' as index
+        dataframe['date'] = pd.to_datetime(dataframe['timestamp'], unit='ms')
+        dataframe = dataframe.drop('timestamp', axis=1)
         dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
-        dataframe['close_difference'] = dataframe['close'].pct_change() * 100
+        dataframe['target_vlaue_difference'] = (dataframe['close'].shift(-1) - dataframe['close']) / dataframe['close'] * 100
+        dataframe['close_difference'] = (dataframe['close'] - dataframe['close'].shift(1) ) / dataframe['close'].shift(1) * 100
         
         # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
         lag_columns = []
@@ -105,5 +109,5 @@ class LoaderOHLCV():
         # removes close column
         dataframe = dataframe.drop('close', axis=1)
         print(f"shape of prepared data {dataframe.shape}")
-        #dataframe.to_csv("dataframe_test") # just a debug tool
-        return dataframe 
+        #dataframe.to_csv("dataframe_test.csv") # just a debug tool
+        return dataframe
