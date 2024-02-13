@@ -8,8 +8,13 @@ class LoaderOHLCV():
         self.target_column = target_column
         self.mode = mode
         self.input_file = input_file
-        
-    def load_data(self):
+    def get_data_as_numpy(self):
+        if self.input_file == 'not_given':
+            pass
+        else:
+            shifted_df_as_np = self.load_data_from_csv()
+        return shifted_df_as_np
+    def load_data_from_csv(self):
         print("loading raw data")
         data = pd.read_csv(self.get_absolute_path())
         #different modes of data input
