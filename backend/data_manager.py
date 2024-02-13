@@ -59,6 +59,7 @@ class LoaderOHLCV():
         
         print(f"shape of prepared data{dataframe.shape}")
         return dataframe
+    
     def prepare_dataframe_for_lstm1(self, dataframe):
         selected_columns = ['date'] + self.target_column + self.features_columns # it is expected that just the close value will be passed
         dataframe = dc(dataframe[selected_columns])
@@ -83,6 +84,7 @@ class LoaderOHLCV():
         print(f"shape of prepared data {dataframe.shape}")
         #dataframe.to_csv("dataframe_test") # just a debug tool
         return dataframe
+    
     def prepare_dataframe_for_lstm2(self, dataframe):
         # Convert the 'timestamp' column to date if it's not already
         #selected_columns = ['date'] + self.target_column + self.features_columns # it is expected that just the close value will be passed
