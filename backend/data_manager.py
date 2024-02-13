@@ -55,14 +55,18 @@ class LoaderOHLCV():
         print(f"shape of prepared data{dataframe.shape}")
         return dataframe
     
+    # creates sequences of difference in close values
     def prepare_dataframe_for_lstm1(self, dataframe):
-        selected_columns = ['date'] + self.target_column + self.features_columns # it is expected that just the close value will be passed
-        dataframe = dc(dataframe[selected_columns])
+        dataframe = dc(dataframe[['timestamp', 'close']])
         print(f"shape of loadet data {dataframe.shape}")
         
         # Create new DataFrame with 'date' as index
+        dataframe['date'] = pd.to_datetime(dataframe['timestamp'], unit='ms')
+        dataframe = dataframe.drop('timestamp', axis=1)
         dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+        
         dataframe['close_difference'] = dataframe['close'].diff()
+        dataframe['target_vlaue_difference'] = dataframe['close'].shift(-1) - dataframe['close']
         
         # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
         lag_columns = []
@@ -80,9 +84,8 @@ class LoaderOHLCV():
         #dataframe.to_csv("dataframe_test") # just a debug tool
         return dataframe
     
+    # creates sequences of difference in close values in percentage
     def prepare_dataframe_for_lstm2(self, dataframe):
-        # Convert the 'timestamp' column to date if it's not already
-        #selected_columns = ['date'] + self.target_column + self.features_columns # it is expected that just the close value will be passed
         dataframe = dc(dataframe[['timestamp', 'close']])
         print(f"shape of loadet data {dataframe.shape}")
         
@@ -93,7 +96,7 @@ class LoaderOHLCV():
         dataframe['target_vlaue_difference'] = (dataframe['close'].shift(-1) - dataframe['close']) / dataframe['close'] * 100
         dataframe['close_difference'] = (dataframe['close'] - dataframe['close'].shift(1) ) / dataframe['close'].shift(1) * 100
         
-        # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
+        # adds sequneces of close differences in percentage - 1 sequnece will have legnth of n_steps
         lag_columns = []
         for i in range(1, self.look_back + 1):
             lag_col_name = f'close_difference(t-{i})'
