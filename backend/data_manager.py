@@ -9,21 +9,16 @@ class LoaderOHLCV():
         self.mode = mode
         self.input_file = input_file
         
-    def get_data_as_numpy(self):
-        if self.input_file == 'not_given':
-            pass
-        else:
-            pass
     def load_data(self):
         print("loading raw data")
         data = pd.read_csv(self.get_absolute_path())
         #different modes of data input
         if self.mode == 0:
-            shifted_data_frame = self.prepare_dataframe_for_lstm(data) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
+            shifted_data_frame = self.prepare_dataframe_for_lstm0(data) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
         if self.mode == 1:
-            shifted_data_frame = self.prepare_dataframe_for_lstm2(data) # sequences of returns (differences of values) in featured columns
+            shifted_data_frame = self.prepare_dataframe_for_lstm1(data) # sequences of returns (differences of values) in featured columns
         if self.mode == 2:
-            shifted_data_frame = self.prepare_dataframe_for_lstm3(data) # sequences of returns (differences of values) in featured columns - in %
+            shifted_data_frame = self.prepare_dataframe_for_lstm2(data) # sequences of returns (differences of values) in featured columns - in %
    
         shifted_df_as_np = shifted_data_frame.to_numpy()
     
