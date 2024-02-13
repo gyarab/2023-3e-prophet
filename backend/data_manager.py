@@ -9,7 +9,7 @@ class LoaderOHLCV():
         self.mode = mode
         self.input_file = input_file
     def get_data_as_numpy(self):
-        if self.input_file == 'not_given':
+        if self.input_file == 'not_given': # not_given - means live data
             pass
         else:
             shifted_df_as_np = self.load_data_from_csv()
