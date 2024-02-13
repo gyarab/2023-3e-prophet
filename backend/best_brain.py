@@ -55,98 +55,6 @@ def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', input_file)
     return input_file_path
 
-def prepare_dataframe_for_lstm(dataframe, n_steps, features_columns, target_column):
-    # created deepcopy of dataframe - to not edit original data
-    selected_columns = ['date']+ target_column + features_columns
-    dataframe = dc(dataframe[selected_columns])
-    dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
-    print(f"shape of loadet data {dataframe.shape}")
-    
-    # Add lag features for the entire OHLCV columns
-    lag_columns = []
-    # for i in range(1, n_steps + 1):
-    #         for col in features_columns:
-    #             dataframe[f'{col}(t-{i})'] = dataframe[col].shift(i)
-    
-    # adds t-n;look_back (n_steps)> columns of data from previous rows
-    for i in range(1, n_steps + 1):
-        for col in features_columns:
-            lag_col_name = f'{col}(t-{i})'
-            lag_columns.append(dataframe[col].shift(i).rename(lag_col_name))
-    
-    # Concatenate all lag columns to the original dataframe
-    dataframe = pd.concat([dataframe] + lag_columns, axis=1)
-    
-    # removes possible blank lines
-    dataframe.dropna(inplace=True)
-    
-    print(f"shape of prepared data{dataframe.shape}")
-    return dataframe
-def prepare_dataframe_for_lstm2(dataframe, n_steps, features_columns,target_column ):
-    selected_columns = ['date'] + target_column + features_columns # it is expected that just the close value will be passed
-    dataframe = dc(dataframe[selected_columns])
-    print(f"shape of loadet data {dataframe.shape}")
-    
-    # Create new DataFrame with 'date' as index
-    dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
-    dataframe['close_difference'] = dataframe['close'].diff()
-    
-    # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
-    lag_columns = []
-    for i in range(1, n_steps + 1):
-        lag_col_name = f'close_difference(t-{i})'
-        lag_columns.append(dataframe['close_difference'].shift(i).rename(lag_col_name))
-    # Concatenate all lag columns to the original dataframe
-    dataframe = pd.concat([dataframe] + lag_columns, axis=1)
-    
-    # removes possible blank lines
-    dataframe.dropna(inplace=True)
-    # removes close column
-    dataframe = dataframe.drop('close', axis=1)
-    print(f"shape of prepared data {dataframe.shape}")
-    #dataframe.to_csv("dataframe_test") # just a debug tool
-    return dataframe
-
-def prepare_dataframe_for_lstm3(dataframe, n_steps, features_columns, target_column ):
-    selected_columns = ['date'] + target_column + features_columns # it is expected that just the close value will be passed
-    dataframe = dc(dataframe[selected_columns])
-    print(f"shape of loadet data {dataframe.shape}")
-    
-    # Create new DataFrame with 'date' as index
-    dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
-    dataframe['close_difference'] = dataframe['close'].pct_change() * 100
-    
-    # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
-    lag_columns = []
-    for i in range(1, n_steps + 1):
-        lag_col_name = f'close_difference(t-{i})'
-        lag_columns.append(dataframe['close_difference'].shift(i).rename(lag_col_name))
-    # Concatenate all lag columns to the original dataframe
-    dataframe = pd.concat([dataframe] + lag_columns, axis=1)
-    
-    # removes possible blank lines
-    dataframe.dropna(inplace=True)
-    # removes close column
-    dataframe = dataframe.drop('close', axis=1)
-    print(f"shape of prepared data {dataframe.shape}")
-    #dataframe.to_csv("dataframe_test") # just a debug tool
-    return dataframe 
-
-# loads data in acording format
-def load_data(input_file_name, look_back, features_columns,target_column, mode):
-    print("loading raw data")
-    data = pd.read_csv(get_absolute_path(input_file_name))
-    #different modes of data input
-    if mode == 0:
-        shifted_data_frame = prepare_dataframe_for_lstm(data, look_back, features_columns, target_column) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
-    if mode == 1:
-        shifted_data_frame = prepare_dataframe_for_lstm2(data, look_back, features_columns, target_column) # sequences of returns (differences of values) in featured columns
-    if mode == 2:
-        shifted_data_frame = prepare_dataframe_for_lstm3(data, look_back, features_columns, target_column) # sequences of returns (differences of values) in featured columns - in %
-   
-    shifted_df_as_np = shifted_data_frame.to_numpy()
-    
-    return shifted_df_as_np
 def absolute_scale_data(shifted_df_as_np):
     shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
     return shifted_df_as_np
@@ -397,7 +305,7 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'technical_indicators_test_BTCUSDT.csv' # this file has to be in /backend/dataset
+    input_file_name = 'test_BTCUSDT.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['close',
         #"open", "high", "low", "close", "volume",
@@ -408,7 +316,7 @@ if __name__ == '__main__':
     target_column = ['target_value_difference']
     load_data_mode = 2 # modes of loading the data, starts with 0
     
-    linear_layers = 64
+    linear_layers = 128
     model = LSTM(1, linear_layers, 1)
     model.to(device)
     model_name = create_model_name(target_column, features_columns, look_back, linear_layers)
@@ -452,7 +360,7 @@ if __name__ == '__main__':
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     train_model(model, train_loader, test_loader, num_epochs, model_name)
@@ -464,5 +372,5 @@ if __name__ == '__main__':
    
 
     #shows graphs
-    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
