@@ -209,7 +209,8 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
     dummies[:, 0] = y_train.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
-    
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
     plt.xlabel('Day')
@@ -230,9 +231,10 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
     dummies[:, 0] = y_test.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
-    
-    plt.plot(new_y_test, label='Actual Close')
-    plt.plot(test_predictions, label='Predicted Close')
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    plt.plot(new_y_test, label='Actual change')
+    plt.plot(test_predictions, label='Predicted change')
     plt.xlabel('Day')
     plt.ylabel('Close')
     plt.legend()
@@ -316,7 +318,7 @@ if __name__ == '__main__':
     target_column = ['target_value_difference']
     load_data_mode = 2 # modes of loading the data, starts with 0
     
-    linear_layers = 128
+    linear_layers = 64
     model = LSTM(1, linear_layers, 1)
     model.to(device)
     model_name = create_model_name(target_column, features_columns, look_back, linear_layers)
