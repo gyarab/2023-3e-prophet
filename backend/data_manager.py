@@ -91,13 +91,18 @@ class LoaderOHLCV():
     
     # creates sequences of difference in close values in percentage
     def prepare_dataframe_for_lstm2(self, dataframe):
-        dataframe = dc(dataframe[['timestamp', 'close']])
+        try:
+            dataframe = dc(dataframe[['timestamp', 'close']])
+            dataframe['date'] = pd.to_datetime(dataframe['timestamp'], unit='ms')
+            dataframe = dataframe.drop('timestamp', axis=1)
+            dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+        except:
+            dataframe = dc(dataframe[['date', 'close']])
+            dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+            
         print(f"shape of loadet data {dataframe.shape}")
         
-        # Create new DataFrame with 'date' as index
-        dataframe['date'] = pd.to_datetime(dataframe['timestamp'], unit='ms')
-        dataframe = dataframe.drop('timestamp', axis=1)
-        dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+        # creates the target difference columns
         dataframe['target_vlaue_difference'] = (dataframe['close'].shift(-1) - dataframe['close']) / dataframe['close'] * 100
         dataframe['close_difference'] = (dataframe['close'] - dataframe['close'].shift(1) ) / dataframe['close'].shift(1) * 100
         
