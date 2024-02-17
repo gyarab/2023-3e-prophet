@@ -51,10 +51,6 @@ def get_device():
     print(device)
     return device
 # Helper function to get the absolute file path
-def get_absolute_path(input_file):
-    input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', input_file)
-    return input_file_path
-
 def absolute_scale_data(shifted_df_as_np):
     shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
     return shifted_df_as_np
