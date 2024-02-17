@@ -289,10 +289,10 @@ def predict_next_target_difference(model, input_data, device):
 
     print(f'Predicted Next Target Difference: {prediction:.6f}')
 
-def create_model_name(target_column, features_columns, look_back, linear_layers, model_name = 'not_given'):
+def create_model_name(target_column, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
     if model_name == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
-        model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{linear_layers}L'
+        model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
     
     return model_name
 if __name__ == '__main__':
@@ -317,11 +317,11 @@ if __name__ == '__main__':
     num_of_data_columns = len(features_columns) 
     target_column = ['target_value_difference']
     load_data_mode = 2 # modes of loading the data, starts with 0
-    
-    linear_layers = 64
-    model = LSTM(1, linear_layers, 1)
+    lstm_layers = 1
+    lstm_neuron_count = 64
+    model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
-    model_name = create_model_name(target_column, features_columns, look_back, linear_layers)
+    model_name = create_model_name(target_column, features_columns, look_back, lstm_neuron_count, lstm_layers)
     
     if use_dataset == 1:
         # Load the dataset
