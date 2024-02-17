@@ -30,19 +30,23 @@ class LoaderOHLCV():
     def get_absolute_path(self):
         input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', self.input_file)
         return input_file_path
-    
+    # creates sequences of selected data (columns)
     def prepare_dataframe_for_lstm0(self, dataframe):
         # created deepcopy of dataframe - to not edit original data
-        selected_columns = ['Date']+ self.target_column + self.features_columns
-        dataframe = dc(dataframe[selected_columns])
-        dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
+        try:
+            selected_columns = [['Timestamp', 'Close','Open','High','Low','Volume']]
+            dataframe = dc(dataframe[selected_columns])
+            dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
+            dataframe = dataframe.drop('Timestamp', axis=1)
+            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
+        except:
+            selected_columns = [['Date', 'Close','Open','High','Low','Volume']]
+            dataframe = dc(dataframe[selected_columns])
+            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
         print(f"shape of loadet data {dataframe.shape}")
         
         # Add lag features for the entire OHLCV columns
         lag_columns = []
-        # for i in range(1, n_steps + 1):
-        #         for col in features_columns:
-        #             dataframe[f'{col}(t-{i})'] = dataframe[col].shift(i)
         
         # adds t-n;look_back (n_steps)> columns of data from previous rows
         for i in range(1, self.look_back + 1):
@@ -50,6 +54,7 @@ class LoaderOHLCV():
                 lag_col_name = f'{col}(t-{i})'
                 lag_columns.append(dataframe[col].shift(i).rename(lag_col_name))
         
+        dataframe['Target_value'] = dataframe['Close'].shift(-1)
         # Concatenate all lag columns to the original dataframe
         dataframe = pd.concat([dataframe] + lag_columns, axis=1)
         
