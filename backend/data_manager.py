@@ -19,7 +19,7 @@ class LoaderOHLCV():
         data = pd.read_csv(self.get_absolute_path())
         #different modes of data input
         if self.mode == 0:
-            shifted_data_frame = self.prepare_dataframe_for_lstm0(data) #'date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
+            shifted_data_frame = self.prepare_dataframe_for_lstm0(data) #'Date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
         if self.mode == 1:
             shifted_data_frame = self.prepare_dataframe_for_lstm1(data) # sequences of returns (differences of values) in featured columns
         if self.mode == 2:
@@ -34,9 +34,9 @@ class LoaderOHLCV():
     
     def prepare_dataframe_for_lstm0(self, dataframe):
         # created deepcopy of dataframe - to not edit original data
-        selected_columns = ['date']+ self.target_column + self.features_columns
+        selected_columns = ['Date']+ self.target_column + self.features_columns
         dataframe = dc(dataframe[selected_columns])
-        dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+        dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
         print(f"shape of loadet data {dataframe.shape}")
         
         # Add lag features for the entire OHLCV columns
@@ -60,64 +60,64 @@ class LoaderOHLCV():
         print(f"shape of prepared data{dataframe.shape}")
         return dataframe
     
-    # creates sequences of difference in close values
+    # creates sequences of difference in Close values
     def prepare_dataframe_for_lstm1(self, dataframe):
-        dataframe = dc(dataframe[['timestamp', 'close']])
+        dataframe = dc(dataframe[['Timestamp', 'Close']])
         print(f"shape of loadet data {dataframe.shape}")
         
-        # Create new DataFrame with 'date' as index
-        dataframe['date'] = pd.to_datetime(dataframe['timestamp'], unit='ms')
-        dataframe = dataframe.drop('timestamp', axis=1)
-        dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+        # Create new DataFrame with 'Date' as index
+        dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
+        dataframe = dataframe.drop('Timestamp', axis=1)
+        dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
         
-        dataframe['close_difference'] = dataframe['close'].diff()
-        dataframe['target_vlaue_difference'] = dataframe['close'].shift(-1) - dataframe['close']
+        dataframe['Close_difference'] = dataframe['Close'].diff()
+        dataframe['Target_vlaue_difference'] = dataframe['Close'].shift(-1) - dataframe['Close']
         
-        # adds sequneces of close differences - 1 sequnece will have legnth of n_steps
+        # adds sequneces of Close differences - 1 sequnece will have legnth of n_steps
         lag_columns = []
         for i in range(1, self.look_back + 1):
-            lag_col_name = f'close_difference(t-{i})'
-            lag_columns.append(dataframe['close_difference'].shift(i).rename(lag_col_name))
+            lag_col_name = f'Close_difference(t-{i})'
+            lag_columns.append(dataframe['Close_difference'].shift(i).rename(lag_col_name))
         # Concatenate all lag columns to the original dataframe
         dataframe = pd.concat([dataframe] + lag_columns, axis=1)
         
         # removes possible blank lines
         dataframe.dropna(inplace=True)
-        # removes close column
-        dataframe = dataframe.drop('close', axis=1)
+        # removes Close column
+        dataframe = dataframe.drop('Close', axis=1)
         print(f"shape of prepared data {dataframe.shape}")
         #dataframe.to_csv("dataframe_test") # just a debug tool
         return dataframe
     
-    # creates sequences of difference in close values in percentage
+    # creates sequences of difference in Close values in percentage
     def prepare_dataframe_for_lstm2(self, dataframe):
         try:
-            dataframe = dc(dataframe[['timestamp', 'close']])
-            dataframe['date'] = pd.to_datetime(dataframe['timestamp'], unit='ms')
-            dataframe = dataframe.drop('timestamp', axis=1)
-            dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+            dataframe = dc(dataframe[['Timestamp', 'Close']])
+            dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
+            dataframe = dataframe.drop('Timestamp', axis=1)
+            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
         except:
-            dataframe = dc(dataframe[['date', 'close']])
-            dataframe.set_index('date', inplace=True) # inplace means it will edit the dataframe
+            dataframe = dc(dataframe[['Date', 'Close']])
+            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
             
         print(f"shape of loadet data {dataframe.shape}")
         
         # creates the target difference columns
-        dataframe['target_vlaue_difference'] = (dataframe['close'].shift(-1) - dataframe['close']) / dataframe['close'] * 100
-        dataframe['close_difference'] = (dataframe['close'] - dataframe['close'].shift(1) ) / dataframe['close'].shift(1) * 100
+        dataframe['Target_vlaue_difference'] = (dataframe['Close'].shift(-1) - dataframe['Close']) / dataframe['Close'] * 100
+        dataframe['Close_difference'] = (dataframe['Close'] - dataframe['Close'].shift(1) ) / dataframe['Close'].shift(1) * 100
         
-        # adds sequneces of close differences in percentage - 1 sequnece will have legnth of n_steps
+        # adds sequneces of Close differences in percentage - 1 sequnece will have legnth of n_steps
         lag_columns = []
         for i in range(1, self.look_back + 1):
-            lag_col_name = f'close_difference(t-{i})'
-            lag_columns.append(dataframe['close_difference'].shift(i).rename(lag_col_name))
+            lag_col_name = f'Close_difference(t-{i})'
+            lag_columns.append(dataframe['Close_difference'].shift(i).rename(lag_col_name))
         # Concatenate all lag columns to the original dataframe
         dataframe = pd.concat([dataframe] + lag_columns, axis=1)
         
         # removes possible blank lines
         dataframe.dropna(inplace=True)
-        # removes close column
-        dataframe = dataframe.drop('close', axis=1)
+        # removes Close column
+        dataframe = dataframe.drop('Close', axis=1)
         print(f"shape of prepared data {dataframe.shape}")
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe

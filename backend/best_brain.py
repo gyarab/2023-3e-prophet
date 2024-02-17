@@ -249,7 +249,7 @@ def prepare_live_data(last_prices, look_back, num_of_data_columns):
     #DEBUG
     print("Columns in last_prices:", last_prices[0])
     # Extract relevant columns
-    features_columns = ['close'
+    features_columns = ['Close'
         #,"open", "high", "low", "close", "volume",
         # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
@@ -263,7 +263,7 @@ def prepare_live_data(last_prices, look_back, num_of_data_columns):
 
     # Extract features and target values
     X = last_prices_np[:, features_indices]
-    target_column_index = last_prices[0].index("close")
+    target_column_index = last_prices[0].index("Close")
     y = last_prices_np[:, target_column_index]
 
     # Reshape data for LSTM input
@@ -307,9 +307,9 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'test_BTCUSDT.csv' # this file has to be in /backend/dataset
+    input_file_name = 'PEP.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
-    features_columns = ['close',
+    features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
         # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
@@ -362,7 +362,7 @@ if __name__ == '__main__':
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     train_model(model, train_loader, test_loader, num_epochs, model_name)
