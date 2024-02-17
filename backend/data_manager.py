@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from copy import deepcopy as dc
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 class LoaderOHLCV():
     def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
         self.look_back = look_back
@@ -128,3 +130,12 @@ class LoaderOHLCV():
         print(f"shape of prepared data {dataframe.shape}")
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
+    def absolute_scale_data(self, shifted_df_as_np):
+        shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
+        return shifted_df_as_np
+    # scales the data
+    def scale_data(self, shifted_df_as_np):
+        print("scaling data to range -1 .. 1")
+        scaler = MinMaxScaler(feature_range=(-1, 1))
+        shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
+        return shifted_df_as_np, scaler

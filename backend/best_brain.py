@@ -50,16 +50,6 @@ def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     print(device)
     return device
-def absolute_scale_data(shifted_df_as_np):
-    shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
-    return shifted_df_as_np
-# scales the data
-def scale_data(shifted_df_as_np):
-    print("scaling data to range -1 .. 1")
-    scaler = MinMaxScaler(feature_range=(-1, 1))
-    shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
-    return shifted_df_as_np, scaler
-
 # splits data to training and 
 def split_data(shifted_df_as_np, percentage_of_train_data):
     print("spliting data")
@@ -284,10 +274,10 @@ def predict_next_target_difference(model, input_data, device):
 
     print(f'Predicted Next Target Difference: {prediction:.6f}')
 
-def create_model_name(target_column, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
+def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
     if model_name == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
-        model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
+        model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
     
     return model_name
 if __name__ == '__main__':
@@ -302,7 +292,7 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'BTCUSDT-1h.csv' # this file has to be in /backend/dataset
+    input_file_name = 'BTCUSDT02-1h.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
@@ -315,13 +305,13 @@ if __name__ == '__main__':
     lstm_neuron_count = 64
     model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
-    model_name = create_model_name(features_columns, look_back, lstm_neuron_count, lstm_layers)
+    model_name = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
     
     if use_dataset == 1:
         # Load the dataset
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
         shifted_df_as_np = DataManager.get_data_as_numpy()
-        shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
+        shifted_df_as_np, scaler = DataManager.scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
         X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data)
         X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
@@ -329,13 +319,10 @@ if __name__ == '__main__':
         train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     
     else:
-        
-
-        
         # Live data preparation
         price_data = Create_price_arr()
         shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
-        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
+        shifted_df_as_np, scaler = DataManager.scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
         X_tensor, _ = shifted_df_as_np  # Ensure this line correctly unpacks X_tensor
 
     
