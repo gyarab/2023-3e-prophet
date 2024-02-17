@@ -209,7 +209,8 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
     dummies[:, 0] = y_train.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
-    
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
     plt.xlabel('Day')
@@ -230,9 +231,10 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
     dummies[:, 0] = y_test.flatten()
     dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
-    
-    plt.plot(new_y_test, label='Actual Close')
-    plt.plot(test_predictions, label='Predicted Close')
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    plt.plot(new_y_test, label='Actual change')
+    plt.plot(test_predictions, label='Predicted change')
     plt.xlabel('Day')
     plt.ylabel('Close')
     plt.legend()
@@ -242,11 +244,37 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
 
 
 def prepare_live_data(last_prices, look_back, num_of_data_columns):
-    # Extract the last 'look_back' prices from last_prices
-    last_prices = np.array(last_prices[-look_back:])
+    # Convert last_prices array to a numpy array
+    last_prices_np = np.array(last_prices)
+    
+    #DEBUG
+    print("Columns in last_prices:", last_prices[0])
+    # Extract relevant columns
+    features_columns = ['Close'
+        #,"open", "high", "low", "close", "volume",
+        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+    ]
+    
+    
+    # Get the indices of the features columns
+    features_indices = [last_prices[0].index(col) for col in features_columns]
 
-    # Reshape the data to match the input shape expected by the model
-    X_tensor = torch.tensor(last_prices.reshape(1, look_back * num_of_data_columns, 1)).float()
+    print("Indices of features columns:", features_indices)
+
+    # Extract features and target values
+    X = last_prices_np[:, features_indices]
+    target_column_index = last_prices[0].index("Close")
+    y = last_prices_np[:, target_column_index]
+
+    # Reshape data for LSTM input
+    num_samples = len(last_prices_np)
+    X = X.reshape((-1, look_back * num_of_data_columns + num_of_data_columns, 1))
+    y = y.reshape((-1, 1))
+
+    # Convert to PyTorch tensors
+    X_tensor = torch.tensor(X).float()
+    y_tensor = torch.tensor(y).float()
 
     return X_tensor
 
@@ -264,10 +292,10 @@ def predict_next_value(model, last_prices, look_back, num_of_data_columns, devic
 
     print(f'Predicted Next Value: {prediction:.6f}')
 
-def create_model_name(target_column, features_columns, look_back, linear_layers, model_name = 'not_given'):
+def create_model_name(target_column, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
     if model_name == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
-        model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{linear_layers}L'
+        model_name = f'model_{target_column[0]}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
     
     return model_name
 if __name__ == '__main__':
@@ -282,9 +310,9 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'test_BTCUSDT.csv' # this file has to be in /backend/dataset
+    input_file_name = 'PEP.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
-    features_columns = ['close',
+    features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
         # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
@@ -292,11 +320,11 @@ if __name__ == '__main__':
     num_of_data_columns = len(features_columns) 
     target_column = ['target_value_difference']
     load_data_mode = 2 # modes of loading the data, starts with 0
-    
-    linear_layers = 128
-    model = LSTM(1, linear_layers, 1)
+    lstm_layers = 1
+    lstm_neuron_count = 64
+    model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
-    model_name = create_model_name(target_column, features_columns, look_back, linear_layers)
+    model_name = create_model_name(target_column, features_columns, look_back, lstm_neuron_count, lstm_layers)
     
     if use_dataset == 1:
         # Load the dataset
@@ -332,7 +360,7 @@ if __name__ == '__main__':
 
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
     #train_model(model, train_loader, test_loader, num_epochs, model_name)
