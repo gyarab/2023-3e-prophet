@@ -307,7 +307,7 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'PEP.csv' # this file has to be in /backend/dataset
+    input_file_name = 'BTCUSDT-1h.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
@@ -315,7 +315,7 @@ if __name__ == '__main__':
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
-    target_column = ['target_value_difference']
+    target_column = ['Target_value_difference']
     load_data_mode = 2 # modes of loading the data, starts with 0
     lstm_layers = 1
     lstm_neuron_count = 64

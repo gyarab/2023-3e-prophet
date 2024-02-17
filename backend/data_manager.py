@@ -2,10 +2,9 @@ import os
 import pandas as pd
 from copy import deepcopy as dc
 class LoaderOHLCV():
-    def __init__(self, look_back, features_columns,target_column, mode, input_file = 'not_given'):
+    def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
         self.look_back = look_back
         self.features_columns = features_columns
-        self.target_column = target_column
         self.mode = mode
         self.input_file = input_file
     def get_data_as_numpy(self):
