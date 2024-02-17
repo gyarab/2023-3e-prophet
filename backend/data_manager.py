@@ -66,14 +66,17 @@ class LoaderOHLCV():
     
     # creates sequences of difference in Close values
     def prepare_dataframe_for_lstm1(self, dataframe):
-        dataframe = dc(dataframe[['Timestamp', 'Close']])
+        try:
+            dataframe = dc(dataframe[['Timestamp', 'Close']])
+            dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
+            dataframe = dataframe.drop('Timestamp', axis=1)
+            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
+        except:
+            dataframe = dc(dataframe[['Date', 'Close']])
+            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
+            
         print(f"shape of loadet data {dataframe.shape}")
-        
-        # Create new DataFrame with 'Date' as index
-        dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
-        dataframe = dataframe.drop('Timestamp', axis=1)
-        dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-        
+    
         dataframe['Close_difference'] = dataframe['Close'].diff()
         dataframe['Target_vlaue_difference'] = dataframe['Close'].shift(-1) - dataframe['Close']
         

@@ -50,7 +50,6 @@ def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     print(device)
     return device
-# Helper function to get the absolute file path
 def absolute_scale_data(shifted_df_as_np):
     shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
     return shifted_df_as_np
