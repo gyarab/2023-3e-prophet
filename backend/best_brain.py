@@ -240,52 +240,29 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
 
 
 
+
 def prepare_live_data(last_prices, look_back, num_of_data_columns):
-    # Convert last_prices array to a numpy array
-    last_prices_np = np.array(last_prices)
-    
-    #DEBUG
-    print("Columns in last_prices:", last_prices[0])
-    # Extract relevant columns
-    features_columns = ['close'
-        #,"open", "high", "low", "close", "volume",
-        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
-    ]
-    
-    
-    # Get the indices of the features columns
-    features_indices = [last_prices[0].index(col) for col in features_columns]
+    # Extract the last 'look_back' prices from last_prices
+    last_prices = np.array(last_prices[-look_back:])
 
-    print("Indices of features columns:", features_indices)
+    # Reshape the data to match the input shape expected by the model
+    X_tensor = torch.tensor(last_prices.reshape(1, look_back * num_of_data_columns, 1)).float()
 
-    # Extract features and target values
-    X = last_prices_np[:, features_indices]
-    target_column_index = last_prices[0].index("close")
-    y = last_prices_np[:, target_column_index]
+    return X_tensor
 
-    # Reshape data for LSTM input
-    num_samples = len(last_prices_np)
-    X = X.reshape((-1, look_back * num_of_data_columns + num_of_data_columns, 1))
-    y = y.reshape((-1, 1))
-
-    # Convert to PyTorch tensors
-    X_tensor = torch.tensor(X).float()
-    y_tensor = torch.tensor(y).float()
-
-    return X_tensor, y_tensor
-
-def predict_next_target_difference(model, input_data, device):
+def predict_next_value(model, last_prices, look_back, num_of_data_columns, device):
     model.eval()
 
-    # Convert input data to tensor
-    input_tensor = torch.tensor(input_data).float().to(device)
+    # Prepare live data
+    X_tensor = prepare_live_data(last_prices, look_back, num_of_data_columns)
 
     # Make the prediction
     with torch.no_grad():
-        prediction = model(input_tensor).item()
+        prediction = model(X_tensor.to(device)).item()
 
-    print(f'Predicted Next Target Difference: {prediction:.6f}')
+    print(f'Predicted Next Value: {prediction:.6f}')
+
+    print(f'Predicted Next Value: {prediction:.6f}')
 
 def create_model_name(target_column, features_columns, look_back, linear_layers, model_name = 'not_given'):
     if model_name == 'not_given':
@@ -334,20 +311,16 @@ if __name__ == '__main__':
     
     else:
         
-
-        
         # Live data preparation
-        price_data = Create_price_arr()
-        shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
-        shifted_df_as_np, scaler = scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
-        X_tensor, _ = shifted_df_as_np  # Ensure this line correctly unpacks X_tensor
-
+        DataManager = LoaderOHLCV(look_back, features_columns, target_column, load_data_mode, input_file=input_file_name)
+        #predict
+        predict_next_value(model, X_tensor, device)
+    
+    
     
     #x_batch, y_batch = create_batches(train_loader)
-    
-    
 
-    # Build the model
+    
     
     #Load the trained model
     #load_data_model(model, model_name)
@@ -355,22 +328,21 @@ if __name__ == '__main__':
     # Resets the trained model
     # reset_model(model)
     
-    #predict
-    #predict_next_target_difference(model, X_tensor, device )
+    
 
     # Train parameters
     learning_rate = 0.001
     num_epochs = 1000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    train_model(model, train_loader, test_loader, num_epochs, model_name)
+    #train_model(model, train_loader, test_loader, num_epochs, model_name)
     
     
     # Save the trained model
-    save_model(model, model_name) 
+    #save_model(model, model_name) 
 
-   
+    
 
     #shows graphs
-    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
