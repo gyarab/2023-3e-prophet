@@ -315,17 +315,16 @@ if __name__ == '__main__':
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
-    target_column = ['Target_value_difference']
     load_data_mode = 2 # modes of loading the data, starts with 0
     lstm_layers = 1
     lstm_neuron_count = 64
     model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
-    model_name = create_model_name(target_column, features_columns, look_back, lstm_neuron_count, lstm_layers)
+    model_name = create_model_name(features_columns, look_back, lstm_neuron_count, lstm_layers)
     
     if use_dataset == 1:
         # Load the dataset
-        DataManager = LoaderOHLCV(look_back, features_columns, target_column, load_data_mode, input_file=input_file_name)
+        DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
         shifted_df_as_np = DataManager.get_data_as_numpy()
         shifted_df_as_np, scaler = scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
         # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
