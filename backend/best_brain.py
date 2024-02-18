@@ -284,7 +284,7 @@ def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_c
     
     return model_name
 if __name__ == '__main__':
-    use_dataset = 1
+    use_dataset = True
 
 
     device = get_device()
@@ -310,7 +310,7 @@ if __name__ == '__main__':
     model.to(device)
     model_name = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
     
-    if use_dataset == 1:
+    if use_dataset == True:
         # Load the dataset
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
         shifted_df_as_np = DataManager.get_data_as_numpy()
