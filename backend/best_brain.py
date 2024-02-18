@@ -50,54 +50,6 @@ def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     print(device)
     return device
-# splits data to training and 
-def split_data(shifted_df_as_np, percentage_of_train_data):
-    print("spliting data")
-    # splits the data into the target value - y and the data based on which y is predicted X
-    X = shifted_df_as_np[:, 1:] # upper scale X is correct
-    y = shifted_df_as_np[:, 0] # lower scale y - vector ?
-    X = dc(np.flip(X, axis=1)) # now the data are in corect time order - older to newer
-
-    split_index = int(len(X) * percentage_of_train_data)
-
-    X_train = X[:split_index]
-    X_test = X[split_index:]
-
-    y_train = y[:split_index]
-    y_test = y[split_index:]
-    print(f"shape of X_train {X_train.shape}")
-    print(f"shape of X_test {X_test.shape}")
-    return X_train, X_test, y_train, y_test
-
-def to_tensor(X_train,X_test,y_train,y_test, look_back, num_of_data_columns):
-    print("reshaping data to tensors")
-    # reshpaes because LSTM wants 3 dimensional tensors
-    X_train = X_train.reshape((-1, look_back * num_of_data_columns + num_of_data_columns , 1)) 
-    X_test = X_test.reshape((-1, look_back * num_of_data_columns + num_of_data_columns , 1))
-
-    y_train = y_train.reshape((-1, 1))
-    y_test = y_test.reshape((-1, 1))
-    # moves to tensor
-    X_train = torch.tensor(X_train).float()
-    y_train = torch.tensor(y_train).float()
-    X_test = torch.tensor(X_test).float()
-    y_test = torch.tensor(y_test).float()
-    
-    return X_train,X_test,y_train,y_test
-
-def to_dataset(X_train,X_test,y_train,y_test):
-    print("to_dataset")
-    train_dataset = TimeSeriesDataset(X_train, y_train)
-    test_dataset = TimeSeriesDataset(X_test, y_test)
-    return train_dataset, test_dataset
-
-def to_dataLoader(train_dataset,test_dataset,batch_size):
-    print("to_dataloader")
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-    return train_loader, test_loader
-
 def create_batches(train_loader):
     print("creating batches")
     for _, batch in enumerate(train_loader):
