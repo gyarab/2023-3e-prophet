@@ -322,6 +322,7 @@ if __name__ == '__main__':
         train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
     
     else:
+        DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
         # Live data preparation
         price_data = Create_price_arr()
         shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
