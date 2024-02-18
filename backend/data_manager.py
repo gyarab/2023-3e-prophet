@@ -3,6 +3,8 @@ import pandas as pd
 from copy import deepcopy as dc
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+from data_fetcher import Create_price_arr
+
 class LoaderOHLCV():
     def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
         self.look_back = look_back
@@ -10,11 +12,14 @@ class LoaderOHLCV():
         self.mode = mode
         self.input_file = input_file
     def get_data_as_numpy(self):
-        if self.input_file == 'not_given': # not_given - means live data
-            pass
+        if self.input_file == 'not_given':
+            
+            raw_data = Create_price_arr()
+            shifted_df_as_np = self.prepare_dataframe_for_lstm0(pd.DataFrame(raw_data))
         else:
             shifted_df_as_np = self.load_data_from_csv()
         return shifted_df_as_np
+    
     def load_data_from_csv(self):
         print("loading raw data")
         data = pd.read_csv(self.get_absolute_path())

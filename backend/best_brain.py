@@ -227,6 +227,7 @@ def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, de
 
 
 
+
 def prepare_live_data(last_prices, look_back, num_of_data_columns):
     # Convert last_prices array to a numpy array
     last_prices_np = np.array(last_prices)
@@ -260,19 +261,21 @@ def prepare_live_data(last_prices, look_back, num_of_data_columns):
     X_tensor = torch.tensor(X).float()
     y_tensor = torch.tensor(y).float()
 
-    return X_tensor, y_tensor
+    return X_tensor
 
-def predict_next_target_difference(model, input_data, device):
+def predict_next_value(model, last_prices, look_back, num_of_data_columns, device):
     model.eval()
 
-    # Convert input data to tensor
-    input_tensor = torch.tensor(input_data).float().to(device)
+    # Prepare live data
+    X_tensor = prepare_live_data(last_prices, look_back, num_of_data_columns)
 
     # Make the prediction
     with torch.no_grad():
-        prediction = model(input_tensor).item()
+        prediction = model(X_tensor.to(device)).item()
 
-    print(f'Predicted Next Target Difference: {prediction:.6f}')
+    print(f'Predicted Next Value: {prediction:.6f}')
+
+    print(f'Predicted Next Value: {prediction:.6f}')
 
 def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
     if model_name == 'not_given':
@@ -327,10 +330,8 @@ if __name__ == '__main__':
 
     
     #x_batch, y_batch = create_batches(train_loader)
-    
-    
 
-    # Build the model
+    
     
     #Load the trained model
     #load_data_model(model, model_name)
@@ -338,22 +339,21 @@ if __name__ == '__main__':
     # Resets the trained model
     # reset_model(model)
     
-    #predict
-    #predict_next_target_difference(model, X_tensor, device )
+    
 
     # Train parameters
     learning_rate = 0.001
     num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    train_model(model, train_loader, test_loader, num_epochs, model_name)
+    #train_model(model, train_loader, test_loader, num_epochs, model_name)
     
     
     # Save the trained model
-    save_model(model, model_name) 
+    #save_model(model, model_name) 
 
-   
+    
 
     #shows graphs
-    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
