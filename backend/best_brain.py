@@ -237,9 +237,6 @@ def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_c
     
     return model_name
 if __name__ == '__main__':
-    use_dataset = True
-
-
     device = get_device()
     # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
     # after each batch is completed the parameteres of the model will be updated
@@ -266,7 +263,14 @@ if __name__ == '__main__':
     learning_rate = 0.001
     num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
-    if use_dataset == True:
+    if input_file_name == None:
+        DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
+        # Live data preparation
+        price_data = Create_price_arr()
+        shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
+        shifted_df_as_np, scaler = DataManager.scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
+        X_tensor, _ = shifted_df_as_np  # Ensure this line correctly unpacks X_tensor
+    else:
         # Load the dataset
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
         X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
@@ -288,13 +292,6 @@ if __name__ == '__main__':
         #shows graphs
         create_train_graph(X_train, y_train, look_back,num_of_data_columns, device)
         create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
-    else:
-        DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
-        # Live data preparation
-        price_data = Create_price_arr()
-        shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
-        shifted_df_as_np, scaler = DataManager.scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
-        X_tensor, _ = shifted_df_as_np  # Ensure this line correctly unpacks X_tensor
 
     
     #x_batch, y_batch = create_batches(train_loader)
