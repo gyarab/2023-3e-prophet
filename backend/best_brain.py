@@ -133,7 +133,7 @@ def reset_model(model):
 
 def create_train_graph(X_train, y_train, look_back, num_of_data_columns, device):
     print('creating train graph')
-    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaler = DataManager.get_scaler()
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
@@ -158,7 +158,7 @@ def create_train_graph(X_train, y_train, look_back, num_of_data_columns, device)
     
 def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     print('creating test graph')
-    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaler = DataManager.get_scaler()
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = test_predictions
@@ -276,16 +276,16 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
         train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
         train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
-        train_model(model, train_loader, test_loader, num_epochs, model_name)
+        #train_model(model, train_loader, test_loader, num_epochs, model_name)
         #Load the trained model
-        #load_data_model(model, model_name)
+        load_data_model(model, model_name)
         
         # Resets the trained model
         # reset_model(model)
     
     
         # Save the trained model
-        save_model(model, model_name) 
+        #save_model(model, model_name) 
 
     
 

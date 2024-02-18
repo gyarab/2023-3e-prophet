@@ -25,6 +25,7 @@ class LoaderOHLCV():
         self.features_columns = features_columns
         self.mode = mode
         self.input_file = input_file
+        self.scaler = MinMaxScaler(feature_range=(-1, 1))
     
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
@@ -209,10 +210,11 @@ class LoaderOHLCV():
     # scales the data
     def scale_data(self, shifted_df_as_np):
         print("scaling data to range -1 .. 1")
-        scaler = MinMaxScaler(feature_range=(-1, 1))
-        shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
+        shifted_df_as_np = self.scaler.fit_transform(shifted_df_as_np)
         return shifted_df_as_np
     # returns whole path to the dataset/data folder
     def get_absolute_path(self):
         input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', self.input_file)
         return input_file_path
+    def get_scaler(self):
+        return self.scaler
