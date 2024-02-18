@@ -4,21 +4,91 @@ from copy import deepcopy as dc
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from data_fetcher import Create_price_arr
+import torch
+from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+# class for creating dataset
+class TimeSeriesDataset(Dataset):# this class inherits from Dataset
+    def __init__(self, X, y):
+        self.X = X
+        self.y = y
 
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, i):
+        return self.X[i], self.y[i]
+    
 class LoaderOHLCV():
     def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
         self.look_back = look_back
         self.features_columns = features_columns
         self.mode = mode
         self.input_file = input_file
-    def get_data_as_numpy(self):
+    def get_data_as_tensor(self):
         if self.input_file == 'not_given':
             
             raw_data = Create_price_arr()
-            shifted_df_as_np = self.prepare_dataframe_for_lstm0(pd.DataFrame(raw_data))
+            #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
+            #FIX!!
+            shifted_df_as_np = self.X_train, X_test, y_train, y_test(pd.DataFrame(raw_data))
+            shifted_df_as_np = self.scale_data(shifted_df_as_np)
+            #FIX!!
+            return #chybi aby to byl tensor
+        # this is case where there is given file to load from
+        # it returns tensors with y and X values and also splits them into to test and train
         else:
             shifted_df_as_np = self.load_data_from_csv()
-        return shifted_df_as_np
+            shifted_df_as_np = self.scale_data(shifted_df_as_np)
+            X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
+            X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
+            return X_train, X_test, y_train, y_test    
+    
+    def split_data(self, shifted_df_as_np, percentage_of_train_data = 0.8):
+        print("spliting data")
+        # splits the data into the target value - y and the data based on which y is predicted X
+        X = shifted_df_as_np[:, 1:] # upper scale X is correct
+        y = shifted_df_as_np[:, 0] # lower scale y - vector ?
+        X = dc(np.flip(X, axis=1)) # now the data are in corect time order - older to newer
+
+        split_index = int(len(X) * percentage_of_train_data)
+
+        X_train = X[:split_index]
+        X_test = X[split_index:]
+
+        y_train = y[:split_index]
+        y_test = y[split_index:]
+        print(f"shape of X_train {X_train.shape}")
+        print(f"shape of X_test {X_test.shape}")
+        return X_train, X_test, y_train, y_test
+    def to_train_tensor(self, X_train, X_test, y_train, y_test):
+        print("reshaping data to tensors")
+        # reshpaes because LSTM wants 3 dimensional tensors
+        #HARD CODED TO X_train, X_test, y_train, y_test - it has 1 column of data 
+        #FIX!!
+        X_train = X_train.reshape((-1, self.look_back * 1 + 1 , 1)) 
+        X_test = X_test.reshape((-1, self.look_back * 1 + 1 , 1))
+
+        y_train = y_train.reshape((-1, 1))
+        y_test = y_test.reshape((-1, 1))
+        # moves to tensor
+        X_train = torch.tensor(X_train).float()
+        y_train = torch.tensor(y_train).float()
+        X_test = torch.tensor(X_test).float()
+        y_test = torch.tensor(y_test).float()
+        
+        return X_train, X_test, y_train, y_test
+    def to_dataset(self, X_train, X_test, y_train, y_test):
+        print("to_dataset")
+        train_dataset = TimeSeriesDataset(X_train, y_train)
+        test_dataset = TimeSeriesDataset(X_test, y_test)
+        return train_dataset, test_dataset
+    def to_dataLoader(self, train_dataset, test_dataset, batch_size):
+        print("to_dataloader")
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+        return train_loader, test_loader    
+        
     
     def load_data_from_csv(self):
         print("loading raw data")
@@ -34,9 +104,6 @@ class LoaderOHLCV():
         shifted_df_as_np = shifted_data_frame.to_numpy()
     
         return shifted_df_as_np
-    def get_absolute_path(self):
-        input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', self.input_file)
-        return input_file_path
     # creates sequences of selected data (columns)
     def prepare_dataframe_for_lstm0(self, dataframe):
         # created deepcopy of dataframe - to not edit original data
@@ -143,4 +210,8 @@ class LoaderOHLCV():
         print("scaling data to range -1 .. 1")
         scaler = MinMaxScaler(feature_range=(-1, 1))
         shifted_df_as_np = scaler.fit_transform(shifted_df_as_np)
-        return shifted_df_as_np, scaler
+        return shifted_df_as_np
+    # returns whole path to the dataset/data folder
+    def get_absolute_path(self):
+        input_file_path = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'data', self.input_file)
+        return input_file_path

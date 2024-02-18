@@ -293,7 +293,7 @@ if __name__ == '__main__':
     # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-    look_back = 100 # how many candles will it look into the past
+    look_back = 1000 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
     input_file_name = 'BTCUSDT02-1h.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
@@ -313,13 +313,9 @@ if __name__ == '__main__':
     if use_dataset == True:
         # Load the dataset
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
-        shifted_df_as_np = DataManager.get_data_as_numpy()
-        shifted_df_as_np, scaler = DataManager.scale_data(shifted_df_as_np) # scaling is not a good way (the price can get higher than current maximum)
-        # shifted_df_as_np = absolute_scale_data(shifted_df_as_np)
-        X_train, X_test, y_train, y_test = split_data(shifted_df_as_np, precentage_of_train_data)
-        X_train, X_test, y_train, y_test = to_tensor(X_train, X_test, y_train, y_test, look_back, num_of_data_columns)
-        train_dataset, test_dataset = to_dataset(X_train, X_test, y_train, y_test)
-        train_loader, test_loader = to_dataLoader(train_dataset, test_dataset, batch_size)
+        X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
+        train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
+        train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
     
     else:
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
@@ -347,14 +343,14 @@ if __name__ == '__main__':
     num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     # starts training
-    #train_model(model, train_loader, test_loader, num_epochs, model_name)
+    train_model(model, train_loader, test_loader, num_epochs, model_name)
     
     
     # Save the trained model
-    #save_model(model, model_name) 
+    save_model(model, model_name) 
 
     
 
     #shows graphs
-    #create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    #create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
+    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
+    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
