@@ -25,6 +25,7 @@ class LoaderOHLCV():
         self.features_columns = features_columns
         self.mode = mode
         self.input_file = input_file
+    
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
             
