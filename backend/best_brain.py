@@ -179,8 +179,9 @@ def reset_model(model):
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
 
-def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns, device):
+def create_train_graph(X_train, y_train, look_back, num_of_data_columns, device):
     print('creating train graph')
+    scaler = MinMaxScaler(feature_range=(-1, 1))
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
@@ -203,9 +204,9 @@ def create_train_graph(X_train, y_train, scaler, look_back, num_of_data_columns,
     plt.legend()
     plt.show()
     
-def create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device):
+def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     print('creating test graph')
-    
+    scaler = MinMaxScaler(feature_range=(-1, 1))
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = test_predictions
@@ -309,6 +310,9 @@ if __name__ == '__main__':
     model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
     model_name = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
+    # Train parameters
+    learning_rate = 0.001
+    num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
     
     if use_dataset == True:
         # Load the dataset
@@ -316,7 +320,22 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
         train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
         train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
+        train_model(model, train_loader, test_loader, num_epochs, model_name)
+        #Load the trained model
+        #load_data_model(model, model_name)
+        
+        # Resets the trained model
+        # reset_model(model)
     
+    
+        # Save the trained model
+        save_model(model, model_name) 
+
+    
+
+        #shows graphs
+        create_train_graph(X_train, y_train, look_back,num_of_data_columns, device)
+        create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
     else:
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
         # Live data preparation
@@ -330,27 +349,5 @@ if __name__ == '__main__':
 
     
     
-    #Load the trained model
-    #load_data_model(model, model_name)
-    
-    # Resets the trained model
-    # reset_model(model)
     
     
-
-    # Train parameters
-    learning_rate = 0.001
-    num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
-    
-    # starts training
-    train_model(model, train_loader, test_loader, num_epochs, model_name)
-    
-    
-    # Save the trained model
-    save_model(model, model_name) 
-
-    
-
-    #shows graphs
-    create_train_graph(X_train, y_train, scaler, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, scaler, look_back, num_of_data_columns, device)
