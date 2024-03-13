@@ -234,7 +234,7 @@ def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_c
     if model_path == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
         model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
-        model_path = os.path.join(os.path.dirname(__file__), '..', 'models', model_name)
+        model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
     return model_path
 if __name__ == '__main__':
     device = get_device()

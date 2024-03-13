@@ -214,7 +214,7 @@ class LoaderOHLCV():
         return shifted_df_as_np
     # returns whole path to the dataset/data folder
     def get_absolute_path(self):
-        input_file_path = os.path.join(os.path.dirname(__file__), '..', 'datasets', self.input_file)
+        input_file_path = os.path.join(os.path.dirname(__file__), 'datasets', self.input_file)
         return input_file_path
     def get_scaler(self):
         return self.scaler
