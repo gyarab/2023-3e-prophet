@@ -243,9 +243,9 @@ if __name__ == '__main__':
     # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-    look_back = 1000 # how many candles will it look into the past
+    look_back = 60 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'BTCUSDT02-1h.csv' # this file has to be in /backend/dataset
+    input_file_name = 'MinuteBars.csv' # this file has to be in /backend/dataset
     # which columns will be included in training data - X
     features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     model_name = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 2000 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 20 # Epoch: Passes the entire training dataset to the model once
     
     if input_file_name == None:
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
@@ -276,16 +276,16 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
         train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
         train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
-        #train_model(model, train_loader, test_loader, num_epochs, model_name)
+        train_model(model, train_loader, test_loader, num_epochs, model_name)
         #Load the trained model
-        load_data_model(model, model_name)
+        #load_data_model(model, model_name)
         
         # Resets the trained model
         # reset_model(model)
     
     
         # Save the trained model
-        #save_model(model, model_name) 
+        save_model(model, model_name) 
 
     
 
@@ -296,6 +296,7 @@ if __name__ == '__main__':
     
     #x_batch, y_batch = create_batches(train_loader)
 
+    
     
     
     
