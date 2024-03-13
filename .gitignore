@@ -3,7 +3,7 @@
 #
 
 # folder for containg large csv files for training
-dataset/data/*
+datasets/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

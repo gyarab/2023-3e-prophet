@@ -100,21 +100,21 @@ def validate_one_epoch(model, test_loader, loss_function):
     
 
 # train all data
-def train_model(model, train_loader, test_loader, num_epochs, model_name):
+def train_model(model, train_loader, test_loader, num_epochs, model_path):
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
         validate_one_epoch(model, test_loader, loss_function)
         if epoch % 10 == 0:
-            save_model(model, model_name)
+            save_model(model, model_path)
 
 # Function to save the trained model
-def save_model(model, model_name):
-    model_name = model_name + '.pth'
+def save_model(model, model_path):
+    model_path = model_path + '.pth'
     print('saving model')
-    torch.save(model.state_dict(), model_name)
-    print(f"Model saved as {model_name}")
+    torch.save(model.state_dict(), model_path)
+    print(f"Model saved as {model_path}")
 
 # Function to load the trained model
 def load_data_model(model, filename):
@@ -230,12 +230,12 @@ def predict_next_value(model, last_prices, look_back, num_of_data_columns, devic
 
     print(f'Predicted Next Value: {prediction:.6f}')
 
-def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
-    if model_name == 'not_given':
+def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_path = 'not_given'):
+    if model_path == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
         model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
-    
-    return model_name
+        model_path = os.path.join(os.path.dirname(__file__), '..', 'models', model_name)
+    return model_path
 if __name__ == '__main__':
     device = get_device()
     # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 60 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'MinuteBars.csv' # this file has to be in /backend/dataset
+    input_file_name = 'MinuteBars.csv' # this file has to be in /datasets
     # which columns will be included in training data - X
     features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     lstm_neuron_count = 64
     model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
-    model_name = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
+    model_path = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
     # Train parameters
     learning_rate = 0.001
     num_epochs = 20 # Epoch: Passes the entire training dataset to the model once
@@ -276,16 +276,16 @@ if __name__ == '__main__':
         X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
         train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
         train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
-        train_model(model, train_loader, test_loader, num_epochs, model_name)
+        train_model(model, train_loader, test_loader, num_epochs, model_path)
         #Load the trained model
-        #load_data_model(model, model_name)
+        #load_data_model(model, model_path)
         
         # Resets the trained model
         # reset_model(model)
     
     
         # Save the trained model
-        save_model(model, model_name) 
+        save_model(model, model_path) 
 
     
 

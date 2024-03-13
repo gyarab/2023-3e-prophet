@@ -1,0 +1,71 @@
+.navbar {
+    background-color: #04293a;  
+}
+
+.headline {
+    font-family: Georgia;
+    font-size: 30px;
+    color: #ecb365;
+    background-color: #04293a;
+    border-color: #04293a;
+    padding-top:10px;
+    padding-left:3px;
+}
+.user {
+    padding-left: 15px;
+    width: 50px;
+    height: 40px;
+}
+.logo {
+    padding: 10px;
+    width: 70px;
+    height: 55px;
+}
+.tabulka {
+    color: #ecb365;
+    padding: 10px;
+}
+.bambulka {
+    color: #ecb365;
+    padding: 10px;
+}
+.firstNumber {
+    font-weight: 400;
+    color: #ecb365;
+    font-family: Georgia;
+    font-size: 80px;
+    padding-top:120px ;
+    text-align: center;
+    text-decoration: underline;
+    
+}
+.secNumber {
+    
+    font-weight: 400;
+    color: #ecb365;
+    font-family: Georgia;
+    font-size: 50px;
+    text-align: center;
+    line-height: 0;
+    white-space: nowrap;
+}
+.thrdNumber {
+    font-weight: 400;
+    color: #ecb365;
+    font-family: Georgia; 
+    font-size: 30px;
+    padding-top: 30px;
+    text-align: center;
+    line-height: 0;
+    white-space: nowrap;
+}
+.frthNumber {
+    font-weight: 400;
+    color: #ecb365;
+    font-family: Georgia; 
+    font-size: 30px;
+    padding-top: 30px;
+    text-align: center;
+    line-height: 0;
+    white-space: nowrap;
+}
