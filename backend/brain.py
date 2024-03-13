@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
 
     # Train the model
-    n_epochs = 200 # Epoch: Passes the entire training dataset to the model once
+    n_epochs = 20 # Epoch: Passes the entire training dataset to the model once
     batch_size = 10 # Batch: One or more samples passed to the model, from which the gradient descent algorithm will be executed for one iteration
     
     model = train_model(model, X, y, n_epochs, batch_size)

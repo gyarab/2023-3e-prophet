@@ -25,15 +25,21 @@ def binanceBarExtractor(symbol):
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
                                            , 'tb_base_av', 'tb_quote_av', 'ignore' ])
-    
-    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
-    data.set_index('timestamp', inplace=True)
-    data = data.drop('ignore', axis=1)
-    data = data.drop('close_time', axis=1)
-    data = data.drop('trades', axis=1)
-    data = data.drop('tb_base_av', axis=1)
-    data = data.drop('tb_quote_av', axis=1)
-    data = data.drop('quote_av', axis=1)
+    # converts time stamp to date
+    data['Date'] = pd.to_datetime(data['timestamp'], unit='ms')
+    data = data.drop('timestamp', axis=1)
+    data.set_index('Date', inplace=True)
+    # removes no important columns
+    drop_column_names = ['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
+    for column_name in drop_column_names:
+        data = data.drop(column_name, axis= 1)
+    # rename columns to start with a capital 
+    rename_column_name = ['open', 'high', 'low', 'close', 'volume']
+    for column_name in rename_column_name:
+        # capitalize makes first letter capital
+        data[column_name.capitalize()] = data[column_name]
+        data = data.drop(column_name, axis= 1)
+    # saves the csv file
     data.to_csv(filename)
     print('finished!')
 
