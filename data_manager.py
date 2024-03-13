@@ -7,6 +7,7 @@ from data_fetcher import Create_price_arr
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+import binance_data_fatcher
 # class for creating dataset
 class TimeSeriesDataset(Dataset):# this class inherits from Dataset
     def __init__(self, X, y):
@@ -30,13 +31,18 @@ class LoaderOHLCV():
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
             
-            raw_data = Create_price_arr()
+            shifted_df_as_np = binance_data_fatcher.get_last_100_datapoints('BTCUSDT')
             #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
             #FIX!!
-            shifted_df_as_np = self.X_train, X_test, y_train, y_test(pd.DataFrame(raw_data))
             shifted_df_as_np = self.scale_data(shifted_df_as_np)
+            
+            # prepare data for lstm 3 pocita s target value
+            shifted_df_as_np = self.prepare_dataframe_for_lstm3(shifted_df_as_np)
+            input_data_tensor = torch.tensor(shifted_df_as_np)
+            
+            return input_data_tensor
             #FIX!!
-            return #chybi aby to byl tensor
+            #chybi aby to byl tensor
         # this is case where there is given file to load from
         # it returns tensors with y and X values and also splits them into to test and train
         else:
