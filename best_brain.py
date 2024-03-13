@@ -253,7 +253,7 @@ if __name__ == '__main__':
         # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
         ]
     num_of_data_columns = len(features_columns) 
-    load_data_mode = 2 # modes of loading the data, starts with 0
+    load_data_mode = 3 # modes of loading the data, starts with 0
     lstm_layers = 1
     lstm_neuron_count = 64
     model = LSTM(1, lstm_neuron_count, lstm_layers)
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     model_path = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
     # Train parameters
     learning_rate = 0.001
-    num_epochs = 20 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
     
     if input_file_name == None:
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
