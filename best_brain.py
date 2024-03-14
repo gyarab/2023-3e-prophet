@@ -20,17 +20,19 @@ class LSTM(nn.Module):# this class inherits from nn.Module
 
         self.lstm = nn.LSTM(input_size, hidden_size, num_stacked_layers, 
                             batch_first=True)
-        
+        # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-
+        self.sigmoid = nn.Sigmoid()
+    # function that describes how the data move throgh the model
     def forward(self, x):
         # hodne skifi, asi neresit
         batch_size = x.size(0)
         h0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
         c0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
-        
+        # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
+        out = self.sigmoid(out) # Apply sigmoid to get probabilities
         return out
     
 def get_device():
@@ -88,7 +90,7 @@ def validate_one_epoch(model, test_loader, loss_function):
 
 # train all data
 def train_model(model, train_loader, test_loader, num_epochs, model_path):
-    loss_function = nn.MSELoss()
+    loss_function = nn.BCELoss() # Binary Cross Entropy Loss
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
@@ -127,12 +129,12 @@ def create_train_graph(X_train, y_train, look_back, num_of_data_columns, device)
 
     dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1)) # !!!!
     dummies[:, 0] = train_predictions
-    dummies = scaler.inverse_transform(dummies)
+    #dummies = scaler.inverse_transform(dummies)
     train_predictions = dc(dummies[:, 0])
     
     dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = y_train.flatten()
-    dummies = scaler.inverse_transform(dummies)
+    #dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
     # Add a horizontal line at y=0
     plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
@@ -149,12 +151,12 @@ def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = test_predictions
-    dummies = scaler.inverse_transform(dummies)
+    #dummies = scaler.inverse_transform(dummies)
     test_predictions = dc(dummies[:, 0])
     
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = y_test.flatten()
-    dummies = scaler.inverse_transform(dummies)
+    #dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
     # Add a horizontal line at y=0
     plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
@@ -180,7 +182,7 @@ if __name__ == '__main__':
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
     look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = None # this file has to be in /datasets
+    input_file_name = 'MinuteBars.csv'  # this file has to be in /datasets/
     # which columns will be included in training data - X
     features_columns = ['Close',
         #"open", "high", "low", "close", "volume",

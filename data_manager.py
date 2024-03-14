@@ -33,7 +33,7 @@ class LoaderOHLCV():
             #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
             #FIX!!
             shifted_df_as_np = self.prepare_dataframe_for_lstm3(recent_data, train= False)
-            shifted_df_as_np = self.scale_data(shifted_df_as_np)
+            #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             shifted_df_as_np = shifted_df_as_np.reshape((-1, self.look_back * 1 + 1 , 1))
             input_data_tensor = torch.tensor(shifted_df_as_np).float()
             
@@ -42,7 +42,7 @@ class LoaderOHLCV():
         # it returns tensors with y and X values and also splits them into to test and train
         else:
             shifted_df_as_np = self.load_data_from_csv()
-            shifted_df_as_np = self.scale_data(shifted_df_as_np)
+            #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
             return X_train, X_test, y_train, y_test    
@@ -222,7 +222,7 @@ class LoaderOHLCV():
         if train == True:
         # creates the target difference columns - in just 
             target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
-            dataframe['Target_vlaue_difference'] = target_difference / abs(target_difference)
+            dataframe['Target_vlaue_difference'] = np.where(target_difference > 0, 1, 0)
         dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')
         dataframe['Close_difference'] = (dataframe['Close'] - dataframe['Close'].shift(1) ) / dataframe['Close'].shift(1) * 100
         # adds sequneces of Close differences in percentage - 1 sequnece will have legnth of n_steps
@@ -238,6 +238,7 @@ class LoaderOHLCV():
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
         print(f"shape of prepared data {dataframe.shape}")
+        print(dataframe.head())
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
     def absolute_scale_data(self, shifted_df_as_np):
