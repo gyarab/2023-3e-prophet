@@ -59,9 +59,11 @@ def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
         output = model(x_batch)
         loss = loss_function(output, y_batch) # tensor with 1 value
         running_loss += loss.item() # gets the 1 value
-        
+        # this clears the gradient
         optimizer.zero_grad()
+        # gradients are computed for all parameters in nn with respect to the loss
         loss.backward()
+        # updates the parameters of the model based on the gradients computed during backpropagation
         optimizer.step()
 
         if batch_index % 100 == 99:  # print every 100 batches
@@ -69,19 +71,20 @@ def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
             print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
                                                     avg_loss_across_batches))
             running_loss = 0.0
+# validates results during training process
 def validate_one_epoch(model, test_loader, loss_function):
     model.train(False)
     running_loss = 0.0
     
-    for batch_index, batch in enumerate(test_loader):
-        x_batch, y_batch = batch[0].to(device), batch[1].to(device)
+    for batch_index, batch in enumerate(test_loader): # ?
+        x_batch, y_batch = batch[0].to(device), batch[1].to(device) # ?
         
         with torch.no_grad():
             output = model(x_batch)
             loss = loss_function(output, y_batch)
-            running_loss += loss.item()
+            running_loss += loss.item() # adss the loss value
 
-    avg_loss_across_batches = running_loss / len(test_loader)
+    avg_loss_across_batches = running_loss / len(test_loader) # arythmetic avrage
     
     print('Val Loss: {0:.3f}'.format(avg_loss_across_batches))
     #print('***************************************************')
