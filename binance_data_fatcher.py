@@ -14,7 +14,7 @@ utc_timezone = pytz.utc
 bclient = Client(api_key=api_key, api_secret=api_secret)
 
 def get_absolute_path(input_file):
-    input_file_path = os.path.join(os.path.dirname(__file__),'data', input_file)
+    input_file_path = os.path.join(os.path.dirname(__file__),'datasets', input_file)
     return input_file_path
 # saves a csv file with historical data
 # Date is hard coded !!!
@@ -22,7 +22,7 @@ def get_historical_data(symbol):
     print('downloading historical data from Binance...')
     filename = get_absolute_path('MinuteBars.csv')
     start_date = datetime.strptime('1 Jan 2024', '%d %b %Y')
-    today = datetime.today(utc_timezone)
+    today = datetime.now(utc_timezone)
     klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), today.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
@@ -75,5 +75,5 @@ def get_last_102_datapoints(symbol):
 
 
 if __name__ == '__main__':
-    print(type(get_last_102_datapoints('BTCUSDT')))
-    #get_historical_data('BTCUSDT')
+    #print(type(get_last_102_datapoints('BTCUSDT')))
+    get_historical_data('BTCUSDT')
