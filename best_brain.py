@@ -10,7 +10,6 @@ from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
-from data_fetcher import Create_price_arr, get_last_100_btc_price
 from data_manager import LoaderOHLCV
 
 class LSTM(nn.Module):# this class inherits from nn.Module

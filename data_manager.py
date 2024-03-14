@@ -3,7 +3,6 @@ import pandas as pd
 from copy import deepcopy as dc
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from data_fetcher import Create_price_arr
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
