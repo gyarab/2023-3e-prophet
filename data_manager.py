@@ -29,11 +29,20 @@ class LoaderOHLCV():
     
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
-            recent_data = binance_data_fatcher.get_last_102_datapoints('BTCUSDT')
+            recent_data = binance_data_fatcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
             #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
             #FIX!!
-            shifted_df_as_np = self.prepare_dataframe_for_lstm3(recent_data, train= False)
+            if self.mode == 0:
+                shifted_df_as_np = self.prepare_dataframe_for_lstm0(recent_data)
+            if self.mode == 1:
+                shifted_df_as_np = self.prepare_dataframe_for_lstm1(recent_data)
+            if self.mode == 2:        
+                shifted_df_as_np = self.prepare_dataframe_for_lstm2(recent_data)
+            if self.mode == 3:
+                shifted_df_as_np = self.prepare_dataframe_for_lstm3(recent_data, train= False)
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
+            
+            
             shifted_df_as_np = shifted_df_as_np.reshape((-1, self.look_back * 1 + 1 , 1))
             input_data_tensor = torch.tensor(shifted_df_as_np).float()
             
