@@ -176,59 +176,7 @@ def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     plt.ylabel('Close')
     plt.legend()
     plt.show()
-
-
-
-
-def prepare_live_data(last_prices, look_back, num_of_data_columns):
-    # Convert last_prices array to a numpy array
-    last_prices_np = np.array(last_prices)
     
-    #DEBUG
-    print("Columns in last_prices:", last_prices[0])
-    # Extract relevant columns
-    features_columns = ['Close'
-        #,"open", "high", "low", "close", "volume",
-        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
-    ]
-    
-    
-    # Get the indices of the features columns
-    features_indices = [last_prices[0].index(col) for col in features_columns]
-
-    print("Indices of features columns:", features_indices)
-
-    # Extract features and target values
-    X = last_prices_np[:, features_indices]
-    target_column_index = last_prices[0].index("Close")
-    y = last_prices_np[:, target_column_index]
-
-    # Reshape data for LSTM input
-    num_samples = len(last_prices_np)
-    X = X.reshape((-1, look_back * num_of_data_columns + num_of_data_columns, 1))
-    y = y.reshape((-1, 1))
-
-    # Convert to PyTorch tensors
-    X_tensor = torch.tensor(X).float()
-    y_tensor = torch.tensor(y).float()
-
-    return X_tensor
-
-def predict_next_value(model, last_prices, look_back, num_of_data_columns, device):
-    model.eval()
-
-    # Prepare live data
-    X_tensor = prepare_live_data(last_prices, look_back, num_of_data_columns)
-
-    # Make the prediction
-    with torch.no_grad():
-        prediction = model(X_tensor.to(device)).item()
-
-    print(f'Predicted Next Value: {prediction:.6f}')
-
-    print(f'Predicted Next Value: {prediction:.6f}')
-
 def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_path = 'not_given'):
     if model_path == 'not_given':
         inicials_features_columns = ''.join([s[0] for s in features_columns])
