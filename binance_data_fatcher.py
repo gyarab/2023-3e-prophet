@@ -21,7 +21,7 @@ def get_absolute_path(input_file):
 def get_historical_data(symbol):
     print('downloading historical data from Binance...')
     filename = get_absolute_path('MinuteBars.csv')
-    start_date = datetime.strptime('1 Jan 2024', '%d %b %Y')
+    start_date = datetime.strptime('1 Mar 2024', '%d %b %Y')
     today = datetime.now(utc_timezone)
     klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), today.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
@@ -30,7 +30,7 @@ def get_historical_data(symbol):
     # converts time stamp to date
     data['Date'] = pd.to_datetime(data['timestamp'], unit='ms')
     data = data.drop('timestamp', axis=1)
-    #data.set_index('Date', inplace=True)
+    data.set_index('Date', inplace=True)
     # removes no important columns
     drop_column_names = ['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
     for column_name in drop_column_names:
