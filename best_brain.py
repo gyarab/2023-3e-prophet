@@ -206,7 +206,7 @@ if __name__ == '__main__':
         with torch.no_grad():
             model.eval()
             prediction = model(recent_data_tensor)
-            print(prediction)
+            print(f"prediction for next change is {prediction}")
         
     else:
         # Load the dataset

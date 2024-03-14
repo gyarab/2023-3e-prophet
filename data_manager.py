@@ -29,7 +29,6 @@ class LoaderOHLCV():
     
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
-            #print(binance_data_fatcher.get_last_100_datapoints('BTCUSDT').columns)
             recent_data = binance_data_fatcher.get_last_102_datapoints('BTCUSDT')
             #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
             #FIX!!
@@ -83,12 +82,12 @@ class LoaderOHLCV():
         
         return X_train, X_test, y_train, y_test
     def to_dataset(self, X_train, X_test, y_train, y_test):
-        print("to_dataset")
+        print("to dataset")
         train_dataset = TimeSeriesDataset(X_train, y_train)
         test_dataset = TimeSeriesDataset(X_test, y_test)
         return train_dataset, test_dataset
     def to_dataLoader(self, train_dataset, test_dataset, batch_size):
-        print("to_dataloader")
+        print("to dataloader")
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
         return train_loader, test_loader    
@@ -219,18 +218,13 @@ class LoaderOHLCV():
         except:
             dataframe = dc(dataframe[['Date', 'Close']])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-        print(dataframe.values)
         print(f"shape of loadet data {dataframe.shape}")
         if train == True:
         # creates the target difference columns - in just 
             target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
             dataframe['Target_vlaue_difference'] = target_difference / abs(target_difference)
         dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')
-        print(dataframe.head())
-        print(dataframe.values)
         dataframe['Close_difference'] = (dataframe['Close'] - dataframe['Close'].shift(1) ) / dataframe['Close'].shift(1) * 100
-        print(dataframe.head())
-        print(dataframe.values)
         # adds sequneces of Close differences in percentage - 1 sequnece will have legnth of n_steps
         lag_columns = []
         for i in range(1, self.look_back + 1):
@@ -244,7 +238,6 @@ class LoaderOHLCV():
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
         print(f"shape of prepared data {dataframe.shape}")
-        print(dataframe.head())
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
     def absolute_scale_data(self, shifted_df_as_np):
