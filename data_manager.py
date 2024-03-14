@@ -43,7 +43,7 @@ class LoaderOHLCV():
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             
             
-            shifted_df_as_np = shifted_df_as_np.reshape((-1, self.look_back * 1 + 1 , 1))
+            shifted_df_as_np = shifted_df_as_np.values.reshape((-1, self.look_back * 1 + 1 , 1))
             input_data_tensor = torch.tensor(shifted_df_as_np).float()
             
             return input_data_tensor
