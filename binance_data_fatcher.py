@@ -44,13 +44,12 @@ def get_historical_data(symbol):
     # saves the csv file
     data.to_csv(filename)
     print('finished!')
-# on look back set to 100 you need 102 and data points to get 1 row of full data
-# close_diff, close_diff t-1 .... close_diff t -100
-# Fix later
-def get_last_102_datapoints(symbol):
+def get_live_minute_datapoints(symbol, lookback):
     print('downloading data from Binance...')
     current_time = datetime.now(utc_timezone)
-    start_date = current_time - timedelta(minutes=102)
+    # on look back set to 100 you need 102 and data points to get 1 row of full data
+    # close_diff, close_diff t-1 .... close_diff t -100
+    start_date = current_time - timedelta(minutes=lookback+2) 
     klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), current_time.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
