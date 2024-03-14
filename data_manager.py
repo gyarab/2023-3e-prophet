@@ -30,19 +30,16 @@ class LoaderOHLCV():
     
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
-            
-            shifted_df_as_np = binance_data_fatcher.get_last_100_datapoints('BTCUSDT')
+            #print(binance_data_fatcher.get_last_100_datapoints('BTCUSDT').columns)
+            recent_data = binance_data_fatcher.get_last_102_datapoints('BTCUSDT')
             #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
             #FIX!!
+            shifted_df_as_np = self.prepare_dataframe_for_lstm3(recent_data, train= False)
             shifted_df_as_np = self.scale_data(shifted_df_as_np)
-            
-            # prepare data for lstm 3 pocita s target value
-            shifted_df_as_np = self.prepare_dataframe_for_lstm3(shifted_df_as_np)
-            input_data_tensor = torch.tensor(shifted_df_as_np)
+            shifted_df_as_np = shifted_df_as_np.reshape((-1, self.look_back * 1 + 1 , 1))
+            input_data_tensor = torch.tensor(shifted_df_as_np).float()
             
             return input_data_tensor
-            #FIX!!
-            #chybi aby to byl tensor
         # this is case where there is given file to load from
         # it returns tensors with y and X values and also splits them into to test and train
         else:
@@ -79,7 +76,7 @@ class LoaderOHLCV():
 
         y_train = y_train.reshape((-1, 1))
         y_test = y_test.reshape((-1, 1))
-        # moves to tensor
+        # moves to tensor 
         X_train = torch.tensor(X_train).float()
         y_train = torch.tensor(y_train).float()
         X_test = torch.tensor(X_test).float()
@@ -214,7 +211,7 @@ class LoaderOHLCV():
         print(f"shape of prepared data {dataframe.shape}")
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
-    def prepare_dataframe_for_lstm3(self, dataframe):
+    def prepare_dataframe_for_lstm3(self, dataframe, train = True):
         try:
             dataframe = dc(dataframe[['Timestamp', 'Close']])
             dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
@@ -223,14 +220,18 @@ class LoaderOHLCV():
         except:
             dataframe = dc(dataframe[['Date', 'Close']])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-            
+        print(dataframe.values)
         print(f"shape of loadet data {dataframe.shape}")
-        
-        # creates the target difference columns
-        target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
-        dataframe['Target_vlaue_difference'] = target_difference / abs(target_difference)
+        if train == True:
+        # creates the target difference columns - in just 
+            target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
+            dataframe['Target_vlaue_difference'] = target_difference / abs(target_difference)
+        dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')
+        print(dataframe.head())
+        print(dataframe.values)
         dataframe['Close_difference'] = (dataframe['Close'] - dataframe['Close'].shift(1) ) / dataframe['Close'].shift(1) * 100
-        
+        print(dataframe.head())
+        print(dataframe.values)
         # adds sequneces of Close differences in percentage - 1 sequnece will have legnth of n_steps
         lag_columns = []
         for i in range(1, self.look_back + 1):
@@ -244,6 +245,7 @@ class LoaderOHLCV():
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
         print(f"shape of prepared data {dataframe.shape}")
+        print(dataframe.head())
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
     def absolute_scale_data(self, shifted_df_as_np):

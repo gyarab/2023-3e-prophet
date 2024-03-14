@@ -243,9 +243,9 @@ if __name__ == '__main__':
     # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
     # we have: min-batch gradient descent
     batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-    look_back = 60 # how many candles will it look into the past
+    look_back = 100 # how many candles will it look into the past
     precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'MinuteBars.csv' # this file has to be in /datasets
+    input_file_name = None # this file has to be in /datasets
     # which columns will be included in training data - X
     features_columns = ['Close',
         #"open", "high", "low", "close", "volume",
@@ -264,12 +264,15 @@ if __name__ == '__main__':
     num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
     
     if input_file_name == None:
+        model = load_data_model(model, model_path)
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
-        # Live data preparation
-        price_data = Create_price_arr()
-        shifted_df_as_np = prepare_live_data(price_data, look_back, num_of_data_columns)
-        shifted_df_as_np, scaler = DataManager.scale_data(shifted_df_as_np)  # Assuming scale_data function is correctly defined
-        X_tensor, _ = shifted_df_as_np  # Ensure this line correctly unpacks X_tensor
+        recent_data_tensor = DataManager.get_data_as_tensor()
+        recent_data_tensor = recent_data_tensor.to(device)
+        with torch.no_grad():
+            model.eval()
+            prediction = model(recent_data_tensor)
+            print(prediction)
+        
     else:
         # Load the dataset
         DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
@@ -285,7 +288,7 @@ if __name__ == '__main__':
     
     
         # Save the trained model
-        save_model(model, model_path) 
+        #save_model(model, model_path) 
 
     
 

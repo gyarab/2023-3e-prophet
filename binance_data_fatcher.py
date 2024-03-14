@@ -30,7 +30,7 @@ def get_historical_data(symbol):
     # converts time stamp to date
     data['Date'] = pd.to_datetime(data['timestamp'], unit='ms')
     data = data.drop('timestamp', axis=1)
-    data.set_index('Date', inplace=True)
+    #data.set_index('Date', inplace=True)
     # removes no important columns
     drop_column_names = ['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
     for column_name in drop_column_names:
@@ -44,11 +44,13 @@ def get_historical_data(symbol):
     # saves the csv file
     data.to_csv(filename)
     print('finished!')
-    
-def get_last_100_datapoints(symbol):
+# on look back set to 100 you need 102 and data points to get 1 row of full data
+# close_diff, close_diff t-1 .... close_diff t -100
+# Fix later
+def get_last_102_datapoints(symbol):
     print('downloading data from Binance...')
     current_time = datetime.now(utc_timezone)
-    start_date = current_time - timedelta(minutes=100)
+    start_date = current_time - timedelta(minutes=102)
     klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), current_time.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
@@ -56,7 +58,7 @@ def get_last_100_datapoints(symbol):
     # converts time stamp to date
     data['Date'] = pd.to_datetime(data['timestamp'], unit='ms')
     data = data.drop('timestamp', axis=1)
-    data.set_index('Date', inplace=True)
+    #data.set_index('Date', inplace=True)
     # removes no important columns
     drop_column_names = ['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
     for column_name in drop_column_names:
@@ -73,5 +75,5 @@ def get_last_100_datapoints(symbol):
 
 
 if __name__ == '__main__':
-    print(get_last_100_datapoints('BTCUSDT'))
+    print(type(get_last_102_datapoints('BTCUSDT')))
     #get_historical_data('BTCUSDT')
