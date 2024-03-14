@@ -32,19 +32,7 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
         return out
-  
-# class for creating dataset
-class TimeSeriesDataset(Dataset):# this class inherits from Dataset
-    def __init__(self, X, y):
-        self.X = X
-        self.y = y
-
-    def __len__(self):
-        return len(self.X)
-
-    def __getitem__(self, i):
-        return self.X[i], self.y[i]
-
+    
 def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     print(device)
