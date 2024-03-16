@@ -18,10 +18,10 @@ def get_absolute_path(input_file):
     return input_file_path
 # saves a csv file with historical data
 # Date is hard coded !!!
-def get_historical_data(symbol):
+def get_historical_data(symbol, start_date_string, ouput_file = 'not_given'):
     print('downloading historical data from Binance...')
-    filename = get_absolute_path('MinuteBars.csv')
-    start_date = datetime.strptime('1 Mar 2024', '%d %b %Y')
+    filename = get_absolute_path(ouput_file)
+    start_date = datetime.strptime(start_date_string, '%d %b %Y') # '1 Mar 2024' this is format of start_date_string
     today = datetime.now(utc_timezone)
     klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), today.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
@@ -42,8 +42,12 @@ def get_historical_data(symbol):
         data[column_name.capitalize()] = data[column_name]
         data = data.drop(column_name, axis= 1)
     # saves the csv file
-    data.to_csv(filename)
     print('finished!')
+    if ouput_file == 'not_given':
+        return data
+    else:
+        data.to_csv(filename)
+        
 def get_live_minute_datapoints(symbol, lookback):
     print('downloading data from Binance...')
     current_time = datetime.now(utc_timezone)
