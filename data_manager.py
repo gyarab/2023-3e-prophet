@@ -18,7 +18,7 @@ class TimeSeriesDataset(Dataset):# this class inherits from Dataset
 
     def __getitem__(self, i):
         return self.X[i], self.y[i]
-    
+# class for managing OHLCV data    
 class LoaderOHLCV():
     def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
         self.look_back = look_back
@@ -30,8 +30,7 @@ class LoaderOHLCV():
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
             recent_data = binance_data_fatcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
-            #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
-            #FIX!!
+            
             if self.mode == 0:
                 shifted_df_as_np = self.prepare_dataframe_for_lstm0(recent_data)
             if self.mode == 1:
