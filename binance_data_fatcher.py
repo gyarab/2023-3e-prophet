@@ -18,19 +18,24 @@ def get_absolute_path(input_file):
     return input_file_path
 # saves a csv file with historical data
 # Date is hard coded !!!
-def get_historical_data(symbol, start_date_string, ouput_file = 'not_given'):
+def get_historical_data(symbol, start_date_string, end_date_string = 'not_given', ouput_file = 'not_given'):
     print('downloading historical data from Binance...')
     filename = get_absolute_path(ouput_file)
     start_date = datetime.strptime(start_date_string, '%d %b %Y') # '1 Mar 2024' this is format of start_date_string
-    today = datetime.now(utc_timezone)
-    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), today.strftime("%d %b %Y %H:%M:%S"), 1000)
+    if end_date_string == 'not_given':
+        today = datetime.now(utc_timezone)
+        end_date = today
+    else:
+         end_date = datetime.strptime(end_date_string, '%d %b %Y')
+    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), end_date.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
                                            , 'tb_base_av', 'tb_quote_av', 'ignore' ])
     # converts time stamp to date
     data['Date'] = pd.to_datetime(data['timestamp'], unit='ms')
     data = data.drop('timestamp', axis=1)
-    data.set_index('Date', inplace=True)
+    if ouput_file != 'not_given':
+        data.set_index('Date', inplace=True)
     # removes no important columns
     drop_column_names = ['close_time', 'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
     for column_name in drop_column_names:
@@ -79,4 +84,4 @@ def get_live_minute_datapoints(symbol, lookback):
 
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
-    get_historical_data('BTCUSDT')
+    get_historical_data('BTCUSDT','1 Jan 2024','1 Mar 2024','MinuteBars.csv')

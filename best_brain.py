@@ -187,7 +187,7 @@ device = get_device()
 # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-look_back = 10 # how many candles will it look into the past
+look_back = 99 # how many candles will it look into the past
 precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
 input_file_name = None  # this file has to be in /datasets/
 # which columns will be included in training data - X
