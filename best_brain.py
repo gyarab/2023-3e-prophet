@@ -188,7 +188,7 @@ device = get_device()
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
 look_back = 99 # how many candles will it look into the past
-precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
+precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = None  # this file has to be in /datasets/
 # which columns will be included in training data - X
 features_columns = ['Close',
@@ -199,14 +199,14 @@ features_columns = ['Close',
 num_of_data_columns = len(features_columns) 
 load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
-lstm_neuron_count = 64
+lstm_neuron_count = 512
 model = LSTM(1, lstm_neuron_count, lstm_layers)
 model_path = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
 if __name__ == '__main__':
     model.to(device)
     # Train parameters
-    learning_rate = 0.001
-    num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
+    learning_rate = 0.002
+    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
     input_file_name = 'MinuteBars.csv'
     
     if input_file_name == None:

@@ -76,6 +76,7 @@ def back_test_loop():
     trades_taken_wrongly = 0
     print (f'Starting with usd balance: {usd_balance}')
     # Create tqdm instance
+    current_btc_price = 0
     for index, one_sequence in enumerate(prepared_data_as_np):
         current_btc_price = get_btc_price_for_current_sequence(index)
         usd_balance_test,_ = sellAllBtc(usd_balance,btc_balance,current_btc_price)
@@ -89,7 +90,7 @@ def back_test_loop():
         prediction = make_one_prediction(one_sequence_tensor)
         
         usd_balance, btc_balance = make_one_trade(prediction,usd_balance,btc_balance,current_btc_price)
-        
+    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
     print(f'usd balance ended with: {usd_balance}')
     print(f'win rate: {calculate_win_rate(trades_taken_wrongly, len(prepared_data_as_np))}%')        
 if __name__ == '__main__':
