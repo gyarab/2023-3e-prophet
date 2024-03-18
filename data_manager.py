@@ -32,18 +32,18 @@ class LoaderOHLCV():
             recent_data = binance_data_fatcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
             
             if self.mode == 0:
-                shifted_df_as_np = self.prepare_dataframe_for_lstm0(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm0(recent_data)
             if self.mode == 1:
-                shifted_df_as_np = self.prepare_dataframe_for_lstm1(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm1(recent_data)
             if self.mode == 2:        
-                shifted_df_as_np = self.prepare_dataframe_for_lstm2(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm2(recent_data)
             if self.mode == 3:
-                shifted_df_as_np = self.prepare_dataframe_for_lstm3(recent_data, train= False)
+                shifted_df = self.prepare_dataframe_for_lstm3(recent_data, train= False)
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             
             
-            shifted_df_as_np = shifted_df_as_np.values.reshape((-1, self.look_back * 1 + 1 , 1))
-            input_data_tensor = torch.tensor(shifted_df_as_np).float()
+            shifted_df = shifted_df.values.reshape((-1, self.look_back * 1 + 1 , 1))
+            input_data_tensor = torch.tensor(shifted_df).float()
             
             return input_data_tensor
         # this is case where there is given file to load from
