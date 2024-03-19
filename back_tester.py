@@ -2,7 +2,7 @@ import best_brain as bb
 import binance_data_fatcher
 from data_manager import LoaderOHLCV
 import torch
-from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 device = bb.device
 model = bb.model
@@ -15,6 +15,10 @@ raw_data = binance_data_fatcher.get_historical_data('BTCUSDT','2 Mar 2024')
 DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode)
 prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
+def create_back_test_graph(algo_usd_balance_history, bh_usd_balance_history): #bh = buy and hold
+    plt.plot(algo_usd_balance_history,color = 'red')
+    plt.plot(bh_usd_balance_history, color = 'blue')
+    plt.show()
 def make_one_prediction(one_sequence_tensor):
     one_sequence_tensor = one_sequence_tensor.to(device)
     # Model makes prediction
@@ -53,16 +57,22 @@ def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price):
     # sells all btc, so the algo is now trading just with the set amout of portfolio
     usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
     # how much of portfolio will be traded in one trade
-    percentage_per_transaction = 0.2
+    percentage_per_transaction = 20
     # converts the prediction to percentage - how likely will btc go up
     prediction_in_percentage = prediction * 100
     # Opens long position
-    if prediction_in_percentage > 50:
+    if prediction_in_percentage > 51:
         usd_balance, btc_balance = long_position(usd_balance, btc_balance,percentage_per_transaction,current_btc_price)
     # Opens short position - can go to negative values
-    else:
+    elif prediction_in_percentage < 49:
         usd_balance, btc_balance = short_position(usd_balance, btc_balance,percentage_per_transaction,current_btc_price)
         
+    return usd_balance, btc_balance
+# Buys btc wih all btc - suitable for buy and hold simulation
+def initialize_bh_balance(current_btc_price, usd_balance = 10000):
+    btc_bought = usd_balance /current_btc_price # calculates amount of btc to buy
+    btc_balance = btc_bought
+    usd_balance = 0 
     return usd_balance, btc_balance
 def get_btc_price_for_current_sequence(index_of_data_sequence):
     index_of_raw_data = index_of_data_sequence + bb.look_back
@@ -77,9 +87,16 @@ def back_test_loop():
     print (f'Starting with usd balance: {usd_balance}')
     # Create tqdm instance
     current_btc_price = 0
+    bh_usd_balance, bh_btc_balance = initialize_bh_balance(get_btc_price_for_current_sequence(0)) # gets starting price of btc
+    usd_balance_history = []
+    bh_usd_balance_history = []
     for index, one_sequence in enumerate(prepared_data_as_np):
         current_btc_price = get_btc_price_for_current_sequence(index)
         usd_balance_test,_ = sellAllBtc(usd_balance,btc_balance,current_btc_price)
+        bh_usd_balance_test, _ = sellAllBtc(bh_usd_balance, bh_btc_balance, current_btc_price)
+        
+        usd_balance_history.append(usd_balance_test) # Remembers usd balance of algo
+        bh_usd_balance_history.append(bh_usd_balance_test) # Remembers usd balance of buy and hold
         if( last_usd_balance > usd_balance_test):
             trades_taken_wrongly += 1
         last_usd_balance = usd_balance_test
@@ -90,8 +107,10 @@ def back_test_loop():
         prediction = make_one_prediction(one_sequence_tensor)
         
         usd_balance, btc_balance = make_one_trade(prediction,usd_balance,btc_balance,current_btc_price)
+        
     usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
     print(f'usd balance ended with: {usd_balance}')
-    print(f'win rate: {calculate_win_rate(trades_taken_wrongly, len(prepared_data_as_np))}%')        
+    print(f'win rate: {calculate_win_rate(trades_taken_wrongly, len(prepared_data_as_np))} %')
+    create_back_test_graph(usd_balance_history, bh_usd_balance_history)        
 if __name__ == '__main__':
     back_test_loop()
