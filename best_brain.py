@@ -103,7 +103,7 @@ def train_model(model, train_loader, test_loader, num_epochs, model_path):
 
 # Function to save the trained model
 def save_model(model, model_path):
-    model_path = model_path + '.pth'
+    model_path = model_path
     print('saving model')
     torch.save(model.state_dict(), model_path)
     print(f"Model saved as {model_path}")
@@ -112,7 +112,7 @@ def save_model(model, model_path):
 def load_data_model(model, filename):
     print('loading model')
     loaded_model = model #changed
-    loaded_model.load_state_dict(torch.load(filename + '.pth'))
+    loaded_model.load_state_dict(torch.load(filename))
     print(f"Model loaded from {filename}")
     return loaded_model   
 
@@ -170,11 +170,14 @@ def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     plt.legend()
     plt.show()
     
-def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_path = 'not_given'):
-    if model_path == 'not_given':
+def create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
+    if model_name == 'not_given':
+        # Creates model's name
         inicials_features_columns = ''.join([s[0] for s in features_columns])
         model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
-        model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
+        model_name = model_name + '.pth'
+    model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
+    
     return model_path
 #
 #
@@ -201,7 +204,8 @@ load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 256
 model = LSTM(1, lstm_neuron_count, lstm_layers)
-model_path = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
+model_name = 'brain01.pth'
+model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
 if __name__ == '__main__':
     model.to(device)
     # Train parameters
