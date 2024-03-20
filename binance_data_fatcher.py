@@ -84,4 +84,4 @@ def get_live_minute_datapoints(symbol, lookback):
 
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
-    get_historical_data('BTCUSDT','1 Jan 2024','1 Mar 2024','MinuteBars.csv')
+    get_historical_data('BTCUSDT','2 Mar 2024', ouput_file='Back_test.csv')

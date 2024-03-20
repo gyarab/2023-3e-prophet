@@ -49,6 +49,16 @@ class LoaderOHLCV():
         # this is case where there is given file to load from
         # it returns tensors with y and X values and also splits them into to test and train
         else:
+            raw_data = self.load_data_from_csv(True)
+            if self.mode == 0:
+                shifted_df = self.prepare_dataframe_for_lstm0(raw_data)
+            if self.mode == 1:
+                shifted_df = self.prepare_dataframe_for_lstm1(raw_data)
+            if self.mode == 2:        
+                shifted_df = self.prepare_dataframe_for_lstm2(raw_data)
+            if self.mode == 3:
+                shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
+            shifted_df_as_np = shifted_df.to_numpy()
             shifted_df_as_np = self.load_data_from_csv()
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
@@ -101,24 +111,10 @@ class LoaderOHLCV():
         return train_loader, test_loader    
         
     
-    def load_data_from_csv(self):
+    def load_data_from_csv(self,):
         print("loading raw data")
-        data = pd.read_csv(self.get_absolute_path())
-        #different modes of data input
-        if self.mode == 0:
-            shifted_data_frame = self.prepare_dataframe_for_lstm0(data) #'Date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
-        if self.mode == 1:
-            shifted_data_frame = self.prepare_dataframe_for_lstm1(data) # sequences of returns (differences of values) in featured columns
-        if self.mode == 2:
-            shifted_data_frame = self.prepare_dataframe_for_lstm2(data) # sequences of returns (differences of values) in featured columns - in %
-        # sequences of returns (differences of values) in featured columns - in %
-        # target values price cahnges(returns) only up or down
-        if self.mode == 3:
-            shifted_data_frame = self.prepare_dataframe_for_lstm3(data) 
-   
-        shifted_df_as_np = shifted_data_frame.to_numpy()
-    
-        return shifted_df_as_np
+        raw_data = pd.read_csv(self.get_absolute_path())
+        return raw_data
     # creates sequences of selected data (columns)
     def prepare_dataframe_for_lstm0(self, dataframe):
         # created deepcopy of dataframe - to not edit original data
