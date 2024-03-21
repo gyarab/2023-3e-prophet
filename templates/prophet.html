@@ -49,8 +49,27 @@
             </p>
         </div>
         <div class="container-fluid d-flex align-items-center justify-content-center">
-            <p class="frthNumber">
-                {{ btc_value }} BTC
+            <p>
+                
+                <h1 class="frthNumber"> Current Bitcoin Value: <span id="btc_value"></span></h1>
+
+                <script>
+                    // JavaScript code to update the Bitcoin value every 10 seconds
+                    function updateBTCValue() {
+                        // Fetch the value from the server
+                        fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
+                            .then(response => response.text())
+                            .then(data => {
+                                // Update the HTML content with the fetched value
+                                document.getElementById('btc_value').textContent = data;
+                            });
+                    }
+            
+                    // Call updateBTCValue initially and then every 10 seconds
+                    updateBTCValue();
+                    setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
+                </script>
+               
             </p>
         </div>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

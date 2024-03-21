@@ -7,15 +7,13 @@ app = Flask(__name__)
 btc_value = 0
 
 @app.route('/')
-def index():
-    
-    global btc_value
-    btc_value = get_current_btc_value()
-    return render_template('prophet.html', btc_value=btc_value)
-
-@app.route('/increment_btc_value')
-def increment_btc_value():
+def prophet():
     return render_template('prophet.html')
+
+@app.route('/get_btc_value')
+def get_btc_value():
+    btc_value = get_current_btc_value()
+    return str(btc_value)
     
 
 #if this script is being run directly, run it in debbug mode( detailed errors + some other features)
