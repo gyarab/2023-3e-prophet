@@ -49,7 +49,7 @@ class LoaderOHLCV():
         # this is case where there is given file to load from
         # it returns tensors with y and X values and also splits them into to test and train
         else:
-            raw_data = self.load_data_from_csv(True)
+            raw_data = self.load_data_from_csv()
             if self.mode == 0:
                 shifted_df = self.prepare_dataframe_for_lstm0(raw_data)
             if self.mode == 1:
@@ -59,7 +59,6 @@ class LoaderOHLCV():
             if self.mode == 3:
                 shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
             shifted_df_as_np = shifted_df.to_numpy()
-            shifted_df_as_np = self.load_data_from_csv()
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)

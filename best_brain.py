@@ -190,7 +190,7 @@ device = get_device()
 # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-look_back = 499 # how many candles will it look into the past
+look_back = 47 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = None  # this file has to be in /datasets/
 # which columns will be included in training data - X
@@ -204,7 +204,7 @@ load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 256
 model = LSTM(1, lstm_neuron_count, lstm_layers)
-model_name = 'brain01.pth'
+model_name = 'not_given'
 model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
 if __name__ == '__main__':
     model.to(device)

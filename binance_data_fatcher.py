@@ -27,7 +27,7 @@ def get_historical_data(symbol, start_date_string, end_date_string = 'not_given'
         end_date = today
     else:
          end_date = datetime.strptime(end_date_string, '%d %b %Y')
-    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), end_date.strftime("%d %b %Y %H:%M:%S"), 1000)
+    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1HOUR, start_date.strftime("%d %b %Y %H:%M:%S"), end_date.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
                                            , 'tb_base_av', 'tb_quote_av', 'ignore' ])
@@ -84,4 +84,4 @@ def get_live_minute_datapoints(symbol, lookback):
 
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
-    get_historical_data('BTCUSDT','2 Mar 2024', ouput_file='Back_test.csv')
+    get_historical_data('BTCUSDT', '2 Dec 2023', ouput_file='Back_test_hours.csv')
