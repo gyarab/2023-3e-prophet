@@ -82,7 +82,7 @@ def get_live_minute_datapoints(symbol, lookback):
     return data
 
 
-
+# trochy z toho lezou divny veci
 def get_current_btc_value(symbol='BTCUSDT'):
     # Fetch live minute data for Bitcoin
     btc_data = get_live_minute_datapoints(symbol, lookback=1)
