@@ -1,5 +1,5 @@
 import best_brain as bb
-import binance_data_fatcher
+import binance_data_fetcher
 from data_manager import LoaderOHLCV
 import torch
 import matplotlib.pyplot as plt
