@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import binance_data_fatcher
+import binance_data_fetcher
 # class for creating dataset
 class TimeSeriesDataset(Dataset):# this class inherits from Dataset
     def __init__(self, X, y):
@@ -29,7 +29,7 @@ class LoaderOHLCV():
     
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
-            recent_data = binance_data_fatcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
+            recent_data = binance_data_fetcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
             
             if self.mode == 0:
                 shifted_df = self.prepare_dataframe_for_lstm0(recent_data)
