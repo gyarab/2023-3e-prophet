@@ -82,6 +82,24 @@ def get_live_minute_datapoints(symbol, lookback):
     return data
 
 
+
+def get_current_btc_value(symbol='BTCUSDT'):
+    # Fetch live minute data for Bitcoin
+    btc_data = get_live_minute_datapoints(symbol, lookback=1)
+    
+    # Extract the most recent closing price
+    current_btc_value = btc_data['Close'].iloc[-1]
+    
+    
+    current_btc_value = round(float(current_btc_value), 3)
+    return current_btc_value
+
+
+
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
-    get_historical_data('BTCUSDT','2 Mar 2024', ouput_file='Back_test.csv')
+    #get_historical_data('BTCUSDT','2 Mar 2024', ouput_file='Back_test.csv')
+
+
+    current_btc_value = get_current_btc_value()
+    print("Current BTC value:", current_btc_value)
