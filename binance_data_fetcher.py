@@ -90,6 +90,8 @@ def get_current_btc_value(symbol='BTCUSDT'):
     # Extract the most recent closing price
     current_btc_value = btc_data['Close'].iloc[-1]
     
+    
+    current_btc_value = round(float(current_btc_value), 3)
     return current_btc_value
 
 
