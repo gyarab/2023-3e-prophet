@@ -11,7 +11,7 @@ model_path = bb.model_path
 model = bb.load_data_model(model,model_path)
 model.to(device)
 # prepares data
-DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode,'Back_test.csv')
+DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode,'Back_test_hours.csv')
 raw_data = DataManager.load_data_from_csv()
 prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
@@ -33,7 +33,6 @@ def calculate_win_rate(trades_taken_wrongly, amount_of_trades):
     win_rate = 100 - loose_rate
     return win_rate
 def balance_after_comission(usd_balance, btc_balance, comission_rate = 0.1, Buy = True):
-    comission = usd_balance * (comission_rate / 100) 
     if Buy:
         btc_comission = btc_balance * (comission_rate / 100) 
         btc_balance = btc_balance - btc_comission
@@ -45,11 +44,11 @@ def sellAllBtc(usd_balance, btc_balance, current_btc_price):
     usd_will_get = btc_balance * current_btc_price
     usd_balance += usd_will_get
     btc_balance = 0
-    usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=False)
+    #usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=False)
     return usd_balance, btc_balance
 # Opens long position
-def long_position(usd_balance, btc_balance,percentage_per_transaction,current_btc_price):
-    usd_to_buy_with = usd_balance * percentage_per_transaction
+def long_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price):
+    usd_to_buy_with = usd_balance * amount_of_balanace_per_trade
     btc_bought = usd_to_buy_with / current_btc_price
     
     usd_balance -= usd_to_buy_with 
@@ -57,8 +56,8 @@ def long_position(usd_balance, btc_balance,percentage_per_transaction,current_bt
     usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=True)
     return usd_balance, btc_balance
 # Opens short position
-def short_position(usd_balance, btc_balance,percentage_per_transaction,current_btc_price):
-    usd_to_sell_with = usd_balance * percentage_per_transaction
+def short_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price):
+    usd_to_sell_with = usd_balance * amount_of_balanace_per_trade
     btc_sold = usd_to_sell_with / current_btc_price
     
     usd_balance += usd_to_sell_with 
@@ -66,18 +65,17 @@ def short_position(usd_balance, btc_balance,percentage_per_transaction,current_b
     usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=False)
     return usd_balance, btc_balance
 def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price):
-    # sells all btc, so the algo is now trading just with the set amout of portfolio
-    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
     # how much of portfolio will be traded in one trade
-    percentage_per_transaction = 1
+    amount_of_balanace_per_trade = 1
     # converts the prediction to percentage - how likely will btc go up
     prediction_in_percentage = prediction * 100
     # Opens long position
-    if prediction_in_percentage > 51.5:
-        usd_balance, btc_balance = long_position(usd_balance, btc_balance,percentage_per_transaction,current_btc_price)
+    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
+    if prediction_in_percentage > 60:
+        usd_balance, btc_balance = long_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price)
     # Opens short position - sells what I dont havem gets negative btc balance
-    elif prediction_in_percentage < 48.5:
-        usd_balance, btc_balance = short_position(usd_balance, btc_balance,percentage_per_transaction,current_btc_price)
+    elif prediction_in_percentage < 40:
+        usd_balance, btc_balance = short_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price)
         
     return usd_balance, btc_balance
 # Buys btc wih all btc - suitable for buy and hold simulation
