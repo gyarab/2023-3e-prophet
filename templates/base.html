@@ -1,35 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styleProphet.css') }}">
-    
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <!-- Bootstrap -->
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styleProphet.css') }}"> Adam css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Jiriik css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Icons -->
 
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Prophet</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
-              <a class="nav-link" href="#evaluation">Evaluace</a>
-              <a class="nav-link" href="#model">Model</a>
-              <a class="nav-link" href="#settings">Nastavení</a>
-              <!-- <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a> -->
-            </div>
-          </div>
-        </div>
-      </nav>
-    
 
+<body>
+  <nav class="navbar navbar-expand-sm navbar-light fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#home">
+        <img src="{{ url_for('static', filename='img/icon_placeholder.png') }}" alt="Logo" height=40
+          class="d-inline-block align-text-top">
+        <span class="flex-fill" style="font-size: 150% ;"> Prophet</span>
+      </a>
+
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link active" aria-current="page" href="#home">Ceny</a>
+          <a class="nav-link" href="#evaluation">Evaluace</a>
+          <a class="nav-link" href="#model">Model</a>
+          <a class="nav-link" href="#settings">Nastavení</a>
+          <!-- <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a> -->
+          <!-- Icon <i class="bi bi-fire"></i>  -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  
+
+  
+    <div class="footer fixed-bottom ">Last refresh <span id="last_refresh"></span> ago</div>
+
+  
+
+
+
+  <div class="container">
+    <h1 class="header" id="home">Ceny</h1>
+    
+    <div class="row mt-5">
+      <div class="col-sm-6 order-1 order-sm-1 d-flex align-items-center justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader">Wallet</h2>
+          <p class="numbers">
+            541654 USD <br>
+            546 BTC
+          </p>
+        </div>
+      </div>
+      <div class="col-sm-6 order-2 order-sm-2 d-flex align-items-center justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader">Bitcoin</h2>
+          <p class="numbers">
+            Current BTC value = <span id="btc_value"></span>
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Epty space -->
+  <div style="height: 600px;; width:100%; clear:both;"></div>
+
+
+
+  <h1 class="header mt-5" id="evaluation">Evaluace</h1>
+  <p>
+    at eveniet recusandae. Eveniet saepe tenetur eligendi, porro cum nihil? Distinctio, quasi similique fugiat nihil
+    veritatis eos? Lorem ipsum dolor sit amet consect
+    etur adipisicing elit. Corrupti voluptates quaerat alias tenetur sequi necessitatibus in pariatur asperiores,
+    nesciunt tempore qui quo! Est commodi asperiores quid
+    em odit eius cum velit. Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam sint vitae quia ut tempore
+    id natus quis voluptate totam aperiam a, laudanti
+    um, neque minus laboriosam architecto saepe, expedita cupiditate ullam! Lorem ipsum dolor, sit amet consectetur
+    adipisicing elit. Temporibus necessitati
+    bus itaque, nemo fuga dignissimos ipsa adipisci molestias labore sunt corporis consectetur maiores sequi facere
+    blanditiis tempore excepturi, voluptates soluta quos? Lor
+    em ipsum dolor sit amet consectetur adipisicing elit. Totam nostrum, excepturi, doloremque non soluta maxime sint
+    esse dolore optio ea
+    rum iusto porro nemo quae quidem suscipit repudiandae maiores unde. Fugit. Lorem ipsum dolor sit amet consectetur
+    adipisicing e
+  </p>
+
+  <!-- Epty space -->
+  <div style="height: 600px;; width:100%; clear:both;"></div>
+
+
+  <h1 class="header mt-5" id="model">Model</h1>
+  <p>
+    lit. Voluptatum exercitationem corrupti tempora aspernatur voluptatibus animi eligendi natus ipsa repudiandae, earum
+    deserunt est ipsum, ad ducimus nobis aliquid totam
+    consequuntur maxime. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id quos quidem quo vitae pariatur
+    quasi soluta mollitia minus ex, perspicia
+    tis vel reprehenderit praesentium, inventore non debitis doloremque qui facere consequatur? Lorem, ipsum dolor sit
+    amet consectetur adipisicing elit. Neque provi
+    dent fuga placeat corporis cupiditate animi, quas, assumenda tempora aut cum voluptatem alias dolores labore
+    incidunt eaque inventore at odit
+    et.
+  </p>
+  <h1 class="header mt-5" id="settings">Nastavení</h1>
 </body>
+
+<script>
+  // Variable to hold the interval ID
+  var refreshIntervalID;
+
+  // Function to update Bitcoin value and last refresh time
+  function updateBTCValue() {
+      // Fetch the value from the server
+      fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
+          .then(response => response.text())
+          .then(data => {
+              // Update the HTML content with the fetched value
+              document.getElementById('btc_value').textContent = data;
+          });
+
+      // Update last refresh time
+      var lastRefresh = new Date().getTime();
+      document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
+      
+      // Clear the previous interval if it exists
+      clearInterval(refreshIntervalID);
+
+      // Set a new interval to update the last refresh time
+      refreshIntervalID = setInterval(function() {
+          var now = new Date().getTime();
+          var secondsPassed = Math.floor((now - lastRefresh) / 1000);
+          document.getElementById('last_refresh').textContent = secondsPassed;
+      }, 1000); // Update every second
+  }
+
+  // Call updateBTCValue initially and then every 10 seconds
+  updateBTCValue();
+  setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
+</script>
+
 </html>

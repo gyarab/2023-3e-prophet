@@ -1,0 +1,36 @@
+.navbar {
+    background-color: #04293a;  
+}
+
+
+body
+{
+    background-color: #041c32;
+}
+
+
+
+.header
+{
+    text-align: center;
+    
+    /* "Fixed top" fix*/
+    padding-top: 65px; 
+}
+
+.miniHeader
+{
+    text-align: center;
+    
+    color: #ecb365;
+    font-size: 400%;
+}
+
+
+.numbers
+{
+    text-align: center;
+    
+    color: #ecb365;
+    font-size: 200%;
+}
