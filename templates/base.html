@@ -4,37 +4,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Crypto trading bot</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
   <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styleProphet.css') }}"> Adam css -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> <!-- Jiriik css -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Jiriik css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-sm navbar-light fixed-top">
+  <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center" href="#home">
         <img src="{{ url_for('static', filename='img/icon_placeholder.png') }}" alt="Logo" height=40
           class="d-inline-block align-text-top">
-        <span class="flex-fill" style="font-size: 150% ;"> Prophet</span>
+        <span class="flex-fill menuText" style="font-size: 150% ;"> Prophet</span>
       </a>
-
-
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="#home">Ceny</a>
-          <a class="nav-link" href="#evaluation">Evaluace</a>
-          <a class="nav-link" href="#model">Model</a>
-          <a class="nav-link" href="#settings">Nastavení</a>
+          <a class="nav-link menuText" aria-current="page" href="#home">Ceny</a>
+          <a class="nav-link menuText" href="#evaluation">Evaluace</a>
+          <a class="nav-link menuText" href="#model">Model</a>
+          <a class="nav-link menuText" href="#settings">Nastavení</a>
           <!-- <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a> -->
           <!-- Icon <i class="bi bi-fire"></i>  -->
         </div>
@@ -42,18 +43,19 @@
     </div>
   </nav>
 
-  
 
-  
-    <div class="footer fixed-bottom ">Last refresh <span id="last_refresh"></span> ago</div>
 
-  
+
+  <div class="footer menuText fixed-bottom container-fluid d-flex;">Last refresh <span id="last_refresh"></span> ago
+  </div>
+
+
 
 
 
   <div class="container">
     <h1 class="header" id="home">Ceny</h1>
-    
+
     <div class="row mt-5">
       <div class="col-sm-6 order-1 order-sm-1 d-flex align-items-center justify-content-center">
         <div class="d-flex flex-column align-items-center">
@@ -124,27 +126,27 @@
 
   // Function to update Bitcoin value and last refresh time
   function updateBTCValue() {
-      // Fetch the value from the server
-      fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
-          .then(response => response.text())
-          .then(data => {
-              // Update the HTML content with the fetched value
-              document.getElementById('btc_value').textContent = data;
-          });
+    // Fetch the value from the server
+    fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
+      .then(response => response.text())
+      .then(data => {
+        // Update the HTML content with the fetched value
+        document.getElementById('btc_value').textContent = data;
+      });
 
-      // Update last refresh time
-      var lastRefresh = new Date().getTime();
-      document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
-      
-      // Clear the previous interval if it exists
-      clearInterval(refreshIntervalID);
+    // Update last refresh time
+    var lastRefresh = new Date().getTime();
+    document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
 
-      // Set a new interval to update the last refresh time
-      refreshIntervalID = setInterval(function() {
-          var now = new Date().getTime();
-          var secondsPassed = Math.floor((now - lastRefresh) / 1000);
-          document.getElementById('last_refresh').textContent = secondsPassed;
-      }, 1000); // Update every second
+    // Clear the previous interval if it exists
+    clearInterval(refreshIntervalID);
+
+    // Set a new interval to update the last refresh time
+    refreshIntervalID = setInterval(function () {
+      var now = new Date().getTime();
+      var secondsPassed = Math.floor((now - lastRefresh) / 1000);
+      document.getElementById('last_refresh').textContent = secondsPassed;
+    }, 1000); // Update every second
   }
 
   // Call updateBTCValue initially and then every 10 seconds

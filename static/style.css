@@ -8,12 +8,18 @@ body
     background-color: #041c32;
 }
 
+.footer
+{
+    height: auto; 
+    text-align: right; 
+    background-color: #04293a;
+}
 
 
 .header
 {
     text-align: center;
-    
+    color: #da9940;
     /* "Fixed top" fix*/
     padding-top: 65px; 
 }
@@ -30,7 +36,11 @@ body
 .numbers
 {
     text-align: center;
-    
     color: #ecb365;
     font-size: 200%;
+}
+
+.menuText
+{
+    color: #da9940;
 }
