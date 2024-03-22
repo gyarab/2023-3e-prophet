@@ -103,7 +103,7 @@ def train_model(model, train_loader, test_loader, num_epochs, model_path):
 
 # Function to save the trained model
 def save_model(model, model_path):
-    model_path = model_path + '.pth'
+    model_path = model_path
     print('saving model')
     torch.save(model.state_dict(), model_path)
     print(f"Model saved as {model_path}")
@@ -112,7 +112,7 @@ def save_model(model, model_path):
 def load_data_model(model, filename):
     print('loading model')
     loaded_model = model #changed
-    loaded_model.load_state_dict(torch.load(filename + '.pth'))
+    loaded_model.load_state_dict(torch.load(filename))
     print(f"Model loaded from {filename}")
     return loaded_model   
 
@@ -170,38 +170,48 @@ def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     plt.legend()
     plt.show()
     
-def create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_path = 'not_given'):
-    if model_path == 'not_given':
+def create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
+    if model_name == 'not_given':
+        # Creates model's name
         inicials_features_columns = ''.join([s[0] for s in features_columns])
         model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
-        model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
+        model_name = model_name + '.pth'
+    model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
+    
     return model_path
+#
+#
+#Here starts model specific variables
+#
+#
+device = get_device()
+# batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
+# after each batch is completed the parameteres of the model will be updated
+# if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
+# we have: min-batch gradient descent
+batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
+look_back = 47 # how many candles will it look into the past
+precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
+input_file_name = None  # this file has to be in /datasets/
+# which columns will be included in training data - X
+features_columns = ['Close',
+    #"open", "high", "low", "close", "volume",
+    # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
+    # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
+    ]
+num_of_data_columns = len(features_columns) 
+load_data_mode = 3 # modes of loading the data, starts with 0
+lstm_layers = 1
+lstm_neuron_count = 256
+model = LSTM(1, lstm_neuron_count, lstm_layers)
+model_name = 'not_given'
+model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
 if __name__ == '__main__':
-    device = get_device()
-    # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
-    # after each batch is completed the parameteres of the model will be updated
-    # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
-    # we have: min-batch gradient descent
-    batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-    look_back = 100 # how many candles will it look into the past
-    precentage_of_train_data = 0.80 # how much data will be used for training, rest will be used for testing
-    input_file_name = 'MinuteBars.csv'  # this file has to be in /datasets/
-    # which columns will be included in training data - X
-    features_columns = ['Close',
-        #"open", "high", "low", "close", "volume",
-        # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-        # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
-        ]
-    num_of_data_columns = len(features_columns) 
-    load_data_mode = 3 # modes of loading the data, starts with 0
-    lstm_layers = 1
-    lstm_neuron_count = 64
-    model = LSTM(1, lstm_neuron_count, lstm_layers)
     model.to(device)
-    model_path = create_model_name(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers)
     # Train parameters
-    learning_rate = 0.001
-    num_epochs = 200 # Epoch: Passes the entire training dataset to the model once
+    learning_rate = 0.002
+    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
+    input_file_name = 'MinuteBars.csv'
     
     if input_file_name == None:
         model = load_data_model(model, model_path)

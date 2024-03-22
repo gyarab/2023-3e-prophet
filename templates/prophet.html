@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styleProphet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styleProphet.css') }}">
     <title>Prophet</title>
 </head>
+
 <body style="background-color: #041c32;">
-    
+
     <nav class="navbar navbar-expand-md navbar-dark">
         <div class="container">
-            <img class="logo" src="img/Snímek obrazovky 2024-01-06 150713.png"> 
-            <h1 class="headline">Prophet</h1> 
+            <img class="logo" src="img/Snímek obrazovky 2024-01-06 150713.png">
+            <h1 class="headline">Prophet</h1>
             <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -21,9 +23,9 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="tabulka" aria-current="page" href="#tabulka" >Tabulka</a>
+                        <a class="tabulka" aria-current="page" href="#tabulka">Tabulka</a>
                     </li>
-                    <li class="nav-item" >
+                    <li class="nav-item">
                         <a class="bambulka" href="#bambulka">Bambulka</a>
                     </li>
                     <li>
@@ -31,28 +33,70 @@
                     </li>
                 </ul>
             </div>
-            </div>
-        </nav>
-        <div class="container-fluid d-flex align-items-center justify-content-center">
-            <p class="firstNumber">
-                69 420 USD
-            </p>
         </div>
-        <div class="container-fluid d-flex align-items-center justify-content-center">
-            <p class="secNumber">
-                1.5819 BTC
-            </p>
-        </div>
-        <div class="container-fluid d-flex align-items-center justify-content-center">
-            <p class="thrdNumber">
-               + 3,4% in the last hour
-            </p>
-        </div>
-        <div class="container-fluid d-flex align-items-center justify-content-center">
-            <p class="frthNumber">
-               BUY 0.048 BTC
-            </p>
-        </div>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </nav>
+    <div class="container-fluid d-flex align-items-center justify-content-center">
+        <p class="firstNumber">
+            69 420 USD
+        </p>
+    </div>
+    <div class="container-fluid d-flex align-items-center justify-content-center">
+        <p class="secNumber">
+            1.5819 BTC
+        </p>
+    </div>
+    <div class="container-fluid d-flex align-items-center justify-content-center">
+        <p class="thrdNumber">
+            + 3,4% in the last hour
+        </p>
+    </div>
+    <div class="container-fluid d-flex align-items-center justify-content-center">
+        <p class="frthNumber">
+
+            Current Bitcoin Value: <span id="btc_value"></span>
+            
+            Last refreshed <span id="last_refresh"></span> seconds ago
+
+
+        </p>
+        <script>
+            // Variable to hold the interval ID
+            var refreshIntervalID;
+        
+            // Function to update Bitcoin value and last refresh time
+            function updateBTCValue() {
+                // Fetch the value from the server
+                fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
+                    .then(response => response.text())
+                    .then(data => {
+                        // Update the HTML content with the fetched value
+                        document.getElementById('btc_value').textContent = data;
+                    });
+        
+                // Update last refresh time
+                var lastRefresh = new Date().getTime();
+                document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
+                
+                // Clear the previous interval if it exists
+                clearInterval(refreshIntervalID);
+        
+                // Set a new interval to update the last refresh time
+                refreshIntervalID = setInterval(function() {
+                    var now = new Date().getTime();
+                    var secondsPassed = Math.floor((now - lastRefresh) / 1000);
+                    document.getElementById('last_refresh').textContent = secondsPassed;
+                }, 1000); // Update every second
+            }
+        
+            // Call updateBTCValue initially and then every 10 seconds
+            updateBTCValue();
+            setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
+        </script>
+        
+
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

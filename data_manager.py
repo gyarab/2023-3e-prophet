@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import binance_data_fatcher
+import binance_data_fetcher
 # class for creating dataset
 class TimeSeriesDataset(Dataset):# this class inherits from Dataset
     def __init__(self, X, y):
@@ -18,7 +18,7 @@ class TimeSeriesDataset(Dataset):# this class inherits from Dataset
 
     def __getitem__(self, i):
         return self.X[i], self.y[i]
-    
+# class for managing OHLCV data    
 class LoaderOHLCV():
     def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
         self.look_back = look_back
@@ -29,28 +29,36 @@ class LoaderOHLCV():
     
     def get_data_as_tensor(self):
         if self.input_file == 'not_given':
-            recent_data = binance_data_fatcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
-            #Hard coded mode of prepare_dataframe_for_lstm - seted to 2
-            #FIX!!
+            recent_data = binance_data_fetcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
+            
             if self.mode == 0:
-                shifted_df_as_np = self.prepare_dataframe_for_lstm0(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm0(recent_data)
             if self.mode == 1:
-                shifted_df_as_np = self.prepare_dataframe_for_lstm1(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm1(recent_data)
             if self.mode == 2:        
-                shifted_df_as_np = self.prepare_dataframe_for_lstm2(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm2(recent_data)
             if self.mode == 3:
-                shifted_df_as_np = self.prepare_dataframe_for_lstm3(recent_data, train= False)
+                shifted_df = self.prepare_dataframe_for_lstm3(recent_data, train= False)
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             
             
-            shifted_df_as_np = shifted_df_as_np.values.reshape((-1, self.look_back * 1 + 1 , 1))
-            input_data_tensor = torch.tensor(shifted_df_as_np).float()
+            shifted_df = shifted_df.values.reshape((-1, self.look_back * 1 + 1 , 1))
+            input_data_tensor = torch.tensor(shifted_df).float()
             
             return input_data_tensor
         # this is case where there is given file to load from
         # it returns tensors with y and X values and also splits them into to test and train
         else:
-            shifted_df_as_np = self.load_data_from_csv()
+            raw_data = self.load_data_from_csv()
+            if self.mode == 0:
+                shifted_df = self.prepare_dataframe_for_lstm0(raw_data)
+            if self.mode == 1:
+                shifted_df = self.prepare_dataframe_for_lstm1(raw_data)
+            if self.mode == 2:        
+                shifted_df = self.prepare_dataframe_for_lstm2(raw_data)
+            if self.mode == 3:
+                shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
+            shifted_df_as_np = shifted_df.to_numpy()
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
             X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
@@ -102,24 +110,10 @@ class LoaderOHLCV():
         return train_loader, test_loader    
         
     
-    def load_data_from_csv(self):
+    def load_data_from_csv(self,):
         print("loading raw data")
-        data = pd.read_csv(self.get_absolute_path())
-        #different modes of data input
-        if self.mode == 0:
-            shifted_data_frame = self.prepare_dataframe_for_lstm0(data) #'Date', 'target_value', 'target_value_difference' + all mentioned columns in features_columns
-        if self.mode == 1:
-            shifted_data_frame = self.prepare_dataframe_for_lstm1(data) # sequences of returns (differences of values) in featured columns
-        if self.mode == 2:
-            shifted_data_frame = self.prepare_dataframe_for_lstm2(data) # sequences of returns (differences of values) in featured columns - in %
-        # sequences of returns (differences of values) in featured columns - in %
-        # target values price cahnges(returns) only up or down
-        if self.mode == 3:
-            shifted_data_frame = self.prepare_dataframe_for_lstm3(data) 
-   
-        shifted_df_as_np = shifted_data_frame.to_numpy()
-    
-        return shifted_df_as_np
+        raw_data = pd.read_csv(self.get_absolute_path())
+        return raw_data
     # creates sequences of selected data (columns)
     def prepare_dataframe_for_lstm0(self, dataframe):
         # created deepcopy of dataframe - to not edit original data
