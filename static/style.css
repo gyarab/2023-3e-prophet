@@ -60,3 +60,11 @@ body
 {
     padding-top: 40px;
 }
+
+.fixedFooter
+{
+    padding-bottom: 50px;
+    color: #da9940;
+    text-align: center;
+    font-size: 200%;
+}

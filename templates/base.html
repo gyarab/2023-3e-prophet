@@ -34,8 +34,9 @@
         <div class="navbar-nav">
           <a class="nav-link menuText" aria-current="page" href="#home">Ceny</a>
           <a class="nav-link menuText" href="#evaluation">Evaluace</a>
-          <a class="nav-link menuText" href="#model">Model</a>
           <a class="nav-link menuText" href="#settings">Nastavení</a>
+          <a class="nav-link menuText" href="#links">Odkazy</a>
+
           <!-- <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a> -->
         </div>
       </div>
@@ -72,7 +73,7 @@
           <h2 class="miniHeader">Bitcoin</h2>
           <p class="numbers">
             Current BTC value <span id="btc_value"></span> USD <br>
-            Last hour 12%  <i class="bi bi-arrow-up"></i> <br>
+            Last hour 12% <i class="bi bi-arrow-up"></i> <br>
             Since opened 2% <i class="bi bi-arrow-up"></i>
           </p>
         </div>
@@ -87,7 +88,7 @@
 
   <!-- Evaluace-->
   <div class="bg2 container-fluid ">
-    <h1 class="header mt-5" id="evaluation">Evaluace</h1>
+    <h1 class="header" id="evaluation">Evaluace</h1>
 
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
@@ -95,13 +96,13 @@
           <h2 class="miniHeader">Graph</h2>
           <p class="numbers">
             <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
-            
-            <p class="underValues numbers">
-              Total time trading: 0h 0m <br>
-            Total profit: 0BTC 
-              </p>
-  
-            
+
+          <p class="underValues numbers">
+            Total time trading: 0h 0m <br>
+            Total profit: 0BTC
+          </p>
+
+
           </p>
         </div>
       </div>
@@ -113,10 +114,10 @@
             <span style="color: red;"> sold - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
             <span style="color: limegreen;"> sold - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
 
-            <p class="underValues numbers">
+          <p class="underValues numbers">
             winrate: 89% <br>
             win to loss ration: 67%
-            </p>
+          </p>
 
           </p>
         </div>
@@ -129,25 +130,52 @@
 
 
 
-  <h1 class="header mt-5" id="model">Model</h1>
-  <p>
-    lit. Voluptatum exercitationem corrupti tempora aspernatur voluptatibus animi eligendi natus ipsa repudiandae, earum
-    deserunt est ipsum, ad ducimus nobis aliquid totam
-    consequuntur maxime. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Id quos quidem quo vitae pariatur
-    quasi soluta mollitia minus ex, perspicia
-    tis vel reprehenderit praesentium, inventore non debitis doloremque qui facere consequatur? Lorem, ipsum dolor sit
-    amet consectetur adipisicing elit. Neque provi
-    dent fuga placeat corporis cupiditate animi, quas, assumenda tempora aut cum voluptatem alias dolores labore
-    incidunt eaque inventore at odit
-    et.
-  </p>
-  <h1 class="header mt-5" id="settings">Nastavení</h1>
-  <!-- Vertically centered modal -->
-  <div class="modal-dialog modal-dialog-centered">
-    ...
+  <h1 class="header" id="settings">Nastavení</h1>
+
+
+  <div class="row mt-5">
+    <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
+      <div class="d-flex flex-column align-items-center">
+        <h2 class="miniHeader">Trading options</h2>
+        <p class="numbers">
+
+          Active portfolio: 5% <br>
+          Trading window: 1h <br>
+          Bot risk: 5% (>55%)
+
+
+
+        </p>
+      </div>
+    </div>
+    <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
+      <div class="d-flex flex-column align-items-center">
+        <h2 class="miniHeader">Nastavení stránky</h2>
+        <p class="numbers">
+
+          Refresh rate: 10s <br>
+          Theme: <br>
+
+
+
+
+        </p>
+
+      </div>
+    </div>
   </div>
+  <!-- Epty space -->
+  <div style="height: 600px;; width:100%; clear:both;"></div>
 
-
+  <div class="bg2 container-fluid fixedFooter">
+    <h1 class="header" id="links">Odkazy</h1>
+    <p class="underValues">
+      
+      <a href="[https://github.com/gyarab/2023-3e-prophet]">Link to github</a> <br>
+      vytvořeno 2024
+    </p>
+  </div>
+  <!--Site Footer-->
 
 
 
@@ -190,30 +218,30 @@
 
 
 <script>
-  const xValues = [100,200,300,400,500,600,700,800,900,1000];
+  const xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
   const name = ['Bitcoin', 'Bot balance'];
-  
+
   new Chart("myChart", {
     type: "line",
     data: {
       labels: xValues,
-      datasets: [{ 
-        data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
+      datasets: [{
+        data: [860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
         borderColor: "#da9940",
         fill: false,
         label: name[0]
-      }, { 
-        data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
+      }, {
+        data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
         borderColor: "lime",
         fill: false,
         label: name[1]
       }]
     },
     options: {
-      legend: {display: false}
+      legend: { display: false }
     }
   });
-  </script>
+</script>
 
 
 </html>
