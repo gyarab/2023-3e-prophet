@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
 </head>
 
@@ -56,63 +56,74 @@
     <h1 class="header" id="home">Ceny</h1>
 
     <div class="row mt-5">
-      <div class="col-sm-6 order-1 order-sm-1 d-flex  justify-content-center">
+      <div class="col-md-6 order-1 order-sm-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader">Wallet</h2>
           <p class="numbers">
             541654 USD <br>
             546 BTC
 
-            <div style="width: 250px; height:335px; background-color: #232937; overflow:hidden; box-sizing: border-box; border: 1px solid #282E3B; border-radius: 4px; text-align: right; line-height:14px; block-size:335px; font-size: 12px; font-feature-settings: normal; text-size-adjust: 100%; box-shadow: inset 0 -20px 0 0 #262B38;margin: 0;width: 250px;padding:1px;padding: 0px; margin: 0px;"><div style="height:315px; padding:0px; margin:0px; width: 100%;"><iframe src="https://widget.coinlib.io/widget?type=converter&theme=dark" width="250" height="310px" scrolling="auto" marginwidth="0" marginheight="0" frameborder="0" border="0" style="border:0;margin:0;padding:0;"></iframe></div><div style="color: #626B7F; line-height: 14px; font-weight: 400; font-size: 11px; box-sizing: border-box; padding: 2px 6px; width: 100%; font-family: Verdana, Tahoma, Arial, sans-serif;"><a href="https://coinlib.io" target="_blank" style="font-weight: 500; color: #626B7F; text-decoration:none; font-size:11px">Cryptocurrency Prices</a>&nbsp;by Coinlib</div></div>
 
           </p>
         </div>
       </div>
-      <div class="col-sm-6 order-2 order-sm-2 d-flex justify-content-center">
+      <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader">Bitcoin</h2>
           <p class="numbers">
             Current BTC value = <span id="btc_value"></span>
-            <div style="width: 400px; height:220px; background-color: #1D2330; overflow:hidden; box-sizing: border-box; border: 1px solid #282E3B; border-radius: 4px; text-align: right; line-height:14px; block-size:220px; font-size: 12px; font-feature-settings: normal; text-size-adjust: 100%; box-shadow: inset 0 -20px 0 0 #262B38;padding:1px;padding: 0px; margin: 0px;"><div style="height:200px; padding:0px; margin:0px; width: 100%;"><iframe src="https://widget.coinlib.io/widget?type=single_v2&theme=dark&coin_id=859&pref_coin_id=1505" width="400" height="196px" scrolling="auto" marginwidth="0" marginheight="0" frameborder="0" border="0" style="border:0;margin:0;padding:0;line-height:14px;"></iframe></div><div style="color: #626B7F; line-height: 14px; font-weight: 400; font-size: 11px; box-sizing: border-box; padding: 2px 6px; width: 100%; font-family: Verdana, Tahoma, Arial, sans-serif;"><a href="https://coinlib.io" target="_blank" style="font-weight: 500; color: #626B7F; text-decoration:none; font-size:11px">Cryptocurrency Prices</a>&nbsp;by Coinlib</div></div>
           </p>
         </div>
       </div>
     </div>
-  
-  
-  <!-- Epty space -->
-  <div style="height: 600px;; width:100%; clear:both;"></div>
-</div>
 
 
-<!-- Evaluace-->
-<div class="bg2 container-fluid ">
-  <h1 class="header mt-5" id="evaluation">Evaluace</h1>
-  
-  <div class="row mt-5">
-    <div class="col-sm-6 order-1 order-sm-1 d-flex  justify-content-center">
-      <div class="d-flex flex-column align-items-center">
-        <h2 class="miniHeader">Graph</h2>
-        <p class="numbers">
-          
-        </p>
-      </div>
-    </div>
-    <div class="col-sm-6 order-2 order-sm-2 d-flex justify-content-center">
-      <div class="d-flex flex-column align-items-center">
-        <h2 class="miniHeader">Latest trades</h2>
-        <p class="numbers">
-          <span style="color: limegreen;"> bought - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
-          <span style="color: red;"> sold - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
-          <span style="color: limegreen;"> sold - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
-        </p>
-      </div>
-    </div>
+    <!-- Epty space -->
+    <div style="height: 100vh; width:100%; clear:both;"></div>
   </div>
 
-  <!-- Epty space -->
-  <div style="height: 600px;; width:100%; clear:both;"></div>
-</div>
+
+  <!-- Evaluace-->
+  <div class="bg2 container-fluid ">
+    <h1 class="header mt-5" id="evaluation">Evaluace</h1>
+
+    <div class="row mt-5">
+      <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader">Graph</h2>
+          <p class="numbers">
+            <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
+            
+            <p class="underValues numbers">
+              Total time trading: 0h 0m <br>
+            Total profit: 0BTC 
+              </p>
+  
+            
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader">Latest trades</h2>
+          <p class="numbers">
+            <span style="color: limegreen;"> bought - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
+            <span style="color: red;"> sold - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
+            <span style="color: limegreen;"> sold - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
+
+            <p class="underValues numbers">
+            winrate: 89% <br>
+            win to loss ration: 67%
+            </p>
+
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Epty space -->
+    <div style="height: 600px;; width:100%; clear:both;"></div>
+  </div>
 
 
 
@@ -130,9 +141,9 @@
   </p>
   <h1 class="header mt-5" id="settings">Nastavení</h1>
   <!-- Vertically centered modal -->
-<div class="modal-dialog modal-dialog-centered">
-  ...
-</div>
+  <div class="modal-dialog modal-dialog-centered">
+    ...
+  </div>
 
 
 
@@ -174,5 +185,34 @@
   updateBTCValue();
   setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
 </script>
+
+
+<script>
+  const xValues = [100,200,300,400,500,600,700,800,900,1000];
+  
+  new Chart("myChart", {
+    type: "line",
+    data: {
+      labels: xValues,
+      datasets: [{ 
+        data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
+        borderColor: "red",
+        fill: false
+      }, { 
+        data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
+        borderColor: "green",
+        fill: false
+      }, { 
+        data: [300,700,2000,5000,6000,4000,2000,1000,200,100],
+        borderColor: "blue",
+        fill: false
+      }]
+    },
+    options: {
+      legend: {display: false}
+    }
+  });
+  </script>
+
 
 </html>

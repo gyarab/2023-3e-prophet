@@ -32,7 +32,7 @@ body
 .miniHeader
 {
     text-align: center;
-    
+    padding-top: 40px;
     color: #ecb365;
     font-size: 400%;
 
@@ -54,4 +54,9 @@ body
 .menuText
 {
     color: #da9940;
+}
+
+.underValues
+{
+    padding-top: 40px;
 }
