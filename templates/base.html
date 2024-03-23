@@ -45,7 +45,7 @@
 
 
   <!-- Footer -->
-  <div class="footer menuText fixed-bottom container-fluid d-flex;">Last refresh <span id="last_refresh"></span> ago
+  <div class="footer menuText fixed-bottom container-fluid d-flex;">Last refresh <span id="last_refresh"></span>s ago
   </div>
 
 
@@ -71,7 +71,9 @@
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader">Bitcoin</h2>
           <p class="numbers">
-            Current BTC value = <span id="btc_value"></span>
+            Current BTC value <span id="btc_value"></span> USD <br>
+            Last hour 12%  <i class="bi bi-arrow-up"></i> <br>
+            Since opened 2% <i class="bi bi-arrow-up"></i>
           </p>
         </div>
       </div>
@@ -189,6 +191,7 @@
 
 <script>
   const xValues = [100,200,300,400,500,600,700,800,900,1000];
+  const name = ['Bitcoin', 'Bot balance'];
   
   new Chart("myChart", {
     type: "line",
@@ -196,16 +199,14 @@
       labels: xValues,
       datasets: [{ 
         data: [860,1140,1060,1060,1070,1110,1330,2210,7830,2478],
-        borderColor: "red",
-        fill: false
+        borderColor: "#da9940",
+        fill: false,
+        label: name[0]
       }, { 
         data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000],
-        borderColor: "green",
-        fill: false
-      }, { 
-        data: [300,700,2000,5000,6000,4000,2000,1000,200,100],
-        borderColor: "blue",
-        fill: false
+        borderColor: "lime",
+        fill: false,
+        label: name[1]
       }]
     },
     options: {
