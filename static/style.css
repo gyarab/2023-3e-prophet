@@ -8,6 +8,11 @@ body
     background-color: #041c32;
 }
 
+.bg2
+{
+    background-color: #021a31;
+}
+
 .footer
 {
     height: auto; 
@@ -21,7 +26,7 @@ body
     text-align: center;
     color: #da9940;
     /* "Fixed top" fix*/
-    padding-top: 65px; 
+    padding-top: 100px; 
 }
 
 .miniHeader
@@ -30,6 +35,9 @@ body
     
     color: #ecb365;
     font-size: 400%;
+
+    margin: 0; /* Reset margin */
+    line-height: 1.5; /* Adjust line height */
 }
 
 
@@ -38,6 +46,9 @@ body
     text-align: center;
     color: #ecb365;
     font-size: 200%;
+
+    margin: 0; /* Reset margin */
+    line-height: 1.5; /* Adjust line height */
 }
 
 .menuText
