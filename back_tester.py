@@ -11,7 +11,7 @@ model_path = bb.model_path
 model = bb.load_data_model(model,model_path)
 model.to(device)
 # prepares data
-DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode,'Back_test_hours.csv')
+DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode,'Back_test_15_minute.csv')
 raw_data = DataManager.load_data_from_csv()
 prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
@@ -19,7 +19,7 @@ def create_back_test_graph(algo_usd_balance_history, bh_usd_balance_history): #b
     plt.plot(algo_usd_balance_history,color = 'red')
     plt.plot(bh_usd_balance_history, color = 'blue')
     plt.show()
-def make_one_prediction(one_sequence_tensor):
+def make_one_prediction(one_sequence_tensor): # to by asi melo byt v best brainu
     one_sequence_tensor = one_sequence_tensor.to(device)
     # Model makes prediction
     with torch.no_grad():
@@ -32,50 +32,53 @@ def calculate_win_rate(trades_taken_wrongly, amount_of_trades):
     loose_rate = loose_ratio * 100
     win_rate = 100 - loose_rate
     return win_rate
-def balance_after_comission(usd_balance, btc_balance, comission_rate = 0.1, Buy = True):
+def balance_after_commission(usd_balance, btc_balance, commission_rate = 0.05, Buy = True):
     if Buy:
-        btc_comission = btc_balance * (comission_rate / 100) 
-        btc_balance = btc_balance - btc_comission
+        btc_commission = btc_balance * (commission_rate / 100) 
+        btc_balance = btc_balance - btc_commission
     else: # Sell scenario 
-        usd_comission = usd_balance * (comission_rate / 100)
-        usd_balance = usd_balance - usd_comission
+        usd_commission = usd_balance * (commission_rate / 100)
+        usd_balance = usd_balance - usd_commission
     return usd_balance, btc_balance
-def sellAllBtc(usd_balance, btc_balance, current_btc_price):
+def sellAllBtc(usd_balance, btc_balance, current_btc_price, use_commissions):
     usd_will_get = btc_balance * current_btc_price
     usd_balance += usd_will_get
     btc_balance = 0
-    #usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=False)
+    if use_commissions:
+        usd_balance,btc_balance = balance_after_commission(usd_balance,btc_balance, Buy=False)
     return usd_balance, btc_balance
 # Opens long position
-def long_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price):
+def long_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price, use_commissions):
     usd_to_buy_with = usd_balance * amount_of_balanace_per_trade
     btc_bought = usd_to_buy_with / current_btc_price
     
     usd_balance -= usd_to_buy_with 
     btc_balance += btc_bought
-    usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=True)
+    if use_commissions:
+        usd_balance,btc_balance = balance_after_commission(usd_balance,btc_balance, Buy=True)
     return usd_balance, btc_balance
 # Opens short position
-def short_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price):
+def short_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price, use_commissions):
     usd_to_sell_with = usd_balance * amount_of_balanace_per_trade
     btc_sold = usd_to_sell_with / current_btc_price
     
     usd_balance += usd_to_sell_with 
     btc_balance -= btc_sold
-    usd_balance,btc_balance = balance_after_comission(usd_balance,btc_balance, Buy=False)
+    if use_commissions:
+        usd_balance,btc_balance = balance_after_commission(usd_balance,btc_balance, Buy=False)
     return usd_balance, btc_balance
-def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price):
+def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price, use_commissions):
     # how much of portfolio will be traded in one trade
     amount_of_balanace_per_trade = 1
     # converts the prediction to percentage - how likely will btc go up
     prediction_in_percentage = prediction * 100
+    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price, use_commissions)
     # Opens long position
-    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
-    if prediction_in_percentage > 60:
-        usd_balance, btc_balance = long_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price)
+    if prediction_in_percentage > 50:
+        usd_balance, btc_balance = long_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price, use_commissions)
     # Opens short position - sells what I dont havem gets negative btc balance
-    elif prediction_in_percentage < 40:
-        usd_balance, btc_balance = short_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price)
+    elif prediction_in_percentage < 50:
+        usd_balance, btc_balance = short_position(usd_balance, btc_balance,amount_of_balanace_per_trade,current_btc_price, use_commissions)
         
     return usd_balance, btc_balance
 # Buys btc wih all btc - suitable for buy and hold simulation
@@ -88,7 +91,7 @@ def get_btc_price_for_current_sequence(index_of_data_sequence):
     index_of_raw_data = index_of_data_sequence + bb.look_back
     current_btc_price = raw_data.loc[index_of_raw_data, 'Close']
     return float(current_btc_price)
-def back_test_loop():
+def back_test_loop(use_commissions = True):
     print('Starting back testing loop')
     usd_balance = 10000
     btc_balance = 0
@@ -102,8 +105,8 @@ def back_test_loop():
     bh_usd_balance_history = []
     for index, one_sequence in enumerate(prepared_data_as_np):
         current_btc_price = get_btc_price_for_current_sequence(index)
-        usd_balance_after_sell,_ = sellAllBtc(usd_balance,btc_balance,current_btc_price)
-        bh_usd_balance_test, _ = sellAllBtc(bh_usd_balance, bh_btc_balance, current_btc_price)
+        usd_balance_after_sell,_ = sellAllBtc(usd_balance,btc_balance,current_btc_price, use_commissions)
+        bh_usd_balance_test, _ = sellAllBtc(bh_usd_balance, bh_btc_balance, current_btc_price, use_commissions)
         
         usd_balance_history.append(usd_balance_after_sell) # Remembers usd balance of algo
         bh_usd_balance_history.append(bh_usd_balance_test) # Remembers usd balance of buy and hold
@@ -117,11 +120,11 @@ def back_test_loop():
         
         prediction = make_one_prediction(one_sequence_tensor)
         
-        usd_balance, btc_balance = make_one_trade(prediction,usd_balance,btc_balance,current_btc_price)
+        usd_balance, btc_balance = make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, use_commissions)
         
-    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price)
+    usd_balance, btc_balance = sellAllBtc(usd_balance,btc_balance,current_btc_price, use_commissions)
     print(f'usd balance ended with: {usd_balance}')
     print(f'win rate: {calculate_win_rate(trades_taken_wrongly, len(prepared_data_as_np))} %')
     create_back_test_graph(usd_balance_history, bh_usd_balance_history)        
 if __name__ == '__main__':
-    back_test_loop()
+    back_test_loop(False)
