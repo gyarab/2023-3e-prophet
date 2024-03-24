@@ -97,9 +97,10 @@ def train_model(model, train_loader, test_loader, num_epochs, model_path):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
-        validate_one_epoch(model, test_loader, loss_function)
-        if epoch % 10 == 0:
+        #validate_one_epoch(model, test_loader, loss_function)
+        if epoch % 5 == 0:
             save_model(model, model_path)
+    save_model(model, model_path)
 
 # Function to save the trained model
 def save_model(model, model_path):
@@ -190,7 +191,7 @@ device = get_device()
 # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-look_back = 47 # how many candles will it look into the past
+look_back = 149 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = None  # this file has to be in /datasets/
 # which columns will be included in training data - X
@@ -210,8 +211,8 @@ if __name__ == '__main__':
     model.to(device)
     # Train parameters
     learning_rate = 0.002
-    num_epochs = 100 # Epoch: Passes the entire training dataset to the model once
-    input_file_name = 'MinuteBars.csv'
+    num_epochs = 20 # Epoch: Passes the entire training dataset to the model once
+    input_file_name = 'Train_15_minute.csv'
     
     if input_file_name == None:
         model = load_data_model(model, model_path)
