@@ -16,6 +16,7 @@ raw_data = DataManager.load_data_from_csv()
 prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
 def create_back_test_graph(algo_usd_balance_history, bh_usd_balance_history): #bh = buy and hold
+    print('Creating graph')
     plt.plot(algo_usd_balance_history,color = 'red')
     plt.plot(bh_usd_balance_history, color = 'blue')
     plt.show()
