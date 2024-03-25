@@ -180,6 +180,14 @@ def create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_c
     model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
     
     return model_path
+def make_one_prediction(one_sequence_tensor): # to by asi melo byt v best brainu
+    one_sequence_tensor = one_sequence_tensor.to(device)
+    # Model makes prediction
+    with torch.no_grad():
+                model.eval()
+                prediction = model(one_sequence_tensor)
+                prediction_values = prediction.item()
+    return prediction_values
 #
 #
 #Here starts model specific variables
@@ -191,7 +199,7 @@ device = get_device()
 # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-look_back = 149 # how many candles will it look into the past
+look_back = 499 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = None  # this file has to be in /datasets/
 # which columns will be included in training data - X
@@ -212,7 +220,7 @@ if __name__ == '__main__':
     # Train parameters
     learning_rate = 0.002
     num_epochs = 20 # Epoch: Passes the entire training dataset to the model once
-    input_file_name = 'Train_15_minute.csv'
+    input_file_name = 'Train_1_minute.csv'
     
     if input_file_name == None:
         model = load_data_model(model, model_path)
