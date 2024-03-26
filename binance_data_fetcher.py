@@ -99,8 +99,11 @@ def get_current_btc_value(symbol='BTCUSDT'):
 
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
-    #get_historical_data('BTCUSDT','2 Mar 2024', ouput_file='Back_test.csv')
+    symbol = 'BTCUSDT'
+    start_date_string = '1 Jan 2023'
+    end_date_string = '31 Dec 2023'
+    get_historical_data(symbol,start_date_string,end_date_string=end_date_string, ouput_file='Train_1_minute.csv')
 
 
-    current_btc_value = get_current_btc_value()
-    print("Current BTC value:", current_btc_value)
+    # current_btc_value = get_current_btc_value()
+    # print("Current BTC value:", current_btc_value)
