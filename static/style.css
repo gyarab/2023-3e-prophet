@@ -38,6 +38,7 @@ body
 {
     text-align: center;
     color: var(--orange);
+    text-decoration: underline;
     /* "Fixed top" fix*/
     padding-top: 100px; 
 }
