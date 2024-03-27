@@ -3,33 +3,48 @@
   var refreshIntervalID;
 
   // Function to update Bitcoin value and last refresh time
-  function updateBTCValue() {
-    // Fetch the value from the server
-    fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
-      .then(response => response.text())
+function updateBTCValue() {
+  // Fetch the value from the server
+  fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.text();
+      })
       .then(data => {
-        // Update the HTML content with the fetched value
-        document.getElementById('btc_value').textContent = data;
+          // Update the HTML content with the fetched value
+          document.getElementById('btc_value').textContent = data;
+
+          // Update last refresh time
+          var lastRefresh = new Date().getTime();
+          document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
+
+          // Clear the previous interval if it exists
+          clearInterval(refreshIntervalID);
+
+          // Set a new interval to update the last refresh time
+          refreshIntervalID = setInterval(function () {
+              var now = new Date().getTime();
+              var secondsPassed = Math.floor((now - lastRefresh) / 1000);
+              document.getElementById('last_refresh').textContent = secondsPassed;
+          }, 1000); // Update every second
+      })
+      .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+
+          // Increment last refresh time until response is received
+          var secondsPassed = parseInt(document.getElementById('last_refresh').textContent || 0, 10);
+          document.getElementById('last_refresh').textContent = secondsPassed + 1;
+
+          // Retry after 1 second
+          setTimeout(updateBTCValue, 1000);
       });
+}
 
-    // Update last refresh time
-    var lastRefresh = new Date().getTime();
-    document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
-
-    // Clear the previous interval if it exists
-    clearInterval(refreshIntervalID);
-
-    // Set a new interval to update the last refresh time
-    refreshIntervalID = setInterval(function () {
-      var now = new Date().getTime();
-      var secondsPassed = Math.floor((now - lastRefresh) / 1000);
-      document.getElementById('last_refresh').textContent = secondsPassed;
-    }, 1000); // Update every second
-  }
-
-  // Call updateBTCValue initially and then every 10 seconds
-  updateBTCValue();
-  setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
+// Call updateBTCValue initially and then every 10 seconds
+updateBTCValue();
+setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
 
 
 
