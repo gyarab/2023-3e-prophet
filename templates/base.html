@@ -157,10 +157,11 @@
         <p class="numbers">
 
           Refresh rate: 10s <br>
-          Theme: <button onclick="darkMode()">Dark mode</button> <br>
-          <button onclick="lightMode()">Light Mode</button> 
-          <button onclick="defaultMode()">Default</button>
-
+          Theme:
+          <a class="btn btn-primary btn btn-lg"  onclick="defaultMode()" role="button"> <i class="bi bi-palette"></i>  </a>  
+          <a class="btn btn-primary btn btn-lg" onclick="lightMode()" role="button"> <i class="bi bi-sun"></i>  </a> 
+          <a class="btn btn-primary btn btn-lg"  onclick="darkMode()" role="button"> <i class="bi bi-moon"></i>  </a>
+        
 
 
 
@@ -178,7 +179,8 @@
     <h1 class="header" id="links">Odkazy</h1>
     <p class="underValues">
       
-      <a href="https://github.com/gyarab/2023-3e-prophet">Link to github</a> <br>
+      <a href="">Dokumentace projektu <i class="bi bi-file-earmark-text-fill"></i></a> <br>
+      <a href="https://github.com/gyarab/2023-3e-prophet">Github repozitář <i class="bi bi-github"></i></a> <br>
       Vytvořeno 2024
     </p>
   </div>
@@ -252,18 +254,31 @@
 
 <script>
 function darkMode() {
-  var element = document.getElementById("color")
-  element.classList.add("dark-mode");
+  document.documentElement.style.setProperty('--darkBlue', '#010207' );
+  document.documentElement.style.setProperty( '--darkerBlue', '#000000')
+  document.documentElement.style.setProperty(  '--yellow', '#fce6bd',)
+  document.documentElement.style.setProperty('--orange', '#fcdb9f',)
+  document.documentElement.style.setProperty('--darkCyan','#04090f',) 
+    
+    
 }
 
 function lightMode() {
-  var element = document.getElementById("color")
-  element.classList.remove("dark-mode");
+  document.documentElement.style.setProperty('--darkBlue', '#fcfcfc', );
+  document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7',)
+  document.documentElement.style.setProperty('--yellow', '#',)
+  document.documentElement.style.setProperty('--orange', '#',)
+  document.documentElement.style.setProperty( '--darkCyan','#d3d3d3',)
+  
 }
 
 function defaultMode() {
-  var element = document.getElementById("color")
-  element.classList.remove("dark-mode");
+  document.documentElement.style.setProperty('--darkBlue', '#041c32', );
+  document.documentElement.style.setProperty('--darkerBlue', '#021a31',)
+  document.documentElement.style.setProperty('--yellow', '#ecb365',)
+  document.documentElement.style.setProperty('--orange', '#da9940',)
+  document.documentElement.style.setProperty( '--darkCyan','#04293a',)
+  
 }
 </script>
 

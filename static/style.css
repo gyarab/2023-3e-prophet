@@ -1,33 +1,43 @@
-.navbar {
-    background-color: #04293a;  
-}
 
-.dark-mode {
-    background-color: black;
+
+/* https://www.freecodecamp.org/news/how-to-easily-create-themes-with-css-variables-2d0f4cfa5b9a/*/
+
+:root {  
+    --darkBlue: #041c32;  
+    --darkerBlue: #021a31;  
+    --yellow: #ecb365;  
+    --orange: #da9940;
+    --darkCyan: #04293a;
   }
+  
+
+
+.navbar {
+    background-color: var(--darkCyan);  
+}
 
 body
 {
-    background-color: #041c32;
+    background-color: var(--darkBlue);
 }
 
 .bg2
 {
-    background-color: #021a31;
+    background-color: var(--darkerBlue);
 }
 
 .footer
 {
     height: auto; 
     text-align: right; 
-    background-color: #04293a;
+    background-color: var(--darkCyan);
 }
 
 
 .header
 {
     text-align: center;
-    color: #da9940;
+    color: var(--orange);
     /* "Fixed top" fix*/
     padding-top: 100px; 
 }
@@ -36,7 +46,7 @@ body
 {
     text-align: center;
     padding-top: 40px;
-    color: #ecb365;
+    color: var(--yellow);
     font-size: 400%;
 
     margin: 0; /* Reset margin */
@@ -47,7 +57,7 @@ body
 .numbers
 {
     text-align: center;
-    color: #ecb365;
+    color: var(--yellow);
     font-size: 200%;
 
     margin: 0; /* Reset margin */
@@ -56,7 +66,7 @@ body
 
 .menuText
 {
-    color: #da9940;
+    color: var(--orange);
 }
 
 .underValues
@@ -67,7 +77,16 @@ body
 .fixedFooter
 {
     padding-bottom: 50px;
-    color: #da9940;
+    color: var(--orange);
     text-align: center;
     font-size: 200%;
+}
+
+
+.btn
+{
+    background-color: var(--darkCyan); 
+    color: var(--orange);
+    border-color: var(--orange);
+    
 }
