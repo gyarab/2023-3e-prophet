@@ -91,3 +91,8 @@ body
     border-color: var(--orange);
     
 }
+
+.separator
+{
+    padding-bottom: 500px;
+}
