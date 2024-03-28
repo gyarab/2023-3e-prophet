@@ -68,7 +68,7 @@
           <h2 class="miniHeader">Bitcoin <i class="bi bi-currency-bitcoin"></i></h2>
           <p class="numbers">
             Nynější cena <span id="btc_value"></span> USD <br>
-            Poslední hodina ?% <i class="bi bi-arrow-up"></i> <br>
+            Poslední hodina  <span id="btcHourDiff"></span>%   <br>
             Od posledního otevření ?% <i class="bi bi-arrow-up"></i>
           </p>
         </div>
@@ -106,8 +106,8 @@
             <span style="color: red;"> prodáno - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
             <span style="color: limegreen;"> prodáno - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
           <p class="underValues numbers">
-            mára zisku: (winrate)% <br>
-            poměr zisku ke ztrátě: (win-loss) %
+            Míra zisku: (winrate)% <br>
+            Poměr zisku ke ztrátě: (win-loss) %
           </p>
           </p>
         </div>
@@ -141,7 +141,7 @@
             <a class="btn btn-primary btn btn-lg" onclick="defaultMode()" role="button"> <i class="bi bi-palette"></i> </a>
             <a class="btn btn-primary btn btn-lg" onclick="lightMode()" role="button"> <i class="bi bi-sun"></i> </a>
             <a class="btn btn-primary btn btn-lg" onclick="darkMode()" role="button"> <i class="bi bi-moon"></i> </a>
-
+            <a class="btn btn-primary btn btn-lg" onclick="refresh()" role="button"> <i class="bi bi-moon"></i> </a>
           </p>
         </div>
       </div>

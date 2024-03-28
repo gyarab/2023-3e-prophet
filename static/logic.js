@@ -5,7 +5,7 @@
   // Function to update Bitcoin value and last refresh time
 function updateBTCValue() {
   // Fetch the value from the server
-  fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
+  fetch('/get_btc_value')  
       .then(response => {
           if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -18,7 +18,7 @@ function updateBTCValue() {
 
           // Update last refresh time
           var lastRefresh = new Date().getTime();
-          document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
+          document.getElementById('last_refresh').textContent = 0; 
 
           // Clear the previous interval if it exists
           clearInterval(refreshIntervalID);
@@ -48,29 +48,49 @@ setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
 
 
 
+function refresh()
+{
+  
+}
 
-  const xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-  const name = ['Bitcoin', 'Bot balance'];
 
-  new Chart("myChart", {
-    type: "line",
-    data: {
-      labels: xValues,
-      datasets: [{
-        data: [860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
-        borderColor: "#da9940",
-        fill: false,
-        label: name[0]
-      }, {
-        data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-        borderColor: "lime",
-        fill: false,
-        label: name[1]
-      }]
-    },
-    options: {
-      legend: { display: false }
-    }
+
+//Graph
+fetch('/get_last_hour_values')
+  .then(response => response.json())
+  .then(data => {
+    const btcVal = Object.values(data)[0]
+
+
+    const btcHourDiff = (100 - ((100 / btcVal[btcVal.length-1]) * btcVal[0])).toFixed(4)
+    if(btcHourDiff >= 0){document.getElementById('btcHourDiff').textContent = " +"+btcHourDiff;}
+    else document.getElementById('btcHourDiff').textContent = btcHourDiff;
+    
+    
+
+    const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
+    const name = ['Bitcoin', 'Bot balance'];
+
+    new Chart("myChart", {
+      type: "line",
+      data: {
+        labels: xValues,
+        datasets: [{
+          data: btcVal, 
+          borderColor: "#da9940",
+          fill: false,
+          label: name[0]
+        }, /*{
+          data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+          borderColor: "lime",
+          fill: false,
+          label: name[1]
+        }*/]
+      },
+      options: {
+        legend: { display: false }
+      }
+    });
   });
 
 
