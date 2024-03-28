@@ -47,10 +47,19 @@ updateBTCValue();
 setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
 
 
+//Language
+function switchLanguage() {
+  var currentLang = document.documentElement.lang;
+  var targetLang = currentLang === "en" ? "es" : "en";
 
-function refresh()
-{
-  
+  fetch('/static/translations.json')
+      .then(response => response.json())
+      .then(data => {
+          document.getElementById('title').textContent = data[targetLang].title;
+          document.getElementById('content').textContent = data[targetLang].content;
+          document.documentElement.lang = targetLang;
+      })
+      .catch(error => console.error('Error fetching translations:', error));
 }
 
 
