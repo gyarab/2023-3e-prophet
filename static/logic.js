@@ -47,17 +47,28 @@ updateBTCValue();
 setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
 
 
+
+
 //Language
 function switchLanguage() {
   var currentLang = document.documentElement.lang;
-  var targetLang = currentLang === "en" ? "es" : "en";
-
+  var targetLang = currentLang === "en" ? "cz" : "en";
+  
   fetch('/static/translations.json')
       .then(response => response.json())
       .then(data => {
-          document.getElementById('title').textContent = data[targetLang].title;
-          document.getElementById('content').textContent = data[targetLang].content;
-          document.documentElement.lang = targetLang;
+        // Get all elements with data-translation attribute
+        var elements = document.querySelectorAll('[data-translation]');
+
+        // Update content of each element with the corresponding translation
+        elements.forEach(element => {
+          var translationKey = element.getAttribute('data-translation');
+          element.textContent = data[targetLang][translationKey];
+        });
+
+        // Set the document language to the target language
+        document.documentElement.lang = targetLang;
+        console.log(targetLang);
       })
       .catch(error => console.error('Error fetching translations:', error));
 }

@@ -1,10 +1,30 @@
 {
     "en": {
-        "title": "Welcome",
-        "content": "This is the content in English."
+        "tmoney": "Money",
+        "teval": "Evaluation",
+        "tsettings": "Settings",
+        "tlinks": "Links",
+        
+        "twallet": "Wallet",
+        "tgraph": "Graph",
+        "tlatestTrades": "Latest trades",
+        "tbotOptions": "Bot options",
+        "tsiteOptions": "Site options"
+    
     },
-    "es": {
-        "title": "Bienvenido",
-        "content": "Este es el contenido en español."
+    "cz": {
+        "tmoney": "Peníze",
+        "teval": "Evaluace",
+        "tsettings": "Nastavení",
+        "tlinks": "Odkazy",
+
+        "twallet": "Peněženka ",
+        "tgraph": "Graf ",
+        "tlatestTrades": "Poslední obchody",
+        "tbotOptions": "Nastavení bota",
+        "tsiteOptions": "Nastavení stránky"
     }
 }
+
+
+

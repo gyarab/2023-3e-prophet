@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cz">
 
 <head>
   <meta charset="UTF-8">
@@ -34,27 +34,27 @@
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link menuText" aria-current="page" href="#home">Peníze</a>
-          <a class="nav-link menuText" href="#evaluation">Evaluace</a>
-          <a class="nav-link menuText" href="#settings">Nastavení</a>
-          <a class="nav-link menuText" href="#links">Odkazy</a>
+          <a class="nav-link menuText" aria-current="page" href="#home"> <span data-translation = "tmoney"> Peníze</span></a>
+          <a class="nav-link menuText" href="#evaluation"> <span data-translation="teval">Evaluace</span> </a>
+          <a class="nav-link menuText" href="#settings"> <span data-translation= "tsettings" > Nastavení </span> </a>
+          <a class="nav-link menuText" href="#links">   <span data-translation= "tlinks"> Odkazy</span> </a>
         </div>
       </div>
     </div>
   </nav>
 
   <!-- Footer -->
-  <div class="footer menuText fixed-bottom container-fluid d-flex;">Poslední obnovení před <span id="last_refresh"></span>s  
+  <div class="footer menuText fixed-bottom container-fluid d-flex;"> Poslední obnovení před <span id="last_refresh"></span>s  
   </div>
 
 
   <div class="container-fluid separator">
-    <h1 class="header" id="home">Peníze</h1>
+    <h1 class="header" id="home"> <span data-translation = "tmoney">  Peníze </span> </h1>
 
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-sm-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Peněženka <i class="bi bi-wallet2"></i></h2>
+          <h2 class="miniHeader"> <span data-translation="twallet"> Peněženka</span> <i class="bi bi-wallet2"></i></h2>
           <p class="numbers">
             0 USD <br>
             0 BTC
@@ -80,12 +80,12 @@
 
   <!-- Evaluace-->
   <div class="bg2 container-fluid separator">
-    <h1 class="header" id="evaluation">Evaluace </h1>
+    <h1 class="header" id="evaluation"> <span data-translation="teval">Evaluace</span> </h1>
 
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Graf <i class="bi bi-graph-up"></i></h2>
+          <h2 class="miniHeader"> <span data-translation="tgraph"> Graf </span> <i class="bi bi-graph-up"></i></h2>
           <p class="numbers">
             <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
 
@@ -100,7 +100,7 @@
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Poslední obchody <i class="bi bi-percent"></i></h2>
+          <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-percent"></i></h2>
           <p class="numbers">
             <span style="color: limegreen;"> koupeno - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
             <span style="color: red;"> prodáno - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
@@ -117,11 +117,11 @@
 
 
   <div class="container-fluid separator">
-    <h1 class="header" id="settings">Nastavení</h1>
+    <h1 class="header" id="settings"> <span data-translation= "tsettings" > Nastavení </span> </h1>
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Natavení obchodování <i class="bi bi-sliders"></i></h2>
+          <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
           <p class="numbers">
 
             Aktivní portfolio: 5% <br>
@@ -133,7 +133,7 @@
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Nastavení stránky <i class="bi bi-gear"></i></h2>
+          <h2 class="miniHeader"> <span data-translation= "tsiteOptions" > Nastavení stránky </span>  <i class="bi bi-gear"></i></h2>
           <p class="numbers">
            
             Čas obnovování: 10s <br>
@@ -142,8 +142,8 @@
             <a class="btn btn-primary btn btn-lg" onclick="lightMode()" role="button"> <i class="bi bi-sun"></i> </a>
             <a class="btn btn-primary btn btn-lg" onclick="darkMode()" role="button"> <i class="bi bi-moon"></i> </a> <br>
             
-            <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> česky </a>
-            <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> english </a>
+            Switch Language: <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> <i class="bi bi-translate"></i> </a>
+            
 
             <h1 id="title"></h1>
             <p id="content"></p>
@@ -156,7 +156,7 @@
 
   <!--Site Footer-->
   <div class="bg2 container-fluid fixedFooter">
-    <h1 class="header" id="links">Odkazy</h1>
+    <h1 class="header" id="links"> <p data-translation= "tlinks"> Odkazy</p> </h1>
     <p class="underValues">
 
       <a href="">Dokumentace projektu <i class="bi bi-file-earmark-text-fill"></i></a> <br>
