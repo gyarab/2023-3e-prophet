@@ -181,7 +181,7 @@ class LoaderOHLCV():
         return dataframe
     
     # creates sequences of difference in Close values in percentage
-    def prepare_dataframe_for_lstm2(self, dataframe):
+    def prepare_dataframe_for_lstm2(self, dataframe,train = True):
         try:
             dataframe = dc(dataframe[['Timestamp', 'Close']])
             dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
@@ -194,7 +194,9 @@ class LoaderOHLCV():
         print(f"shape of loadet data {dataframe.shape}")
         
         # creates the target difference columns
-        dataframe['Target_vlaue_difference'] = (dataframe['Close'].shift(-1) - dataframe['Close']) / dataframe['Close'] * 100
+        dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')
+        if train == True:
+            dataframe['Target_vlaue_difference'] = (dataframe['Close'].shift(-1) - dataframe['Close']) / dataframe['Close'] * 100
         dataframe['Close_difference'] = (dataframe['Close'] - dataframe['Close'].shift(1) ) / dataframe['Close'].shift(1) * 100
         
         # adds sequneces of Close differences in percentage - 1 sequnece will have legnth of n_steps
@@ -222,8 +224,8 @@ class LoaderOHLCV():
             dataframe = dc(dataframe[['Date', 'Close']])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
         print(f"shape of loadet data {dataframe.shape}")
+        # creates the target difference columns if train
         if train == True:
-        # creates the target difference columns - in just 
             target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
             dataframe['Target_vlaue_difference'] = np.where(target_difference > 0, 1, 0)
         dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')

@@ -19,7 +19,7 @@ def get_absolute_path(input_file):
     return input_file_path
 # saves a csv file with historical data
 # Date is hard coded !!!
-def get_historical_data(symbol, start_date_string, end_date_string = 'not_given', ouput_file = 'not_given'):
+def get_historical_data(symbol, interval, start_date_string, end_date_string = 'not_given', ouput_file = 'not_given'):
     print('downloading historical data from Binance...')
     filename = get_absolute_path(ouput_file)
     start_date = datetime.strptime(start_date_string, '%d %b %Y') # '1 Mar 2024' this is format of start_date_string
@@ -28,7 +28,7 @@ def get_historical_data(symbol, start_date_string, end_date_string = 'not_given'
         end_date = today
     else:
          end_date = datetime.strptime(end_date_string, '%d %b %Y')
-    klines = bclient.get_historical_klines(symbol, Client.KLINE_INTERVAL_1MINUTE, start_date.strftime("%d %b %Y %H:%M:%S"), end_date.strftime("%d %b %Y %H:%M:%S"), 1000)
+    klines = bclient.get_historical_klines(symbol, interval, start_date.strftime("%d %b %Y %H:%M:%S"), end_date.strftime("%d %b %Y %H:%M:%S"), 1000)
     data = pd.DataFrame(klines, columns = ['timestamp', 'open', 'high', 'low', 'close', 
                                            'volume', 'close_time', 'quote_av', 'trades'
                                            , 'tb_base_av', 'tb_quote_av', 'ignore' ])
@@ -100,9 +100,10 @@ def get_current_btc_value(symbol='BTCUSDT'):
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
     symbol = 'BTCUSDT'
-    start_date_string = '1 Jan 2023'
-    end_date_string = '31 Dec 2023'
-    get_historical_data(symbol,start_date_string,end_date_string=end_date_string, ouput_file='Train_1_minute.csv')
+    start_date_string = '1 Jan 2022'
+    end_date_string = '1 Feb 2024'
+    interval = Client.KLINE_INTERVAL_1MINUTE
+    get_historical_data(symbol,interval, start_date_string, ouput_file='Train_1_minute.csv')
 
 
     # current_btc_value = get_current_btc_value()

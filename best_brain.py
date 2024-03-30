@@ -22,7 +22,6 @@ class LSTM(nn.Module):# this class inherits from nn.Module
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-        self.sigmoid = nn.Sigmoid()
     # function that describes how the data move throgh the model
     def forward(self, x):
         # hodne skifi, asi neresit
@@ -32,7 +31,6 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        out = self.sigmoid(out) # Apply sigmoid to get probabilities
         return out
     
 def get_device():
@@ -65,7 +63,6 @@ def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
         loss.backward()
         # updates the parameters of the model based on the gradients computed during backpropagation
         optimizer.step()
-
         if batch_index % 100 == 99:  # print every 100 batches
             avg_loss_across_batches = running_loss / 100
             print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
@@ -93,8 +90,8 @@ def validate_one_epoch(model, test_loader, loss_function):
 
 # train all data
 def train_model(model, train_loader, test_loader, num_epochs, model_path):
-    loss_function = nn.BCELoss() # Binary Cross Entropy Loss
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    loss_function = nn.L1Loss() # MAE loss
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
         #validate_one_epoch(model, test_loader, loss_function)
@@ -199,7 +196,7 @@ device = get_device()
 # if the number of batches is between 1 and the total number of data points in the data set, it is called min-batch gradient descent
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
-look_back = 499 # how many candles will it look into the past
+look_back = 9 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = None  # this file has to be in /datasets/
 # which columns will be included in training data - X
@@ -209,9 +206,9 @@ features_columns = ['Close',
     # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
     ]
 num_of_data_columns = len(features_columns) 
-load_data_mode = 3 # modes of loading the data, starts with 0
+load_data_mode = 2 # modes of loading the data, starts with 0
 lstm_layers = 1
-lstm_neuron_count = 256
+lstm_neuron_count = 8
 model = LSTM(1, lstm_neuron_count, lstm_layers)
 model_name = 'not_given'
 model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
@@ -219,7 +216,7 @@ if __name__ == '__main__':
     model.to(device)
     # Train parameters
     learning_rate = 0.002
-    num_epochs = 20 # Epoch: Passes the entire training dataset to the model once
+    num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
     input_file_name = 'Train_1_minute.csv'
     
     if input_file_name == None:
