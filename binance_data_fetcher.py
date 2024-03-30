@@ -97,6 +97,18 @@ def get_current_btc_value(symbol='BTCUSDT'):
 
 
 
+def get_last_hour_values(symbol='BTCUSDT', hours=1):
+    # Fetch live minute data for Bitcoin for the specified number of hours
+    btc_data = get_live_minute_datapoints(symbol, lookback=hours*60)
+    
+    # Extract the closing prices for the last hour
+    last_hour_values = [round(float(value), 2) for value in btc_data['Close'].values[-hours*60:]]
+    
+    return last_hour_values
+
+
+
+
 if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
     symbol = 'BTCUSDT'
@@ -107,4 +119,5 @@ if __name__ == '__main__':
 
 
     # current_btc_value = get_current_btc_value()
-    # print("Current BTC value:", current_btc_value)
+    
+    print(get_last_hour_values())

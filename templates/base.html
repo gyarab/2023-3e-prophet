@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cz">
 
 <head>
   <meta charset="UTF-8">
@@ -8,23 +8,25 @@
 
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styleProphet.css') }}"> Adam css -->
-  <!-- Jiriik css -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Jiriik css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Charts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  
 
 </head>
 
 <body>
+
   <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center" href="#home">
         <img src="{{ url_for('static', filename='img/icon_placeholder.png') }}" alt="Logo" height=40
           class="d-inline-block align-text-top">
-        <span class="flex-fill menuText" style="font-size: 150% ;"> Prophet</span>
+        <span class="flex-fill menuText" style="font-size: 150% ;">  Prophet</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,37 +34,30 @@
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link menuText" aria-current="page" href="#home">Ceny</a>
-          <a class="nav-link menuText" href="#evaluation">Evaluace</a>
-          <a class="nav-link menuText" href="#settings">Nastavení</a>
-          <a class="nav-link menuText" href="#links">Odkazy</a>
-
-          <!-- <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a> -->
+          <a class="nav-link menuText" aria-current="page" href="#home"> <span data-translation = "tmoney"> Peníze</span></a>
+          <a class="nav-link menuText" href="#evaluation"> <span data-translation="teval">Evaluace</span> </a>
+          <a class="nav-link menuText" href="#settings"> <span data-translation= "tsettings" > Nastavení </span> </a>
+          <a class="nav-link menuText" href="#links">   <span data-translation= "tlinks"> Odkazy</span> </a>
         </div>
       </div>
     </div>
   </nav>
 
-
-
   <!-- Footer -->
-  <div class="footer menuText fixed-bottom container-fluid d-flex;">Last refresh <span id="last_refresh"></span>s ago
+  <div class="footer menuText fixed-bottom container-fluid d-flex;"> Poslední obnovení před <span id="last_refresh"></span>s  
   </div>
 
 
-
-
-
-  <div class="container-fluid">
-    <h1 class="header" id="home">Ceny</h1>
+  <div class="container-fluid separator">
+    <h1 class="header" id="home"> <span data-translation = "tmoney">  Peníze </span> </h1>
 
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-sm-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Wallet</h2>
+          <h2 class="miniHeader"> <span data-translation="twallet"> Peněženka</span> <i class="bi bi-wallet2"></i></h2>
           <p class="numbers">
-            541654 USD <br>
-            546 BTC
+            0 USD <br>
+            0 BTC
 
 
           </p>
@@ -70,36 +65,33 @@
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Bitcoin</h2>
+          <h2 class="miniHeader">Bitcoin <i class="bi bi-currency-bitcoin"></i></h2>
           <p class="numbers">
-            Current BTC value <span id="btc_value"></span> USD <br>
-            Last hour 12% <i class="bi bi-arrow-up"></i> <br>
-            Since opened 2% <i class="bi bi-arrow-up"></i>
+            Nynější cena <span id="btc_value"></span> USD <br>
+            Poslední hodina  <span id="btcHourDiff"></span>%   <br>
+            Od posledního otevření ?% <i class="bi bi-arrow-up"></i>
           </p>
         </div>
       </div>
     </div>
-
-
-    <!-- Epty space -->
-    <div style="height: 100vh; width:100%; clear:both;"></div>
+    
   </div>
 
 
   <!-- Evaluace-->
-  <div class="bg2 container-fluid ">
-    <h1 class="header" id="evaluation">Evaluace</h1>
+  <div class="bg2 container-fluid separator">
+    <h1 class="header" id="evaluation"> <span data-translation="teval">Evaluace</span> </h1>
 
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Graph</h2>
+          <h2 class="miniHeader"> <span data-translation="tgraph"> Graf </span> <i class="bi bi-graph-up"></i></h2>
           <p class="numbers">
             <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
 
           <p class="underValues numbers">
-            Total time trading: 0h 0m <br>
-            Total profit: 0BTC
+            Celkový čas obchodování: 0h <br>
+            Celkový profit: BTC
           </p>
 
 
@@ -108,142 +100,74 @@
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">Latest trades</h2>
+          <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-percent"></i></h2>
           <p class="numbers">
-            <span style="color: limegreen;"> bought - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
-            <span style="color: red;"> sold - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
-            <span style="color: limegreen;"> sold - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
-
+            <span style="color: limegreen;"> koupeno - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
+            <span style="color: red;"> prodáno - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
+            <span style="color: limegreen;"> prodáno - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
           <p class="underValues numbers">
-            winrate: 89% <br>
-            win to loss ratio: 67%
+            Míra zisku: (winrate)% <br>
+            Poměr zisku ke ztrátě: (win-loss) %
           </p>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="container-fluid separator">
+    <h1 class="header" id="settings"> <span data-translation= "tsettings" > Nastavení </span> </h1>
+    <div class="row mt-5">
+      <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
+          <p class="numbers">
+
+            Aktivní portfolio: 5% <br>
+            Interval obchodování: 1h <br>
+            Risk bota: 5% (>55%)
+
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader"> <span data-translation= "tsiteOptions" > Nastavení stránky </span>  <i class="bi bi-gear"></i></h2>
+          <p class="numbers">
+           
+            Čas obnovování: 10s <br>
+            Téma:
+            <a class="btn btn-primary btn btn-lg" onclick="defaultMode()" role="button"> <i class="bi bi-palette"></i> </a>
+            <a class="btn btn-primary btn btn-lg" onclick="lightMode()" role="button"> <i class="bi bi-sun"></i> </a>
+            <a class="btn btn-primary btn btn-lg" onclick="darkMode()" role="button"> <i class="bi bi-moon"></i> </a> <br>
+            
+            Switch Language: <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> <i class="bi bi-translate"></i> </a>
+            
+
+            <h1 id="title"></h1>
+            <p id="content"></p>
 
           </p>
         </div>
       </div>
     </div>
-
-    <!-- Epty space -->
-    <div style="height: 600px;; width:100%; clear:both;"></div>
   </div>
-
-
-<div class="container-fluid">
-  <h1 class="header" id="settings">Nastavení</h1>
-
-
-  <div class="row mt-5">
-    <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
-      <div class="d-flex flex-column align-items-center">
-        <h2 class="miniHeader">Trading options</h2>
-        <p class="numbers">
-
-          Active portfolio: 5% <br>
-          Trading window: 1h <br>
-          Bot risk: 5% (>55%)
-
-
-
-        </p>
-      </div>
-    </div>
-    <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
-      <div class="d-flex flex-column align-items-center">
-        <h2 class="miniHeader">Nastavení stránky</h2>
-        <p class="numbers">
-
-          Refresh rate: 10s <br>
-          Theme: <br>
-
-
-
-
-        </p>
-
-      </div>
-    </div>
-  </div>
-  <!-- Epty space -->
-  <div style="height: 600px;; width:100%; clear:both;"></div>
-</div>
 
   <!--Site Footer-->
   <div class="bg2 container-fluid fixedFooter">
-    <h1 class="header" id="links">Odkazy</h1>
+    <h1 class="header" id="links"> <p data-translation= "tlinks"> Odkazy</p> </h1>
     <p class="underValues">
-      
-      <a href="https://github.com/gyarab/2023-3e-prophet">Link to github</a> <br>
+
+      <a href="">Dokumentace projektu <i class="bi bi-file-earmark-text-fill"></i></a> <br>
+      <a href="https://github.com/gyarab/2023-3e-prophet">Github repozitář <i class="bi bi-github"></i></a> <br>
       Vytvořeno 2024
     </p>
   </div>
-  
 
-
-
-
+  <script src="{{ url_for('static', filename='logic.js') }}"></script>
 </body>
 
-<script>
-  // Variable to hold the interval ID
-  var refreshIntervalID;
-
-  // Function to update Bitcoin value and last refresh time
-  function updateBTCValue() {
-    // Fetch the value from the server
-    fetch('/get_btc_value')  // Assuming your Flask route is '/get_btc_value'
-      .then(response => response.text())
-      .then(data => {
-        // Update the HTML content with the fetched value
-        document.getElementById('btc_value').textContent = data;
-      });
-
-    // Update last refresh time
-    var lastRefresh = new Date().getTime();
-    document.getElementById('last_refresh').textContent = 0; // Reset to 0 before calculating
-
-    // Clear the previous interval if it exists
-    clearInterval(refreshIntervalID);
-
-    // Set a new interval to update the last refresh time
-    refreshIntervalID = setInterval(function () {
-      var now = new Date().getTime();
-      var secondsPassed = Math.floor((now - lastRefresh) / 1000);
-      document.getElementById('last_refresh').textContent = secondsPassed;
-    }, 1000); // Update every second
-  }
-
-  // Call updateBTCValue initially and then every 10 seconds
-  updateBTCValue();
-  setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
-</script>
-
-
-<script>
-  const xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-  const name = ['Bitcoin', 'Bot balance'];
-
-  new Chart("myChart", {
-    type: "line",
-    data: {
-      labels: xValues,
-      datasets: [{
-        data: [860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
-        borderColor: "#da9940",
-        fill: false,
-        label: name[0]
-      }, {
-        data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-        borderColor: "lime",
-        fill: false,
-        label: name[1]
-      }]
-    },
-    options: {
-      legend: { display: false }
-    }
-  });
-</script>
 
 
 </html>
