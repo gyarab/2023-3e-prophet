@@ -36,7 +36,7 @@ class LoaderOHLCV():
             if self.mode == 1:
                 shifted_df = self.prepare_dataframe_for_lstm1(recent_data)
             if self.mode == 2:        
-                shifted_df = self.prepare_dataframe_for_lstm2(recent_data)
+                shifted_df = self.prepare_dataframe_for_lstm2(recent_data, train= False)
             if self.mode == 3:
                 shifted_df = self.prepare_dataframe_for_lstm3(recent_data, train= False)
             #shifted_df_as_np = self.scale_data(shifted_df_as_np)
@@ -55,7 +55,7 @@ class LoaderOHLCV():
             if self.mode == 1:
                 shifted_df = self.prepare_dataframe_for_lstm1(raw_data)
             if self.mode == 2:        
-                shifted_df = self.prepare_dataframe_for_lstm2(raw_data)
+                shifted_df = self.prepare_dataframe_for_lstm2(raw_data, train= False)
             if self.mode == 3:
                 shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
             shifted_df_as_np = shifted_df.to_numpy()
@@ -105,7 +105,7 @@ class LoaderOHLCV():
         return train_dataset, test_dataset
     def to_dataLoader(self, train_dataset, test_dataset, batch_size):
         print("to dataloader")
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True) # mozna radsi neshuflovat
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
         return train_loader, test_loader    
         
