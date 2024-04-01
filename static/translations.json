@@ -4,12 +4,36 @@
         "teval": "Evaluation",
         "tsettings": "Settings",
         "tlinks": "Links",
-        
+        "trefresh": "Last refresh before ",
+
+
         "twallet": "Wallet",
+
+        "tPriceBTC": "Btc price now",
+        "tLastHourBTC": "Last hour",
+        "tLastOpened":"Since last open",
+
         "tgraph": "Graph",
+        "tTradeTime":"Total trading time:",
+        "tProfit": "Total profit",
+        
         "tlatestTrades": "Latest trades",
+        "tWinRate":"Win rate",
+        "tWinLoss":"Win to loss ratio",
+
         "tbotOptions": "Bot options",
-        "tsiteOptions": "Site options"
+        "tActivePortfolio":"Active portfolio",
+        "tInterval":"Trading interval",
+        "tRisk":"Take risk",
+
+        "tsiteOptions": "Site options",
+        "tRefreshTime":"Site refresh time",
+        "tTheme": "Theme:",
+        "tLang": "Jazyk:",
+
+        "tDocumentation": "Project documentation",
+        "tGithub": "Github repository",
+        "tCreated": "Created 2024"
     
     },
     "cz": {
@@ -17,12 +41,37 @@
         "teval": "Evaluace",
         "tsettings": "Nastavení",
         "tlinks": "Odkazy",
+        "trefresh": " Poslední obnovení před ",
+        
 
         "twallet": "Peněženka ",
+
+        "tPriceBTC": "Nynější cena",
+        "tLastHourBTC": "Poslední hodina ",
+        "tLastOpened":"Od posledního otevření",
+
         "tgraph": "Graf ",
+        "tTradeTime":"Celkový čas obchodování:",
+        "tProfit": "Celkový profit:",
+        
         "tlatestTrades": "Poslední obchody",
+        "tWinRate":"Míra zisku:",
+        "tWinLoss":"Poměr zisku ke ztrátě:",
+
         "tbotOptions": "Nastavení bota",
-        "tsiteOptions": "Nastavení stránky"
+        "tActivePortfolio":" Aktivní portfolio:",
+        "tInterval":"Interval obchodování:",
+        "tRisk":"Risk bota:",
+
+        "tsiteOptions": "Nastavení stránky",
+        "tRefreshTime":"Čas obnovování:",
+        "tTheme": "Téma:",
+        "tLang": "Language:",
+
+        "tDocumentation": "Dokumentace projektu",
+        "tGithub": "Github repozitář",
+        "tCreated": "Vytvořeno 2024"
+
     }
 }
 
