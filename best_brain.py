@@ -22,15 +22,18 @@ class LSTM(nn.Module):# this class inherits from nn.Module
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
+        self.sigmoid = nn.Sigmoid()
     # function that describes how the data move throgh the model
     def forward(self, x):
-        # hodne skifi, asi neresit
         batch_size = x.size(0)
+        # Initial hidden and cell states of the LSTM
         h0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
         c0 = torch.zeros(self.num_stacked_layers, batch_size, self.hidden_size).to(device)
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
+        out = self.sigmoid(out)
+        
         return out
     
 def get_device():
@@ -90,7 +93,7 @@ def validate_one_epoch(model, test_loader, loss_function):
 
 # train all data
 def train_model(model, train_loader, test_loader, num_epochs, model_path):
-    loss_function = nn.L1Loss() # MAE loss
+    loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
@@ -181,7 +184,7 @@ def make_one_prediction(one_sequence_tensor): # to by asi melo byt v best brainu
     one_sequence_tensor = one_sequence_tensor.to(device)
     # Model makes prediction
     with torch.no_grad():
-                model.eval()
+                model.train(False)
                 prediction = model(one_sequence_tensor)
                 prediction_values = prediction.item()
     return prediction_values
@@ -198,7 +201,7 @@ device = get_device()
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
 look_back = 9 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
-input_file_name = None  # this file has to be in /datasets/
+input_file_name = 'not_given'   # this file has to be in /datasets/
 # which columns will be included in training data - X
 features_columns = ['Close',
     #"open", "high", "low", "close", "volume",
@@ -206,16 +209,16 @@ features_columns = ['Close',
     # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
     ]
 num_of_data_columns = len(features_columns) 
-load_data_mode = 2 # modes of loading the data, starts with 0
+load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 8
 model = LSTM(1, lstm_neuron_count, lstm_layers)
-model_name = 'not_given'
+model_name = 'hokus_pokus.pth'
 model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
 if __name__ == '__main__':
     model.to(device)
     # Train parameters
-    learning_rate = 0.002
+    learning_rate = 0.001
     num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
     input_file_name = 'Train_1_minute.csv'
     
