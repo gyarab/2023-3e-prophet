@@ -116,29 +116,70 @@ fetch('/get_last_hour_values')
 
 
 function darkMode() {
-  document.documentElement.style.setProperty('--darkBlue', '#010207' );
-  document.documentElement.style.setProperty( '--darkerBlue', '#000000')
-  document.documentElement.style.setProperty(  '--yellow', '#fce6bd',)
+  document.documentElement.style.setProperty('--darkBlue', '#010207' )
+  document.documentElement.style.setProperty('--darkerBlue', '#000000')
+  document.documentElement.style.setProperty('--yellow', '#fce6bd',)
   document.documentElement.style.setProperty('--orange', '#fcdb9f',)
   document.documentElement.style.setProperty('--darkCyan','#04090f',) 
-    
-    
 }
 
 function lightMode() {
-  document.documentElement.style.setProperty('--darkBlue', '#fcfcfc', );
+  document.documentElement.style.setProperty('--darkBlue', '#fcfcfc', )
   document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7',)
-  document.documentElement.style.setProperty('--yellow', '#',)
-  document.documentElement.style.setProperty('--orange', '#',)
-  document.documentElement.style.setProperty( '--darkCyan','#d3d3d3',)
-  
+  document.documentElement.style.setProperty('--yellow', '#000000',)
+  document.documentElement.style.setProperty('--orange', '#000000',)
+  document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
 }
 
 function defaultMode() {
-  document.documentElement.style.setProperty('--darkBlue', '#041c32', );
+  document.documentElement.style.setProperty('--darkBlue', '#041c32', )
   document.documentElement.style.setProperty('--darkerBlue', '#021a31',)
   document.documentElement.style.setProperty('--yellow', '#ecb365',)
   document.documentElement.style.setProperty('--orange', '#da9940',)
-  document.documentElement.style.setProperty( '--darkCyan','#04293a',)
-  
+  document.documentElement.style.setProperty('--darkCyan','#04293a',)
+}
+
+
+
+//save and load data
+function saveData() {
+  var timeSpentTrading = "2 hours"; // Example data, you can get this from user input
+  var btcValueInvested = "5 BTC"; // Example data, you can get this from user input
+
+  fetch('/save_trading_data', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          time_spent_trading: timeSpentTrading,
+          btc_value_invested: btcValueInvested
+      })
+  })
+  .then(response => response.json())
+  .then(data => console.log(data.message))
+  .catch(error => console.error('Error:', error));
+}
+
+function loadData() {
+  fetch('/load_trading_data')
+  .then(response => response.json())
+  .then(data => {
+      var tradingData = data.trading_data;
+      document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + tradingData['Time Spent Trading'];
+      document.getElementById('btcValueInvested').innerText = "BTC Value Invested: " + tradingData['BTC Value Invested'];
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function increaseBtc() {
+  fetch('/load_trading_data')
+  .then(response => response.json())
+  .then(data => {
+      var tradingData = data.trading_data;
+      // Example: increase BTC value by 1 BTC
+      tradingData['BTC Value Invested'] = (parseFloat(tradingData['BTC Value Invested']) + 1).toFixed(2);
+      document.getElementById('btcValueInvested').innerText = "BTC Value Invested: " + tradingData['BTC Value Invested'];
+  })
+  .catch(error => console.error('Error:', error));
 }
