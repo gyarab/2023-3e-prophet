@@ -203,61 +203,36 @@ look_back = 9 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = 'not_given'   # this file has to be in /datasets/
 # which columns will be included in training data - X
-features_columns = ['Close',
-    #"open", "high", "low", "close", "volume",
-    # "ema_14", "rsi_14", "macd", "bollinger_upper", "bollinger_lower",
-    # "atr", "ichimoku_a", "ichimoku_b", "obv", "williams_r", "adx"
-    ]
+features_columns = ['Close']
 num_of_data_columns = len(features_columns) 
 load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 8
 model = LSTM(1, lstm_neuron_count, lstm_layers)
-model_name = 'hokus_pokus.pth'
+model_name = 'not_given'
 model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
 if __name__ == '__main__':
     model.to(device)
     # Train parameters
     learning_rate = 0.001
     num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
-    input_file_name = 'Train_1_minute.csv'
+    input_file_name = 'Train_1_minute.csv'    
+    # Load the dataset
+    DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
+    X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
+    train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
+    train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
+    train_model(model, train_loader, test_loader, num_epochs, model_path)
+    #Load the trained model
+    #load_data_model(model, model_path)
     
-    if input_file_name == None:
-        model = load_data_model(model, model_path)
-        DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode)
-        recent_data_tensor = DataManager.get_data_as_tensor()
-        recent_data_tensor = recent_data_tensor.to(device)
-        with torch.no_grad():
-            model.eval()
-            prediction = model(recent_data_tensor)
-            prediction_values = prediction.item()
-            print(f"prediction for next change is {prediction_values}")
-        
-    else:
-        # Load the dataset
-        DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
-        X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
-        train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
-        train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
-        train_model(model, train_loader, test_loader, num_epochs, model_path)
-        #Load the trained model
-        #load_data_model(model, model_path)
-        
-        # Resets the trained model
-        # reset_model(model)
-    
-    
-        # Save the trained model
-        #save_model(model, model_path) 
+    # Resets the trained model
+    #shows graphs
+    create_train_graph(X_train, y_train, look_back,num_of_data_columns, device)
+    create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
 
-    
 
-        #shows graphs
-        create_train_graph(X_train, y_train, look_back,num_of_data_columns, device)
-        create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
-
-    
-    #x_batch, y_batch = create_batches(train_loader)
+#x_batch, y_batch = create_batches(train_loader)
 
     
     
