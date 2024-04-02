@@ -1,0 +1,98 @@
+
+
+/* https://www.freecodecamp.org/news/how-to-easily-create-themes-with-css-variables-2d0f4cfa5b9a/*/
+
+:root {  
+    --darkBlue: #041c32;  
+    --darkerBlue: #021a31;  
+    --yellow: #ecb365;  
+    --orange: #da9940;
+    --darkCyan: #04293a;
+  }
+  
+
+
+.navbar {
+    background-color: var(--darkCyan);  
+}
+
+body
+{
+    background-color: var(--darkBlue);
+}
+
+.bg2
+{
+    background-color: var(--darkerBlue);
+}
+
+.footer
+{
+    height: auto; 
+    text-align: right; 
+    background-color: var(--darkCyan);
+}
+
+
+.header
+{
+    text-align: center;
+    color: var(--orange);
+    text-decoration: underline;
+    /* "Fixed top" fix*/
+    padding-top: 100px; 
+}
+
+.miniHeader
+{
+    text-align: center;
+    padding-top: 40px;
+    color: var(--yellow);
+    font-size: 300%;
+
+    margin: 0; /* Reset margin */
+    line-height: 1.5; /* Adjust line height */
+}
+
+
+.numbers
+{
+    text-align: center;
+    color: var(--yellow);
+    font-size: 200%;
+
+    margin: 0; /* Reset margin */
+    line-height: 1.5; /* Adjust line height */
+}
+
+.menuText
+{
+    color: var(--orange);
+}
+
+.underValues
+{
+    padding-top: 40px;
+}
+
+.fixedFooter
+{
+    padding-bottom: 50px;
+    color: var(--orange);
+    text-align: center;
+    font-size: 200%;
+}
+
+
+.btn
+{
+    background-color: var(--darkCyan); 
+    color: var(--orange);
+    border-color: var(--orange);
+    
+}
+
+.separator
+{
+    padding-bottom: 500px;
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="cz">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prophet</title>
+  <link rel="icon" type="image/x-icon" href="/static/img/icon_placeholder.png">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Jiriik css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Charts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#home">
+        <img src="{{ url_for('static', filename='img/icon_placeholder.png') }}" alt="Logo" height=40
+          class="d-inline-block align-text-top">
+        <span class="flex-fill menuText" style="font-size: 150% ;">  Prophet</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link menuText" aria-current="page" href="#home"> <span data-translation = "tmoney"> Peníze</span></a>
+          <a class="nav-link menuText" href="#evaluation"> <span data-translation="teval">Evaluace</span> </a>
+          <a class="nav-link menuText" href="#settings"> <span data-translation= "tsettings" > Nastavení </span> </a>
+          <a class="nav-link menuText" href="#links">   <span data-translation= "tlinks"> Odkazy</span> </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Fixed Footer -->
+  <div class="footer menuText fixed-bottom container-fluid d-flex;">  <span data-translation= "trefresh"> Poslední obnovení před</span>   <span id="last_refresh"></span>s  
+  </div>
+
+  <!-- Money -->
+  <div class="container-fluid separator">
+    <h1 class="header" id="home"> <span data-translation = "tmoney">  Peníze </span> </h1>
+
+    <div class="row mt-5">
+      <div class="col-md-6 order-1 order-sm-1 d-flex  justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader"> <span data-translation="twallet"> Peněženka</span> <i class="bi bi-wallet2"></i></h2>
+          <p class="numbers">
+            0 USD <br>
+            0 BTC
+
+
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader">Bitcoin <i class="bi bi-currency-bitcoin"></i></h2>
+          <p class="numbers">
+            <span data-translation="tPriceBTC"> Nynější cena </span>  <span id="btc_value"></span> USD <br>
+            <span data-translation="tLastHourBTC"> Poslední hodina </span>   <span id="btcHourDiff"></span>%   <br>
+            <span data-translation="tLastOpened"> Od posledního otevření </span>  ?% <i class="bi bi-arrow-up"></i>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+
+  <!-- Evaluace-->
+  <div class="bg2 container-fluid separator">
+    <h1 class="header" id="evaluation"> <span data-translation="teval">Evaluace</span> </h1>
+
+    <div class="row mt-5">
+      <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader"> <span data-translation="tgraph"> Graf </span> <i class="bi bi-graph-up"></i></h2>
+          <p class="numbers">
+            <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
+
+          <p class="underValues numbers">
+            <span data-translation="tTradeTime">Celkový čas obchodování:</span>   0h <br>
+            <span data-translation="tProfit">Celkový profit:</span>  BTC
+          </p>
+
+
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-percent"></i></h2>
+          <p class="numbers">
+
+            <!--Untranslated-->
+            <span style="color: limegreen;"> koupeno - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
+            <span style="color: red;"> prodáno - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
+            <span style="color: limegreen;"> prodáno - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
+
+
+          <p class="underValues numbers">
+            <span data-translation="tWinrate">Míra zisku:</span>   (winrate)% <br>
+            <span data-translation="tWinLoss">Poměr zisku ke ztrátě:</span>  (win-loss) %
+          </p>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Settings-->
+  <div class="container-fluid separator">
+    <h1 class="header" id="settings"> <span data-translation= "tsettings" > Nastavení </span> </h1>
+    <div class="row mt-5">
+      <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
+          <p class="numbers">
+
+            <span data-translation= "tActivePortfolio" > Aktivní portfolio: </span> 5% <br>
+            <span data-translation= "tInterval" > Interval obchodování: </span> 1h <br>
+            <span data-translation= "tRisk" > Risk bota: </span> 5% (>55%)  <br>
+            
+            <!--Untranslated-->
+            <button class="btn btn-primary" onclick="saveData()">Save </button>
+            <button class="btn btn-primary" onclick="loadData()">Load </button>
+            <button class="btn btn-primary" onclick="increaseBtc()">Increase BTC Value</button>
+            
+            <div id="tradingData"></div>
+             
+
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <h2 class="miniHeader"> <span data-translation= "tsiteOptions" > Nastavení stránky </span>  <i class="bi bi-gear"></i></h2>
+          <p class="numbers">
+           
+             
+            <span data-translation= "tRefreshTime" > Čas obnovování: </span> 10s <br>
+            <span data-translation= "tTheme" > Téma: </span>
+
+            
+            <a class="btn btn-primary btn btn-lg" onclick="defaultMode()" role="button"> <i class="bi bi-palette"></i> </a>
+            <a class="btn btn-primary btn btn-lg" onclick="lightMode()" role="button"> <i class="bi bi-sun"></i> </a>
+            <a class="btn btn-primary btn btn-lg" onclick="darkMode()" role="button"> <i class="bi bi-moon"></i> </a> <br>
+            
+            <!-- Schválně naopak-->
+            <span data-translation= "tLang" > Language: </span> <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> <i class="bi bi-translate"></i> </a>
+            
+
+            <h1 id="title"></h1>
+            <p id="content"></p>
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Site Footer-->
+  <div class="bg2 container-fluid fixedFooter">
+    <h1 class="header" id="links"> <span data-translation= "tlinks"> Odkazy</span> </h1>
+    <p class="underValues">
+
+      <a href=""> <span data-translation= "tDocumentation"> Dokumentace projektu </span>  <i class="bi bi-file-earmark-text-fill"></i></a> <br>
+      <a href="https://github.com/gyarab/2023-3e-prophet"> <span data-translation= "tGithub"> Github repozitář </span> <i class="bi bi-github"></i></a> <br>
+      <span data-translation= "tCreated"> Vytvořeno 2024 </span> 
+    </p>
+  </div>
+
+  <script src="{{ url_for('static', filename='logic.js') }}"></script>
+</body>
+
+
+
+</html>
