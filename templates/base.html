@@ -91,7 +91,7 @@
             <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
 
           <p class="underValues numbers">
-            <span data-translation="tTradeTime">Celkový čas obchodování:</span>   0h <br>
+            <span data-translation="tTradeTime">Celkový čas obchodování:</span>   <span id="timeSpentTrading"></span> <br>
             <span data-translation="tProfit">Celkový profit:</span>  BTC
           </p>
 
@@ -134,11 +134,14 @@
             <span data-translation= "tRisk" > Risk bota: </span> 5% (>55%)  <br>
             
             <!--Untranslated-->
-            <button class="btn btn-primary" onclick="saveData()">Save </button>
-            <button class="btn btn-primary" onclick="loadData()">Load </button>
-            <button class="btn btn-primary" onclick="increaseBtc()">Increase BTC Value</button>
+            <button class="btn btn-primary" onclick=saveData()>Save </button>
+            <button class="btn btn-primary" onclick=loadData()>Load </button>
+            <button class="btn btn-primary" onclick=increaseBtc()>Increase BTC Value</button>
             
-            <div id="tradingData"></div>
+            
+              
+              <p id="btcValueInvested"></p>
+          
              
 
           </p>
@@ -161,9 +164,6 @@
             <!-- Schválně naopak-->
             <span data-translation= "tLang" > Language: </span> <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> <i class="bi bi-translate"></i> </a>
             
-
-            <h1 id="title"></h1>
-            <p id="content"></p>
 
           </p>
         </div>
