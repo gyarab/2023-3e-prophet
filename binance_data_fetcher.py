@@ -54,7 +54,7 @@ def get_historical_data(symbol, interval, start_date_string, end_date_string = '
     else:
         data.to_csv(filename)
         
-def get_live_minute_datapoints(symbol, lookback):
+def get_live_minute_datapoints(symbol, lookback = 9):
     print('downloading data from Binance...')
     current_time = datetime.now(utc_timezone)
     # on look back set to 100 you need 102 and data points to get 1 row of full data
