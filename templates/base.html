@@ -44,11 +44,11 @@
     </div>
   </nav>
 
-  <!-- Footer -->
+  <!-- Fixed Footer -->
   <div class="footer menuText fixed-bottom container-fluid d-flex;">  <span data-translation= "trefresh"> Poslední obnovení před</span>   <span id="last_refresh"></span>s  
   </div>
 
-
+  <!-- Money -->
   <div class="container-fluid separator">
     <h1 class="header" id="home"> <span data-translation = "tmoney">  Peníze </span> </h1>
 
@@ -103,9 +103,13 @@
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-percent"></i></h2>
           <p class="numbers">
+
+            <!--Untranslated-->
             <span style="color: limegreen;"> koupeno - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
             <span style="color: red;"> prodáno - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
             <span style="color: limegreen;"> prodáno - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
+
+
           <p class="underValues numbers">
             <span data-translation="tWinrate">Míra zisku:</span>   (winrate)% <br>
             <span data-translation="tWinLoss">Poměr zisku ke ztrátě:</span>  (win-loss) %
@@ -116,7 +120,7 @@
     </div>
   </div>
 
-
+  <!--Settings-->
   <div class="container-fluid separator">
     <h1 class="header" id="settings"> <span data-translation= "tsettings" > Nastavení </span> </h1>
     <div class="row mt-5">
@@ -127,8 +131,14 @@
 
             <span data-translation= "tActivePortfolio" > Aktivní portfolio: </span> 5% <br>
             <span data-translation= "tInterval" > Interval obchodování: </span> 1h <br>
-            <span data-translation= "tRisk" > Risk bota: </span> 5% (>55%)
-             
+            <span data-translation= "tRisk" > Risk bota: </span> 5% (>55%)  <br>
+            
+            <!--Untranslated-->
+            <button class="btn btn-primary" onclick="saveData()">Save </button>
+            <button class="btn btn-primary" onclick="loadData()">Load </button>
+            <button class="btn btn-primary" onclick="increaseBtc()">Increase BTC Value</button>
+            
+            <div id="tradingData"></div>
              
 
           </p>
