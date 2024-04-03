@@ -6,6 +6,7 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 from copy import deepcopy as dc
+import trader
 
 device = bb.device
 # Initialize weights values
@@ -34,56 +35,6 @@ def calculate_gain_to_loss(usd_gained, usd_lost, good_trade_count, bad_trade_cou
     avrage_loss = usd_lost / bad_trade_count
     gain_to_loss = avrage_gain / avrage_loss # how many dollars were gained for each lost, on avrage
     return gain_to_loss
-def balance_after_commission(usd_balance, btc_balance, commission_rate, Buy = True):
-    if Buy:
-        btc_commission = btc_balance * (commission_rate / 100) 
-        btc_balance = btc_balance - btc_commission
-    else: # Sell scenario 
-        usd_commission = usd_balance * (commission_rate / 100)
-        usd_balance = usd_balance - usd_commission
-    return usd_balance, btc_balance
-def close_trade(usd_balance, btc_balance, current_btc_price, commission_rate):
-    usd_will_get = btc_balance * current_btc_price
-    usd_balance += usd_will_get
-    btc_balance = 0
-    if commission_rate > 0:
-        usd_balance, btc_balance = balance_after_commission(usd_balance, btc_balance, commission_rate, Buy=False)
-    return usd_balance, btc_balance
-# Opens long position
-def long_position(usd_balance, btc_balance,leverage,current_btc_price, commission_rate):
-    usd_to_buy_with = usd_balance * leverage
-    btc_bought = usd_to_buy_with / current_btc_price
-    
-    usd_balance -= usd_to_buy_with 
-    btc_balance += btc_bought
-    if commission_rate > 0:
-        usd_balance,btc_balance = balance_after_commission(usd_balance, btc_balance, commission_rate, Buy=True)
-    return usd_balance, btc_balance
-# Opens short position
-def short_position(usd_balance, btc_balance,leverage,current_btc_price, commission_rate):    
-    usd_to_sell_with = usd_balance * leverage
-    btc_sold = usd_to_sell_with / current_btc_price
-
-    usd_balance += usd_to_sell_with 
-    btc_balance -= btc_sold
-    if commission_rate > 0:
-        usd_balance,btc_balance = balance_after_commission(usd_balance, btc_balance, commission_rate, Buy=False)
-    return usd_balance, btc_balance
-# decides what trade to do, if any
-def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price, commission_rate, last_trade, leverage):
-    # Opens long position
-    if prediction < 0.5 and btc_balance <= 0: # jsem to chce mean
-        usd_balance, btc_balance = close_trade(usd_balance, btc_balance, current_btc_price, commission_rate)
-        usd_balance, btc_balance = long_position(usd_balance, btc_balance, leverage, current_btc_price, commission_rate)
-        last_trade = 'long'
-    #Opens short position - sells what I dont havem gets negative btc balance
-    elif prediction > 0.5 and btc_balance >= 0: # # jsem to chce mean
-        usd_balance, btc_balance = close_trade(usd_balance,btc_balance,current_btc_price, commission_rate)
-        usd_balance, btc_balance = short_position(usd_balance, btc_balance,leverage,current_btc_price, commission_rate)
-        last_trade = 'short'
-    else:
-        last_trade = 'hold'
-    return usd_balance, btc_balance, last_trade
 # Buys btc wih all btc - suitable for buy and hold simulation
 def initialize_bh_balance(current_btc_price, usd_balance = 10000):
     btc_bought = usd_balance /current_btc_price # calculates amount of btc to buy
@@ -122,9 +73,9 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = Tr
     last_trade = None
     for index, one_sequence in enumerate(prepared_data_as_np):
         current_btc_price = get_btc_price_for_current_sequence(index)
-        usd_balance_after_close,_ = close_trade(usd_balance,btc_balance,current_btc_price, commission_rate)
-        bh_usd_balance_test, _ = close_trade(bh_usd_balance, bh_btc_balance, current_btc_price, commission_rate)
-        sh_usd_balance_test, _ = close_trade(sh_usd_balance,sh_btc_balance,current_btc_price, commission_rate)
+        usd_balance_after_close,_ = trader.close_trade(usd_balance,btc_balance,current_btc_price, commission_rate)
+        bh_usd_balance_test, _ = trader.close_trade(bh_usd_balance, bh_btc_balance, current_btc_price, commission_rate)
+        sh_usd_balance_test, _ = trader.close_trade(sh_usd_balance,sh_btc_balance,current_btc_price, commission_rate)
         usd_balance_history.append(usd_balance_after_close) # Remembers usd balance of algo
         bh_usd_balance_history.append(bh_usd_balance_test) # Remembers usd balance of buy and hold
         sh_usd_balance_history.append(sh_usd_balance_test) # Remembers usd balance of short and hold
@@ -149,9 +100,9 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = Tr
         
         prediction = bb.make_one_prediction(one_sequence_tensor)
         
-        usd_balance, btc_balance, last_trade = make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, commission_rate, last_trade, leverage)
+        usd_balance, btc_balance, last_trade = trader.make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, commission_rate, last_trade, leverage)
         
-    usd_balance, btc_balance = close_trade(usd_balance,btc_balance,current_btc_price, commission_rate)
+    usd_balance, btc_balance = trader.close_trade(usd_balance,btc_balance,current_btc_price, commission_rate)
     usd_balance_history.append(usd_balance)
     print(f'usd balance ended with: {usd_balance}')
     print(f'per dollar gained: {usd_balance / start_usd_balance}') # should be divided by start balance
