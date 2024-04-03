@@ -84,17 +84,14 @@ def get_live_minute_datapoints(symbol, lookback = 9):
 
 
 # trochy z toho lezou divny veci
-def get_current_btc_value(symbol='BTCUSDT', round = True):
+def get_current_btc_value(symbol='BTCUSDT'):
     # Fetch live minute data for Bitcoin
     btc_data = get_live_minute_datapoints(symbol, lookback=1)
     
     # Extract the most recent closing price
     current_btc_value = btc_data['Close'].iloc[-1]
     
-    if round:
-        current_btc_value = round(float(current_btc_value), 3)
-    else:
-        current_btc_value = float(current_btc_value)
+    current_btc_value = round(float(current_btc_value), 3)
     return current_btc_value
 
 
