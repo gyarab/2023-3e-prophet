@@ -260,3 +260,13 @@ class LoaderOHLCV():
         return input_file_path
     def get_scaler(self):
         return self.scaler
+    def prepare_live_data(self, raw_data):
+        # Prepares data for prediction
+        prepared_data = self.prepare_dataframe_for_lstm3(raw_data, train= False)
+        prepared_data_as_np = prepared_data.to_numpy()
+        # Converts the data to correct chronological order
+        prepared_data_as_np = dc(np.flip(prepared_data_as_np, axis= 1))
+        # Tranforms sequence to correct form
+        one_sequence = prepared_data_as_np.reshape((-1, self.look_back * 1 + 1 , 1))
+        one_sequence_tensor = torch.tensor(one_sequence).float()
+        return one_sequence_tensor
