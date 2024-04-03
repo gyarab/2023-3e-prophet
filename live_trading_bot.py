@@ -39,11 +39,11 @@ def stop_trading():
     global is_trading
     is_trading = False
 def train_loop():
+    global usd_balance, btc_balance
     last_trade = 'hold'
     last_balance = usd_balance
     DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
     while is_trading == True:
-        global usd_balance, btc_balance
         # Gets raw data from data_fetcher
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
         # Get the last value - the most actual BTC price 
