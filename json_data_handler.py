@@ -68,14 +68,14 @@ def reset_saved_data(filename="data.json"):
 
     with open(filename, 'w') as file:
         json.dump(trading_data, file, indent=4)
+if __name__ == '__main__':
+    data_key = "USD in wallet"
+    specific_data = load_trading_data(data_key=data_key)
+    if specific_data is not None:
+        print(f"{data_key}: {specific_data[data_key]}")
 
-data_key = "USD in wallet"
-specific_data = load_trading_data(data_key=data_key)
-if specific_data is not None:
-    print(f"{data_key}: {specific_data[data_key]}")
-
-trading_data = load_trading_data()
-if trading_data is not None:
-    print("Entire trading data:")
-    print(trading_data)
+    trading_data = load_trading_data()
+    if trading_data is not None:
+        print("Entire trading data:")
+        print(trading_data)
 
