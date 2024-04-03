@@ -26,13 +26,3 @@ def load_trading_data(filename):
         return None
 
 
-
-
-# Example data
-time_spent_trading = "2 hours"
-btc_value_invested = "5 BTC"
-filename = "trading_data.json"
-
-# Save the data to the file
-save_trading_data(time_spent_trading, btc_value_invested, filename)
-

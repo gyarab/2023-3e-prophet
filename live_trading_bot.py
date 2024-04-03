@@ -1,56 +1,60 @@
 # This script is for simulating trading on live data (forward testing)
-def start_trading():
-    pass
-def stop_trading():
-    pass
-def train_loop():
-    pass
-def make_one_trade():
-    pass
-def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price, use_commissions, last_trade, leverage):
-    # Opens long position
-    if prediction < 0.5 and btc_balance <= 0: # jsem to chce mean
-        usd_balance, btc_balance = close_trade(usd_balance, btc_balance, current_btc_price, use_commissions)
-        usd_balance, btc_balance = long_position(usd_balance, btc_balance, leverage, current_btc_price, use_commissions)
-        last_trade = 'long'
-    #Opens short position - sells what I dont havem gets negative btc balance
-    elif prediction > 0.5 and btc_balance >= 0: # # jsem to chce mean
-        usd_balance, btc_balance = close_trade(usd_balance,btc_balance,current_btc_price, use_commissions)
-        usd_balance, btc_balance = short_position(usd_balance, btc_balance,leverage,current_btc_price, use_commissions)
-        last_trade = 'short'
-    else:
-        last_trade = 'hold'
-    return usd_balance, btc_balance, last_trade
-def long_position(usd_balance, btc_balance,leverage,current_btc_price, use_commissions):
-    usd_to_buy_with = usd_balance * leverage
-    btc_bought = usd_to_buy_with / current_btc_price
-    
-    usd_balance -= usd_to_buy_with 
-    btc_balance += btc_bought
-    if use_commissions:
-        usd_balance,btc_balance = balance_after_commission(usd_balance,btc_balance, Buy=True)
-    return usd_balance, btc_balance
-def short_position(usd_balance, btc_balance,leverage,current_btc_price, use_commissions):    
-    usd_to_sell_with = usd_balance * leverage
-    btc_sold = usd_to_sell_with / current_btc_price
+import time
+from copy import deepcopy as dc
+import numpy as np
+import torch
+import best_brain as bb
+import binance_data_fetcher as bdf
+from data_manager import LoaderOHLCV
+import trader
+is_trading = False
 
-    usd_balance += usd_to_sell_with 
-    btc_balance -= btc_sold
-    if use_commissions:
-        usd_balance,btc_balance = balance_after_commission(usd_balance,btc_balance, Buy=False)
-    return usd_balance, btc_balance
-def close_trade(usd_balance, btc_balance, current_btc_price, use_commissions):
-    usd_will_get = btc_balance * current_btc_price
-    usd_balance += usd_will_get
+symbol = 'BTCUSDT'
+usd_balance = 0
+btc_balance = 0
+leverage = 1
+comission_rate = 0
+look_back = 9
+
+long_count = 0
+short_count = 0
+hold_count = 0
+bad_trade_count = 0
+good_trade_count = 0
+good_trade_profit = 0
+bad_trade_loss = 0
+bb.model = bb.load_data_model(bb.model, bb.model_path)
+bb.model.to(bb.device)
+
+def initialize_start_balance(start_usd_balance = 10000):
+    global usd_balance, btc_balance
+    usd_balance = start_usd_balance
     btc_balance = 0
-    if use_commissions:
-        usd_balance, btc_balance = balance_after_commission(usd_balance,btc_balance, Buy=False)
     return usd_balance, btc_balance
-def balance_after_commission(usd_balance, btc_balance, commission_rate = 0.05, Buy = True):
-    if Buy:
-        btc_commission = btc_balance * (commission_rate / 100) 
-        btc_balance = btc_balance - btc_commission
-    else: # Sell scenario 
-        usd_commission = usd_balance * (commission_rate / 100)
-        usd_balance = usd_balance - usd_commission
-    return usd_balance, btc_balance
+
+def start_trading():
+    global is_trading 
+    is_trading = True
+def stop_trading():
+    global is_trading
+    is_trading = False
+def train_loop():
+    last_trade = 'hold'
+    DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
+    while is_trading == True:
+        global usd_balance, btc_balance
+        # Gets raw data from data_fetcher
+        raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
+        # Get the last value - the most actual BTC price 
+        current_btc_price = float(raw_data['Close'].iloc[-1])
+        # Prepares data
+        one_sequence_tensor = DataManager.prepare_live_data(raw_data)
+        # Models makes prediction
+        prediction = bb.make_one_prediction(one_sequence_tensor)
+        # Simulates one trade
+        usd_balance, btc_balance, last_trade = trader.make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, comission_rate, last_trade, leverage)        
+        # Waits minute
+        time.sleep(60)
+initialize_start_balance()
+start_trading()
+train_loop()
