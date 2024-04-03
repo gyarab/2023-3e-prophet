@@ -143,7 +143,7 @@ function defaultMode() {
 
 //save and load data
 let intervalId; // Variable to store the interval ID
-let timeSpent = 0; // Variable to store the time spent trading in seconds
+
 
 function loadData() {
     fetch('/load_trading_data')
