@@ -40,6 +40,7 @@ def stop_trading():
     is_trading = False
 def train_loop():
     last_trade = 'hold'
+    last_balance = usd_balance
     DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
     while is_trading == True:
         global usd_balance, btc_balance
@@ -53,8 +54,28 @@ def train_loop():
         prediction = bb.make_one_prediction(one_sequence_tensor)
         # Simulates one trade
         usd_balance, btc_balance, last_trade = trader.make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, comission_rate, last_trade, leverage)        
+        # Calculates how much usd would he have if he closed trade
+        after_close_usd_balance, _ = trader.close_trade(usd_balance, btc_balance, current_btc_price, comission_rate)
+        # Updates stats
+        calculate_stats(last_trade, after_close_usd_balance, last_balance)
+        last_balance = after_close_usd_balance       
+        
         # Waits minute
         time.sleep(60)
+def calculate_stats(last_trade, after_close_usd_balance, last_balance):
+    global long_count, short_count, hold_count, good_trade_count, bad_trade_count , good_trade_profit, bad_trade_loss
+    if last_trade == 'long':
+        long_count += 1
+    elif last_trade == 'close':
+        last_trade += 1
+    else:
+        hold_count +=1
+    if after_close_usd_balance > last_balance:
+        good_trade_count +=1
+        good_trade_profit += (after_close_usd_balance - last_balance)        
+    else:
+        bad_trade_count +=1
+        bad_trade_loss += (last_balance - after_close_usd_balance)
 initialize_start_balance()
 start_trading()
 train_loop()
