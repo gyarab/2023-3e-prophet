@@ -44,7 +44,7 @@ function updateBTCValue() {
 
 // Call updateBTCValue initially and then every 10 seconds
 updateBTCValue();
-setInterval(updateBTCValue, 10000); // 10000 milliseconds = 10 seconds
+setInterval(updateBTCValue, 1000000); // 10000 milliseconds = 10 seconds
 
 
 
@@ -142,44 +142,59 @@ function defaultMode() {
 
 
 //save and load data
-function saveData() {
-  var timeSpentTrading = "2 hours"; // Example data, you can get this from user input
-  var btcValueInvested = "5 BTC"; // Example data, you can get this from user input
-
-  fetch('/save_trading_data', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          time_spent_trading: timeSpentTrading,
-          btc_value_invested: btcValueInvested
-      })
-  })
-  .then(response => response.json())
-  .then(data => console.log(data.message))
-  .catch(error => console.error('Error:', error));
-}
+let intervalId; // Variable to store the interval ID
+let timeSpent = 0; // Variable to store the time spent trading in seconds
 
 function loadData() {
+    fetch('/load_trading_data')
+    .then(response => response.json())
+    .then(data => {
+        var tradingData = data.trading_data;
+        document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + tradingData['Time Spent Trading'];
+        document.getElementById('btcValueInvested').innerText = "BTC Value Invested: " + tradingData['BTC Value Invested'];
+        startCounting();
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function saveData() {
+  clearInterval(intervalId); // Stop the counting interval before saving
   fetch('/load_trading_data')
   .then(response => response.json())
   .then(data => {
-      var tradingData = data.trading_data;
-      document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + tradingData['Time Spent Trading'];
-      document.getElementById('btcValueInvested').innerText = "BTC Value Invested: " + tradingData['BTC Value Invested'];
+      var tradingData = {};
+      tradingData['time_spent_trading'] = formatTime(timeSpent); // Update the time spent trading in the trading data
+      tradingData['btc_value_invested'] = data.trading_data['BTC Value Invested']; // Get the BTC value from the loaded data
+      fetch('/save_trading_data', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(tradingData)
+      })
+      .then(response => response.json())
+      .then(data => console.log(data.message))
+      .catch(error => console.error('Error:', error));
   })
   .catch(error => console.error('Error:', error));
 }
 
-function increaseBtc() {
-  fetch('/load_trading_data')
-  .then(response => response.json())
-  .then(data => {
-      var tradingData = data.trading_data;
-      // Example: increase BTC value by 1 BTC
-      tradingData['BTC Value Invested'] = (parseFloat(tradingData['BTC Value Invested']) + 1).toFixed(2);
-      document.getElementById('btcValueInvested').innerText = "BTC Value Invested: " + tradingData['BTC Value Invested'];
-  })
-  .catch(error => console.error('Error:', error));
+function startCounting() {
+    intervalId = setInterval(() => {
+        timeSpent++; // Increase the time spent trading by 1 second
+        document.getElementById('timeSpentTrading').innerText = formatTime(timeSpent);
+    }, 1000);
+}
+
+// Format time in HH:MM:SS format
+function formatTime(seconds) {
+    var hours = Math.floor(seconds / 3600);
+    var minutes = Math.floor((seconds % 3600) / 60);
+    var remainingSeconds = seconds % 60;
+    return pad(hours) + ":" + pad(minutes) + ":" + pad(remainingSeconds);
+}
+
+// Add leading zero if needed
+function pad(value) {
+    return value < 10 ? "0" + value : value;
 }
