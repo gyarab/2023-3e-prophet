@@ -9,7 +9,7 @@ from data_manager import LoaderOHLCV
 is_trading = False
 
 symbol = 'BTCUSDT'
-usd_balance = 10000
+usd_balance = 0
 btc_balance = 0
 leverage = 0
 comission_rate = 0
@@ -49,10 +49,12 @@ def train_loop():
         # models makes prediction
         prediction = bb.make_one_prediction(one_sequence_tensor)
         # simulates one trade
-        usd_balance, btc_balance, last_trade = make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, comission_rate, last_trade, leverage)        
+        usd_balance, btc_balance, last_trade = make_one_trade(prediction,current_btc_price, comission_rate, last_trade, leverage)        
         # waits minute
         time.sleep(60)
-def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price, comission_rate, last_trade, leverage):
+def make_one_trade(prediction, current_btc_price, comission_rate, last_trade, leverage):
+    global usd_balance
+    global btc_balance
     # Opens long position
     if prediction < 0.5 and btc_balance <= 0: # jsem to chce mean
         usd_balance, btc_balance = close_trade(usd_balance, btc_balance, current_btc_price, comission_rate)
@@ -99,6 +101,6 @@ def balance_after_commission(usd_balance, btc_balance, commission_rate = 0, Buy 
         usd_commission = usd_balance * (commission_rate / 100)
         usd_balance = usd_balance - usd_commission
     return usd_balance, btc_balance
-#usd_balance, btc_balance = initialize_start_balance()
+usd_balance, btc_balance = initialize_start_balance()
 start_trading()
 train_loop()
