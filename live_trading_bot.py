@@ -10,18 +10,28 @@ import trader
 is_trading = False
 
 symbol = 'BTCUSDT'
-usd_balance = 10000
+usd_balance = 0
 btc_balance = 0
 leverage = 1
 comission_rate = 0
 look_back = 9
 
+long_count = 0
+short_count = 0
+hold_count = 0
+bad_trade_count = 0
+good_trade_count = 0
+good_trade_profit = 0
+bad_trade_loss = 0
 bb.model = bb.load_data_model(bb.model, bb.model_path)
 bb.model.to(bb.device)
 
-def initialize_start_balance(usd_balance = 10000):
+def initialize_start_balance(start_usd_balance = 10000):
+    global usd_balance, btc_balance
+    usd_balance = start_usd_balance
     btc_balance = 0
     return usd_balance, btc_balance
+
 def start_trading():
     global is_trading 
     is_trading = True
@@ -30,29 +40,21 @@ def stop_trading():
     is_trading = False
 def train_loop():
     last_trade = 'hold'
+    DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
     while is_trading == True:
-        global usd_balance
-        global btc_balance
+        global usd_balance, btc_balance
         # Gets raw data from data_fetcher
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
         # Get the last value - the most actual BTC price 
         current_btc_price = float(raw_data['Close'].iloc[-1])
-        
-        DataManager =  LoaderOHLCV(look_back,['Close'], 3) # !!! HARDCODED
-        # Prepares data for prediction
-        prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
-        prepared_data_as_np = prepared_data.to_numpy()
-        # Converts the data to correct chronological order
-        prepared_data_as_np = dc(np.flip(prepared_data_as_np, axis= 1))
-        # Tranforms sequence to correct form
-        one_sequence = prepared_data_as_np.reshape((-1, bb.look_back * 1 + 1 , 1))
-        one_sequence_tensor = torch.tensor(one_sequence).float()
-        # models makes prediction
+        # Prepares data
+        one_sequence_tensor = DataManager.prepare_live_data(raw_data)
+        # Models makes prediction
         prediction = bb.make_one_prediction(one_sequence_tensor)
-        # simulates one trade
+        # Simulates one trade
         usd_balance, btc_balance, last_trade = trader.make_one_trade(prediction,usd_balance,btc_balance,current_btc_price, comission_rate, last_trade, leverage)        
-        # waits minute
+        # Waits minute
         time.sleep(60)
-#usd_balance, btc_balance = initialize_start_balance()
+initialize_start_balance()
 start_trading()
 train_loop()
