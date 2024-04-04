@@ -29,9 +29,7 @@ def save_trading_data_endpoint():
 
 @app.route('/load_trading_data', methods=['POST'])
 def load_trading_data_endpoint():
-    data = request.get_json()
-    data_key = data.get('data_key')  # Get the data_key from the request JSON
-    trading_data = load_trading_data("data.json", data_key=data_key)  # Pass data_key to load_trading_data
+    trading_data = load_trading_data("data.json")  # No need to pass data_key anymore
     if trading_data is not None:
         return jsonify({'trading_data': trading_data})
     else:

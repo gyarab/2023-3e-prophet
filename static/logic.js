@@ -67,22 +67,20 @@ function loadData() {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          // Specify the data_key if needed
-          // 'data_key': 'USD in wallet'
-      })
+      }
   })
   .then(response => response.json())
   .then(data => {
       if (data.trading_data) {
-          // Display the trading data
-          const tradingDataDiv = document.getElementById('tradingData');
-          tradingDataDiv.innerHTML = `
-              <p>USD in wallet: ${data.trading_data['USD in wallet']}</p>
-              <p>Btc value at close app: ${data.trading_data['Btc value at close app']}</p>
-              <!-- Add more values as needed -->
-          `;
+          // Update the content of the spans with the trading data
+          document.getElementById('btc_value_now').textContent = data.trading_data['Btc value at close app'];
+          document.getElementById('USD_in_wallet').textContent = data.trading_data['USD in wallet'];
+          
+          
+          document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + data.trading_data['time_spent_trading'];
+          
+          startCounting();
+          
       } else {
           console.error('Error loading trading data:', data.message);
       }
@@ -96,59 +94,7 @@ function loadData() {
 
 //save and load data
 let intervalId; // Variable to store the interval ID
-
-
-function igan() {
-  fetch('/load_trading_data', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-          data_key: 'time_spent_trading' // Specify the data key to load
-      })
-  })
-  .then(response => {
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      return response.json();
-  })
-  .then(data => {
-      console.log(data); // Log the response for debugging
-      var tradingData = data.trading_data;
-      if (tradingData) {
-          document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + tradingData['time_spent_trading'];
-          // Remove fetching 'usd_in_wallet' as it's not included in the current request
-          startCounting();
-      } else {
-          console.error('No trading data received');
-      }
-  })
-  .catch(error => console.error('Error:', error));
-}
-
-function saveData() {
-  clearInterval(intervalId); // Stop the counting interval before saving
-  fetch('/load_trading_data')
-  .then(response => response.json())
-  .then(data => {
-      var tradingData = {};
-      tradingData['time_spent_trading'] = formatTime(timeSpent); // Update the time spent trading in the trading data
-      tradingData['btc_value_invested'] = data.trading_data['BTC Value Invested']; // Get the BTC value from the loaded data
-      fetch('/save_trading_data', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(tradingData)
-      })
-      .then(response => response.json())
-      .then(data => console.log(data.message))
-      .catch(error => console.error('Error:', error));
-  })
-  .catch(error => console.error('Error:', error));
-}
+let timeSpent = 0; // Variable to store the time spent trading
 
 function startCounting() {
     intervalId = setInterval(() => {
@@ -173,75 +119,6 @@ function pad(value) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Variable to hold the interval ID
-var refreshIntervalID;
-
-  // Function to update Bitcoin value and last refresh time
-function updateBTCValue() {
-  // Fetch the value from the server
-  fetch('/get_btc_value')  
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          return response.text();
-      })
-      .then(data => {
-          // Update the HTML content with the fetched value
-          //document.getElementById('btc_value').textContent = data;
-
-          // Update last refresh time
-          var lastRefresh = new Date().getTime();
-          document.getElementById('last_refresh').textContent = 0; 
-
-          // Clear the previous interval if it exists
-          clearInterval(refreshIntervalID);
-
-          // Set a new interval to update the last refresh time
-          refreshIntervalID = setInterval(function () {
-              var now = new Date().getTime();
-              var secondsPassed = Math.floor((now - lastRefresh) / 1000);
-              document.getElementById('last_refresh').textContent = secondsPassed;
-          }, 1000); // Update every second
-      })
-      .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-
-          // Increment last refresh time until response is received
-          var secondsPassed = parseInt(document.getElementById('last_refresh').textContent || 0, 10);
-          document.getElementById('last_refresh').textContent = secondsPassed + 1;
-
-          // Retry after 1 second
-          setTimeout(updateBTCValue, 1000);
-      });
-}
-
-// Call updateBTCValue initially and then every 10 seconds
-updateBTCValue();
-setInterval(updateBTCValue, 1000000); // 10000 milliseconds = 10 seconds
 
 
 
@@ -299,3 +176,76 @@ function defaultMode() {
 
 
 
+
+
+function saveData() {
+  clearInterval(intervalId); // Stop the counting interval before saving
+  fetch('/load_trading_data')
+  .then(response => response.json())
+  .then(data => {
+      var tradingData = {};
+      //tradingData['time_spent_trading'] = formatTime(timeSpent); // Update the time spent trading in the trading data
+      tradingData['btc_value_invested'] = data.trading_data['BTC Value Invested']; // Get the BTC value from the loaded data
+      fetch('/save_trading_data', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(tradingData)
+      })
+      .then(response => response.json())
+      .then(data => console.log(data.message))
+      .catch(error => console.error('Error:', error));
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+
+
+
+// Variable to hold the interval ID
+var refreshIntervalID;
+
+  // Function to update Bitcoin value and last refresh time
+function updateBTCValue() {
+  // Fetch the value from the server
+  fetch('/get_btc_value')  
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.text();
+      })
+      .then(data => {
+          // Update the HTML content with the fetched value
+          //document.getElementById('btc_value').textContent = data;
+
+          // Update last refresh time
+          var lastRefresh = new Date().getTime();
+          document.getElementById('last_refresh').textContent = 0; 
+
+          // Clear the previous interval if it exists
+          clearInterval(refreshIntervalID);
+
+          // Set a new interval to update the last refresh time
+          refreshIntervalID = setInterval(function () {
+              var now = new Date().getTime();
+              var secondsPassed = Math.floor((now - lastRefresh) / 1000);
+              document.getElementById('last_refresh').textContent = secondsPassed;
+          }, 1000); // Update every second
+      })
+      .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+
+          // Increment last refresh time until response is received
+          var secondsPassed = parseInt(document.getElementById('last_refresh').textContent || 0, 10);
+          document.getElementById('last_refresh').textContent = secondsPassed + 1;
+
+          // Retry after 1 second
+          setTimeout(updateBTCValue, 1000);
+      });
+}
+
+// Call updateBTCValue initially and then every 10 seconds
+updateBTCValue();
+setInterval(updateBTCValue, 1000000); // 10000 milliseconds = 10 seconds

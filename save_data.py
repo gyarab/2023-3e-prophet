@@ -21,22 +21,11 @@ def save_trading_data(filename="data.json", **kwargs):
         json.dump(trading_data, file, indent=4)
 
 
-def load_trading_data(filename="data.json", data_key=None):
+def load_trading_data(filename="data.json"):
     try:
         with open(filename, 'r') as file:
             trading_data = json.load(file)
-        
-        # If data_key is specified, return only the value corresponding to that key
-        if data_key is not None:
-            if data_key in trading_data:
-                return {data_key: trading_data[data_key]}
-            else:
-                print(f"Key '{data_key}' not found in the trading data.")
-                return None
-        
-        # If data_key is not specified, return the entire trading data
         return trading_data
-    
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
         return None
@@ -69,13 +58,6 @@ def reset_saved_data(filename="data.json"):
     with open(filename, 'w') as file:
         json.dump(trading_data, file, indent=4)
 
-data_key = "USD in wallet"
-specific_data = load_trading_data(data_key=data_key)
-if specific_data is not None:
-    print(f"{data_key}: {specific_data[data_key]}")
 
-trading_data = load_trading_data()
-if trading_data is not None:
-    print("Entire trading data:")
-    print(trading_data)
+
 
