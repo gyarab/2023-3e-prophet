@@ -31,7 +31,7 @@ def load_trading_data_endpoint():
 
 @app.route('/reset_saved_data', methods=['POST'])
 def reset_saved_data_endpoint():
-    reset_saved_data("data.json")
+    reset_saved_data()  
     return jsonify({'message': 'Trading data has been reset.'})
 
 @app.route('/update_trading_data', methods=['POST'])

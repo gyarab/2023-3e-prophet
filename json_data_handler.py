@@ -43,7 +43,7 @@ def reset_saved_data(filename=trade_data_file_name):
     
     # Define trading data with fetched BTC value
     trading_data = {
-        "time_spent_trading": 0,
+        "time_spent_trading": "00:00:00",
         "BTC_at_close": btc_value,
         "USD_balance": 10000,
         "BTC_balance": 0,
