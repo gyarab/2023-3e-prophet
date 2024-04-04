@@ -13,3 +13,5 @@ __pycache__/
 # Flask stuff:
 instance/
 .webassets-cach
+
+data/
