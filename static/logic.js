@@ -126,14 +126,15 @@ function saveData() {
   .then(data => {
       var tradingData = {};
       tradingData['time_spent_trading'] = formatTime(timeSpent); // Assuming timeSpent and formatTime are defined elsewhere
-      //tradingData['btc_value_invested'] = data.trading_data['BTC_value_invested']; // Get the BTC value from the loaded data
       
+      // Update the specific key-value pair you want to update in the trading data
+      // For example, let's update the 'time_spent_trading' key
       fetch('/update_trading_data', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
           },
-          body: JSON.stringify(tradingData)
+          body: JSON.stringify({ key: 'time_spent_trading', value: tradingData['time_spent_trading'] })
       })
       .then(response => response.json())
       .then(data => console.log(data.message))

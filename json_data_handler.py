@@ -2,7 +2,7 @@ import json
 from binance_data_fetcher import get_current_btc_value
 import os
 trade_data_file_name = 'data/trade_data.json'
-def update_trading_data(key, value, filename=trade_data_file_name): # **kwargs makes from a=1 dictoniary 'a': 1
+def update_trading_data(key, value, filename=trade_data_file_name):
     # Ensure that the data directory exists
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     # Fetch current BTC value

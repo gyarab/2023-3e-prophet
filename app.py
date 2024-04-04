@@ -36,9 +36,16 @@ def reset_saved_data_endpoint():
 
 @app.route('/update_trading_data', methods=['POST'])
 def update_trading_data_endpoint():
-    data = request.json  # Assuming you're sending JSON data to update trading data
-    update_trading_data(**data)
-    return jsonify({'message': 'Trading data has been updated.'})
+    data = request.json
+    if 'key' not in data or 'value' not in data:
+        return jsonify({'message': 'Missing key or value in request'}), 400
+    
+    key = data['key']
+    value = data['value']
+    
+    update_trading_data(key, value)
+    
+    return jsonify({'message': 'Trading data has been updated'}), 200
 
 
 # if this script is being run directly, run it in debug mode (detailed errors + some other features)
