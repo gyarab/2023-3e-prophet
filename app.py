@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from binance_data_fetcher import get_current_btc_value, get_last_hour_values
-from json_data_handler import save_trading_data, load_trading_data
+from json_data_handler import update_trading_data, load_trading_data, reset_saved_data
 
 app = Flask(__name__)
 
@@ -21,19 +21,25 @@ def get_last_hour_values_endpoint():
     last_hour_values = get_last_hour_values()
     return {'last_hour_values': last_hour_values}
 
-@app.route('/save_trading_data', methods=['POST'])
-def save_trading_data_endpoint():
-    data = request.get_json()
-    save_trading_data("data.json", **data)
-    return jsonify({'message': 'Trading data saved successfully'})
-
-@app.route('/load_trading_data', methods=['POST'])
+@app.route('/load_trading_data', methods=['GET'])
 def load_trading_data_endpoint():
-    trading_data = load_trading_data("data.json")  # No need to pass data_key anymore
+    trading_data = load_trading_data()
     if trading_data is not None:
-        return jsonify({'trading_data': trading_data})
+        return jsonify({'trading_data': trading_data}), 200
     else:
-        return jsonify({'message': 'Error loading trading data'})
+        return jsonify({'message': 'Error loading trading data'}), 200
+
+@app.route('/reset_saved_data', methods=['POST'])
+def reset_saved_data_endpoint():
+    reset_saved_data("data.json")
+    return jsonify({'message': 'Trading data has been reset.'})
+
+@app.route('/update_trading_data', methods=['POST'])
+def update_trading_data_endpoint():
+    data = request.json  # Assuming you're sending JSON data to update trading data
+    update_trading_data(**data)
+    return jsonify({'message': 'Trading data has been updated.'})
+
 
 # if this script is being run directly, run it in debug mode (detailed errors + some other features)
 if __name__ == '__main__':

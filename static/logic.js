@@ -64,35 +64,37 @@ new Chart("myChart", {
 function loadData() {
   // Fetch the trading data from the server
   fetch('/load_trading_data', {
-      method: 'POST',
+      method: 'GET',
       headers: {
           'Content-Type': 'application/json'
       }
   })
-  .then(response => response.json())
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
   .then(data => {
       if (data.trading_data) {
-          // Update the content of the spans with the trading data
-          document.getElementById('btc_value_now').textContent = data.trading_data['Btc value at close app'];
-          document.getElementById('USD_in_wallet').textContent = data.trading_data['USD in wallet'];
-          
+          console.log(data.tradingData);
+        // Update the content of the spans with the trading data
+          document.getElementById('btc_value_now').textContent = data.trading_data['BTC_at_close'];
+          document.getElementById('USD_in_wallet').textContent = data.trading_data['USD_balance'];
           
           document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + data.trading_data['time_spent_trading'];
           
           startCounting();
           
       } else {
-          console.error('Error loading trading data:', data.message);
+          console.error('Error: Missing trading data in response:', data);
       }
   })
   .catch(error => {
-      console.error('Error fetching trading data:', error);
+      console.error('Error fetching or processing trading data:', error);
   });
 }
 
-
-
-//save and load data
 let intervalId; // Variable to store the interval ID
 let timeSpent = 0; // Variable to store the time spent trading
 
@@ -117,10 +119,40 @@ function pad(value) {
 }
 
 
+function saveData() {
+  clearInterval(intervalId); // Stop the counting interval before saving
+  fetch('/load_trading_data')
+  .then(response => response.json())
+  .then(data => {
+      var tradingData = {};
+      tradingData['time_spent_trading'] = formatTime(timeSpent); // Assuming timeSpent and formatTime are defined elsewhere
+      //tradingData['btc_value_invested'] = data.trading_data['BTC_value_invested']; // Get the BTC value from the loaded data
+      
+      fetch('/update_trading_data', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(tradingData)
+      })
+      .then(response => response.json())
+      .then(data => console.log(data.message))
+      .catch(error => console.error('Error:', error));
+  })
+  .catch(error => console.error('Error:', error));
+}
 
-
-
-
+function resetSavedData() {
+  fetch('/reset_saved_data', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => console.log(data.message))
+  .catch(error => console.error('Error:', error));
+}
 
 
 //Language
@@ -178,27 +210,7 @@ function defaultMode() {
 
 
 
-function saveData() {
-  clearInterval(intervalId); // Stop the counting interval before saving
-  fetch('/load_trading_data')
-  .then(response => response.json())
-  .then(data => {
-      var tradingData = {};
-      //tradingData['time_spent_trading'] = formatTime(timeSpent); // Update the time spent trading in the trading data
-      tradingData['btc_value_invested'] = data.trading_data['BTC Value Invested']; // Get the BTC value from the loaded data
-      fetch('/save_trading_data', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(tradingData)
-      })
-      .then(response => response.json())
-      .then(data => console.log(data.message))
-      .catch(error => console.error('Error:', error));
-  })
-  .catch(error => console.error('Error:', error));
-}
+
 
 
 
