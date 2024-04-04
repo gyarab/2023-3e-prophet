@@ -2,7 +2,7 @@ import json
 from binance_data_fetcher import get_current_btc_value
 import os
 trade_data_file_name = 'data/trade_data.json'
-def update_trading_data(filename=trade_data_file_name, **kwargs): # **kwargs makes from a=1 dictoniary 'a': 1
+def update_trading_data(key, value, filename=trade_data_file_name): # **kwargs makes from a=1 dictoniary 'a': 1
     # Ensure that the data directory exists
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     # Fetch current BTC value
@@ -16,8 +16,8 @@ def update_trading_data(filename=trade_data_file_name, **kwargs): # **kwargs mak
         trading_data = {}
 
     # Update trading data with new values
-    trading_data.update(kwargs)
-    trading_data["Btc_valueat_close_app"] = btc_value
+    trading_data[key] = value
+    trading_data["BTC_at_close"] = btc_value
 
     # Open the file in write mode and save the updated data as JSON
     with open(filename, 'w') as file:
@@ -54,8 +54,8 @@ def reset_saved_data(filename=trade_data_file_name):
     
     # Define trading data with fetched BTC value
     trading_data = {
-        "Time_spent_trading": 0,
-        "Btc_value_at_close_app": btc_value,
+        "time_spent_trading": 0,
+        "BTC_at_close": btc_value,
         "USD_balance": 10000,
         "BTC_balance": 0,
         "long_count": 0,
