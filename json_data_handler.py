@@ -1,7 +1,10 @@
 import json
 from binance_data_fetcher import get_current_btc_value
-
-def save_trading_data(filename="data.json", **kwargs):
+import os
+trade_data_file_name = 'data/trade_data.json'
+def update_trading_data(filename=trade_data_file_name, **kwargs): # **kwargs makes from a=1 dictoniary 'a': 1
+    # Ensure that the data directory exists
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     # Fetch current BTC value
     btc_value = get_current_btc_value()
     
@@ -14,7 +17,7 @@ def save_trading_data(filename="data.json", **kwargs):
 
     # Update trading data with new values
     trading_data.update(kwargs)
-    trading_data["Btc value at close app"] = btc_value
+    trading_data["Btc_valueat_close_app"] = btc_value
 
     # Open the file in write mode and save the updated data as JSON
     with open(filename, 'w') as file:
@@ -31,33 +34,30 @@ def load_trading_data(filename="data.json"):
         return None
     except json.JSONDecodeError:
         print(f"Error decoding JSON in file '{filename}'.")
-        return None
     
 
-def reset_saved_data(filename="data.json"):
+def reset_saved_data(filename=trade_data_file_name):
     # Fetch current BTC value
     btc_value = get_current_btc_value()
     
     # Define trading data with fetched BTC value
     trading_data = {
-        "Time Spent Trading": 0,
-        "Btc value at close app": btc_value,
-        "USD in wallet": 10000,
-        "money in BTC": 0,
-        "long trades count": 0,
-        "short trades count": 0,
-        "how many holds": 0,
-        "bad trades count": 0,
-        "good trades count": 0,
-        "good trades profit": 0,
-        "bad trades loss": 0,
+        "Time_spent_trading": 0,
+        "Btc_value_at_close_app": btc_value,
+        "USD_balance": 10000,
+        "BTC_balance": 0,
+        "long_count": 0,
+        "short_count": 0,
+        "hold_count": 0,
+        "bad_trade_count": 0,
+        "good_trade_count": 0,
+        "total_profit": 0,
+        "total_loss": 0,
         "leverage" : 1,
         "comission_rate" : 0
     }
-
+    # Ensure that the data directory exists
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as file:
         json.dump(trading_data, file, indent=4)
-
-
-
 

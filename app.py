@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from binance_data_fetcher import get_current_btc_value, get_last_hour_values
-from save_data import save_trading_data, load_trading_data
+from json_data_handler import save_trading_data, load_trading_data
 
 app = Flask(__name__)
 

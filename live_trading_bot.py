@@ -7,6 +7,7 @@ import best_brain as bb
 import binance_data_fetcher as bdf
 from data_manager import LoaderOHLCV
 import trader
+import json_data_handler
 is_trading = False
 
 symbol = 'BTCUSDT'
@@ -76,6 +77,8 @@ def calculate_stats(last_trade, after_close_usd_balance, last_balance):
     else:
         bad_trade_count +=1
         bad_trade_loss += (last_balance - after_close_usd_balance)
-initialize_start_balance()
-start_trading()
-train_loop()
+
+if __name__ == '__main__':
+    initialize_start_balance()
+    start_trading()
+    train_loop()
