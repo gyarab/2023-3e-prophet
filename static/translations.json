@@ -22,9 +22,7 @@
         "tWinLoss":"Win to loss ratio",
 
         "tbotOptions": "Bot options",
-        "tActivePortfolio":"Active portfolio",
-        "tInterval":"Trading interval",
-        "tRisk":"Take risk",
+        "tLeverage":"Leverage",
 
         "tsiteOptions": "Site options",
         "tRefreshTime":"Site refresh time",
@@ -59,9 +57,8 @@
         "tWinLoss":"Poměr zisku ke ztrátě:",
 
         "tbotOptions": "Nastavení bota",
-        "tActivePortfolio":" Aktivní portfolio:",
-        "tInterval":"Interval obchodování:",
-        "tRisk":"Risk bota:",
+        "tLeverage":" Páka:",
+        
 
         "tsiteOptions": "Nastavení stránky",
         "tRefreshTime":"Čas obnovování:",

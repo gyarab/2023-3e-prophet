@@ -6,6 +6,10 @@ let btcVal = [];
 
 (function SiteRefresh()
 {
+  
+  loadData()
+  
+  
   fetch('/get_last_hour_values')
   .then(response => response.json())
   .then(data => {
@@ -28,7 +32,7 @@ let btcVal = [];
     console.log(btcVal)
   setTimeout(SiteRefresh, (refreshTime * 1000))
   });
-})//()
+})()
 
 
 
@@ -60,6 +64,18 @@ new Chart("myChart", {
 });
 }
 
+function startTrading()
+{
+  loadData();
+  startCounting();
+}
+
+
+function stopTrading()
+{
+  clearInterval(intervalId); // Stop the counting interval before saving
+  saveData();
+}
 
 function loadData() {
   // Fetch the trading data from the server
@@ -77,14 +93,14 @@ function loadData() {
   })
   .then(data => {
       if (data.trading_data) {
-          console.log(data.tradingData);
+          //console.log(data.tradingData);
         // Update the content of the spans with the trading data
           document.getElementById('btc_value_now').textContent = data.trading_data['BTC_at_close'];
           document.getElementById('USD_in_wallet').textContent = data.trading_data['USD_balance'];
           
-          document.getElementById('timeSpentTrading').innerText = "Time Spent Trading: " + data.trading_data['time_spent_trading'];
+          document.getElementById('timeSpentTrading').innerText = data.trading_data['time_spent_trading'];
           
-          startCounting();
+          
           
       } else {
           console.error('Error: Missing trading data in response:', data);
@@ -120,7 +136,7 @@ function pad(value) {
 
 
 function saveData() {
-  clearInterval(intervalId); // Stop the counting interval before saving
+  
   fetch('/load_trading_data')
   .then(response => response.json())
   .then(data => {
@@ -153,6 +169,7 @@ function resetSavedData() {
   .then(response => response.json())
   .then(data => console.log(data.message))
   .catch(error => console.error('Error:', error));
+  timeSpent = 0
 }
 
 

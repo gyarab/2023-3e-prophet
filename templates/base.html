@@ -129,14 +129,17 @@
           <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
           <p class="numbers">
 
-            <span data-translation= "tActivePortfolio" > Aktivní portfolio: </span> 5% <br>
-            <span data-translation= "tInterval" > Interval obchodování: </span> 1h <br>
-            <span data-translation= "tRisk" > Risk bota: </span> 5% (>55%)  <br>
+
+            <span data-translation= "tLeverage" > Páka: </span>  <br>
+           
+            
             
             <!--Untranslated-->
             <button class="btn btn-primary" onclick=saveData()>Save </button>
             <button class="btn btn-primary" onclick=loadData()>Load </button>          
             <button class="btn btn-primary" onclick=resetSavedData()>reset </button>  
+            <button class="btn btn-primary" onclick=startTrading()>start </button>
+            <button class="btn btn-primary" onclick=stopTrading()>stop </button>
             
              <br>
             USD in wallet: <span id="USD_in_wallet"></span> <br>
