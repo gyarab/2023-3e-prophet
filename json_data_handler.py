@@ -5,8 +5,6 @@ trade_data_file_name = 'data/trade_data.json'
 def update_trading_data(key, value, filename=trade_data_file_name):
     # Ensure that the data directory exists
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-    # Fetch current BTC value
-    btc_value = get_current_btc_value()
     
     # Load existing data if the file exists
     try:
@@ -17,7 +15,6 @@ def update_trading_data(key, value, filename=trade_data_file_name):
 
     # Update trading data with new values
     trading_data[key] = value
-    trading_data["BTC_at_close"] = btc_value
 
     # Open the file in write mode and save the updated data as JSON
     with open(filename, 'w') as file:
