@@ -1,6 +1,5 @@
 
 
-
 const refreshTime = 10;
 let btcVal = [];
 
@@ -24,6 +23,7 @@ let btcVal = [];
     if(btcHourDiff >= 0){document.getElementById('btcHourDiff').textContent = " +"+btcHourDiff;}
     else document.getElementById('btcHourDiff').textContent = btcHourDiff;
 
+
     // Chart
     updateChart();
     
@@ -35,6 +35,8 @@ let btcVal = [];
 })()
 
 
+
+document.getElementById('since_close').textContent = btcVal[btcVal.length - 1] ;
 
 
 //Graph
@@ -94,13 +96,21 @@ function loadData() {
   .then(data => {
       if (data.trading_data) {
           //console.log(data.tradingData);
-        // Update the content of the spans with the trading data
-          document.getElementById('btc_value_now').textContent = data.trading_data['BTC_at_close'];
-          document.getElementById('USD_in_wallet').textContent = data.trading_data['USD_balance'];
+          // Update the content of the spans with the trading data
+          document.getElementById('BTC_balance').textContent = data.trading_data['BTC_balance'];
+          document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];
           
           document.getElementById('timeSpentTrading').innerText = data.trading_data['time_spent_trading'];
           
+          document.getElementById('money_made').innerText = (data.trading_data['total_profit'] - data.trading_data['total_loss']);
           
+          document.getElementById('good_trades').textContent = data.trading_data['good_trade_count'];
+          document.getElementById('bad_trades').textContent = data.trading_data['bad_trade_count'];
+
+          document.getElementById('long_count').textContent = data.trading_data['long_count'];
+          document.getElementById('short_count').textContent = data.trading_data['short_count'];
+
+          document.getElementById('leverage').textContent = data.trading_data['leverage'];
           
       } else {
           console.error('Error: Missing trading data in response:', data);
@@ -141,7 +151,7 @@ function saveData() {
   .then(response => response.json())
   .then(data => {
       var tradingData = {};
-      tradingData['time_spent_trading'] = formatTime(timeSpent); // Assuming timeSpent and formatTime are defined elsewhere
+      tradingData['time_spent_trading'] = formatTime(timeSpent); 
       
       // Update the specific key-value pair you want to update in the trading data
       // For example, let's update the 'time_spent_trading' key
