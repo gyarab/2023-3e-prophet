@@ -29,28 +29,31 @@ class TradingThread(threading.Thread):
         last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
         DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
         while not self._stop_event.is_set():
-            td = json_data_handler.load_trading_data()
-            # Gets raw data from data_fetcher
-            raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
-            # Get the last value - the most actual BTC price 
-            current_btc_price = float(raw_data['Close'].iloc[-1])
-            # Prepares data
-            one_sequence_tensor = DataManager.prepare_live_data(raw_data)
-            # Models makes prediction
-            prediction = bb.make_one_prediction(one_sequence_tensor)
-            # Simulates one trade
-            td["USD_balance"], td["BTC_balance"], last_trade = trader.make_one_trade(prediction,td["USD_balance"],td["BTC_balance"],current_btc_price,td["comission_rate"], last_trade, td["leverage"])        
-            # Calculates how much usd would he have if he closed trade
-            after_close_usd_balance, _ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
-            # Updates stats
-            calculate_stats(last_trade, after_close_usd_balance, last_balance)
-            save_all_trading_data()
-            last_balance = after_close_usd_balance
-            # Waits a minute
+            last_balance, last_trade = one_trading_loop_iteration (last_balance, last_trade, DataManager)
             time.sleep(60)
 
     def stop(self):
         self._stop_event.set()
+def one_trading_loop_iteration(last_balance, last_trade, DataManager):
+    td = json_data_handler.load_trading_data()
+    # Gets raw data from data_fetcher
+    raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
+    # Get the last value - the most actual BTC price 
+    current_btc_price = float(raw_data['Close'].iloc[-1])
+    # Prepares data
+    one_sequence_tensor = DataManager.prepare_live_data(raw_data)
+    # Models makes prediction
+    prediction = bb.make_one_prediction(one_sequence_tensor)
+    # Simulates one trade
+    td["USD_balance"], td["BTC_balance"], last_trade = trader.make_one_trade(prediction,td["USD_balance"],td["BTC_balance"],current_btc_price,td["comission_rate"], last_trade, td["leverage"])        
+    # Calculates how much usd would he have if he closed trade
+    after_close_usd_balance, _ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
+    # Updates stats
+    calculate_stats(last_trade, after_close_usd_balance, last_balance)
+    save_all_trading_data()
+    last_balance = after_close_usd_balance
+    
+    return last_balance, last_trade
 def start_trading():
     print("starting trading loop")
     global trading_thread
