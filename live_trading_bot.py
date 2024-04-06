@@ -18,17 +18,24 @@ bb.model = bb.load_data_model(bb.model, bb.model_path)
 bb.model.to(bb.device)
 
 def start_trading():
+    train_loop()
+    print("starting trading loop")
     global is_trading 
     is_trading = True
 def stop_trading():
+    print("stopping trading loop")
     global is_trading
     is_trading = False
 def train_loop():
     global td
+    # sets the initial value, so it can make the first trade properly
     last_trade = 'hold'
-    last_balance = td["USD_balance"] # BUG
+    # actions that are needed to calculate 
+    raw_data = bdf.get_live_minute_datapoints(symbol, lookback = 1)
+    current_btc_price = float(raw_data['Close'].iloc[-1])
+    last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
     DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
-    while is_trading == True:
+    while True:
         td = json_data_handler.load_trading_data()
         # Gets raw data from data_fetcher
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
@@ -46,8 +53,9 @@ def train_loop():
         calculate_stats(last_trade, after_close_usd_balance, last_balance)
         save_all_trading_data()
         last_balance = after_close_usd_balance       
-        
-        # Waits minute
+        if is_trading == False:
+            break
+        # Waits a minute
         time.sleep(60)
 def calculate_stats(last_trade, after_close_usd_balance, last_balance):
     global td
@@ -63,11 +71,12 @@ def calculate_stats(last_trade, after_close_usd_balance, last_balance):
     else:
         td["bad_trade_count"] +=1
         td["total_loss"] += (last_balance - after_close_usd_balance)
-    pass
 def save_all_trading_data():
+    print("Saving stats", end="\r") # returns the "cursor" to the same line, so it will be overwritten in the next print
     for key, value in td.items():
         # Call the function with unpacked kwargs
         json_data_handler.update_trading_data(key=key,value= value)
+    print("Finished saving stats")
 if __name__ == '__main__':
     start_trading()
     train_loop()
