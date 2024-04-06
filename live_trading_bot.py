@@ -6,7 +6,6 @@ import binance_data_fetcher as bdf
 from data_manager import LoaderOHLCV
 import trader
 import json_data_handler
-is_trading = False
 
 symbol = 'BTCUSDT'
 look_back = 9
