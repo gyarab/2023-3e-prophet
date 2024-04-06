@@ -143,10 +143,7 @@
             <button class="btn btn-primary" onclick=stopTrading()>stop </button>
             
             
-              
             
-             
-
           </p>
         </div>
       </div>
@@ -156,7 +153,13 @@
           <p class="numbers">
            
              
-            <span data-translation= "tRefreshTime" > Čas obnovování: </span> 10s <br>
+            
+
+            <label for="Slider" class="form-label">  <span data-translation= "tRefreshTime" > Čas obnovování: </span> 
+            </label> <span id="refreshUpdate"> 10</span>s<br>
+            <input class="slider" type="range" class="form-range" value="10" min="5" max="60" step="5" id="Slider" onchange="refreshUpdate(this.value);"> <br>
+            
+            
             <span data-translation= "tTheme" > Téma: </span>
 
             

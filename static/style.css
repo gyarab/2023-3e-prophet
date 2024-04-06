@@ -133,3 +133,9 @@ body
 {
     padding-bottom: 500px;
 }
+
+.slider
+{
+    width: 100%;
+    background-color: var(--lightYellow) ;
+}
