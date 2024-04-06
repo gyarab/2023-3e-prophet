@@ -12,27 +12,10 @@ is_trading = False
 
 symbol = 'BTCUSDT'
 look_back = 9
-# trading data
-td ={
-    "USD_balance": 0,
-    "BTC_balance": 69,
-    "long_count": 0,
-    "short_count": 0,
-    "hold_count": 0,
-    "bad_trade_count": 0,
-    "good_trade_count": 0,
-    "total_profit": 0,
-    "total_loss": 0,
-    "leverage": 1,
-    "comission_rate": 0
-}
+# loads trading data
+td = json_data_handler.load_trading_data()
 bb.model = bb.load_data_model(bb.model, bb.model_path)
 bb.model.to(bb.device)
-
-def initialize_start_balance(start_usd_balance = 10000):
-    global td
-    td["USD_balance"] = start_usd_balance
-    td["BTC_balance"] = 0
 
 def start_trading():
     global is_trading 
@@ -43,9 +26,10 @@ def stop_trading():
 def train_loop():
     global td
     last_trade = 'hold'
-    last_balance = td["USD_balance"]
+    last_balance = td["USD_balance"] # BUG
     DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
     while is_trading == True:
+        td = json_data_handler.load_trading_data()
         # Gets raw data from data_fetcher
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = look_back)
         # Get the last value - the most actual BTC price 
@@ -85,6 +69,5 @@ def save_all_trading_data():
         # Call the function with unpacked kwargs
         json_data_handler.update_trading_data(key=key,value= value)
 if __name__ == '__main__':
-    initialize_start_balance()
     start_trading()
     train_loop()
