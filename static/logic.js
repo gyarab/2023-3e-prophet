@@ -1,6 +1,6 @@
 
 
-const refreshTime = 10;
+let refreshTime = 10;
 let btcVal = [];
 
 (function SiteRefresh()
@@ -180,6 +180,12 @@ function resetSavedData() {
   .then(data => console.log(data.message))
   .catch(error => console.error('Error:', error));
   timeSpent = 0
+}
+
+
+function refreshUpdate(value) {
+  document.getElementById('refreshUpdate').textContent = value;
+  refreshTime = value;
 }
 
 
