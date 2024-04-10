@@ -78,7 +78,9 @@ function updateChart() {
     }*/]
     },
     options: {
-      legend: { display: false }
+      legend: { display: false },
+      animation: { duration: 0 },
+      responsive: true 
     }
   });
 }
