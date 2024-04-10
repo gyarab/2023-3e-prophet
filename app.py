@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from binance_data_fetcher import get_current_btc_value, get_last_hour_values
 from json_data_handler import update_trading_data, load_trading_data, reset_saved_data
-#from live_trading_bot import start_trading, stop_trading
+from live_trading_bot import start_trading, stop_trading
 
 app = Flask(__name__)
 
@@ -32,6 +32,7 @@ def load_trading_data_endpoint():
 
 @app.route('/reset_saved_data', methods=['POST'])
 def reset_saved_data_endpoint():
+    stop_trading() # alsto stops trading
     reset_saved_data()  
     return jsonify({'message': 'Trading data has been reset.'})
 
@@ -47,15 +48,15 @@ def update_trading_data_endpoint():
     update_trading_data(key, value)
     return jsonify({'message': 'Trading data has been updated'}), 200
 
-# @app.route('/start_trading', methods=['POST'])
-# def start_trading_route():
-    # start_trading()
-    # return jsonify({'message': 'Trading started'})
-# 
-# @app.route('/stop_trading', methods=['POST'])
-# def stop_trading_route():
-    # stop_trading()
-    # return jsonify({'message': 'Trading stopped'})
+@app.route('/start_trading', methods=['POST'])
+def start_trading_route():
+    start_trading()
+    return jsonify({'message': 'Trading started'})
+
+@app.route('/stop_trading', methods=['POST'])
+def stop_trading_route():
+    stop_trading()
+    return jsonify({'message': 'Trading stopped'})
 
 
 # if this script is being run directly, run it in debug mode (detailed errors + some other features)

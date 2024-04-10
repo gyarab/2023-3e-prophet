@@ -83,12 +83,3 @@ def save_all_trading_data():
         # Call the function with unpacked kwargs
         json_data_handler.update_trading_data(key=key,value= value)
     print("Finished saving stats")
-
-if __name__ == '__main__':
-    start_trading()
-    time.sleep(20)
-    stop_trading()
-    time.sleep(2)
-    start_trading()
-    time.sleep(20)
-    stop_trading()
