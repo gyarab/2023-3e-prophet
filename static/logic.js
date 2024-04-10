@@ -1,38 +1,56 @@
 
-
 let refreshTime = 10;
 let btcVal = [];
 
-(function SiteRefresh()
+let timePassedInterval;
+let startTime = Date.now();
+//displayTimePassed();
+
+
+(function SiteRefresh() 
 {
-  
-  loadData()
-  
-  
-  fetch('/get_last_hour_values')
-  .then(response => response.json())
-  .then(data => {
-    btcVal = Object.values(data)[0]
-  
+    loadData();
 
-    //Current btc price
-    document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
+    fetch('/get_last_hour_values')
+        .then(response => response.json())
+        .then(data => {
+            btcVal = Object.values(data)[0];
 
-    // Last hour diff
-    const btcHourDiff = (100 - ((100 / btcVal[btcVal.length-1]) * btcVal[0])).toFixed(4)
-    if(btcHourDiff >= 0){document.getElementById('btcHourDiff').textContent = " +"+btcHourDiff;}
-    else document.getElementById('btcHourDiff').textContent = btcHourDiff;
+            // Current btc price
+            document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
+
+            // Last hour diff
+            const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
+            if (btcHourDiff >= 0) {
+                document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
+            } else {
+                document.getElementById('btcHourDiff').textContent = btcHourDiff;
+            }
+
+            // Chart
+            updateChart();
+
+            
+            resetTimePassedInterval();
+            startTime = Date.now(); // Reset the start time
+
+            setTimeout(SiteRefresh, (refreshTime * 1000));
+        });
+})();
 
 
-    // Chart
-    updateChart();
-    
-    
-  
-    console.log(btcVal)
-  setTimeout(SiteRefresh, (refreshTime * 1000))
-  });
-})()
+function displayTimePassed() {
+  const currentTime = Date.now();
+  const timePassedInSeconds = Math.floor((currentTime - startTime) / 1000);
+  document.getElementById('last_refresh').textContent = timePassedInSeconds;
+}
+
+function resetTimePassedInterval() {
+  clearInterval(timePassedInterval); // Clear the previous interval
+  timePassedInterval = setInterval(displayTimePassed, 1000); // Update time every second
+}
+
+
 
 
 
@@ -145,8 +163,8 @@ function pad(value) {
 }
 
 
+
 function saveData() {
-  
   fetch('/load_trading_data')
   .then(response => response.json())
   .then(data => {
@@ -183,8 +201,8 @@ function resetSavedData() {
 }
 
 
-function refreshUpdate(value) {
-  document.getElementById('refreshUpdate').textContent = value;
+function sliderUpdate(value) {
+  document.getElementById('sliderUpdate').textContent = value;
   refreshTime = value;
 }
 
@@ -246,52 +264,3 @@ function defaultMode() {
 
 
 
-
-
-
-// Variable to hold the interval ID
-var refreshIntervalID;
-
-  // Function to update Bitcoin value and last refresh time
-function updateBTCValue() {
-  // Fetch the value from the server
-  fetch('/get_btc_value')  
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          return response.text();
-      })
-      .then(data => {
-          // Update the HTML content with the fetched value
-          //document.getElementById('btc_value').textContent = data;
-
-          // Update last refresh time
-          var lastRefresh = new Date().getTime();
-          document.getElementById('last_refresh').textContent = 0; 
-
-          // Clear the previous interval if it exists
-          clearInterval(refreshIntervalID);
-
-          // Set a new interval to update the last refresh time
-          refreshIntervalID = setInterval(function () {
-              var now = new Date().getTime();
-              var secondsPassed = Math.floor((now - lastRefresh) / 1000);
-              document.getElementById('last_refresh').textContent = secondsPassed;
-          }, 1000); // Update every second
-      })
-      .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-
-          // Increment last refresh time until response is received
-          var secondsPassed = parseInt(document.getElementById('last_refresh').textContent || 0, 10);
-          document.getElementById('last_refresh').textContent = secondsPassed + 1;
-
-          // Retry after 1 second
-          setTimeout(updateBTCValue, 1000);
-      });
-}
-
-// Call updateBTCValue initially and then every 10 seconds
-updateBTCValue();
-setInterval(updateBTCValue, 1000000); // 10000 milliseconds = 10 seconds
