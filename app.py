@@ -32,7 +32,7 @@ def load_trading_data_endpoint():
 
 @app.route('/reset_saved_data', methods=['POST'])
 def reset_saved_data_endpoint():
-    stop_trading() # alsto stops trading
+    #stop_trading() # alsto stops trading
     reset_saved_data()  
     return jsonify({'message': 'Trading data has been reset.'})
 
