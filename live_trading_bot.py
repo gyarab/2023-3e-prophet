@@ -19,11 +19,12 @@ class TradingThread(threading.Thread):
         self._stop_event = threading.Event()
 
     def run(self):
-        global td
+        global td, start_time
         td = json_data_handler.load_trading_data()
         # sets the initial value, so it can make the first trade properly
         last_trade = 'hold'
-        # actions that are needed to calculate 
+        start_time = time.time()
+        # actions that are needed to calculate upcoming statistics
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = 1)
         current_btc_price = float(raw_data['Close'].iloc[-1])
         last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
@@ -55,7 +56,11 @@ class TradingThread(threading.Thread):
         after_close_usd_balance, _ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
         # Updates stats
         self.calculate_stats(last_trade, after_close_usd_balance, last_balance)
-        save_all_trading_data()
+        # Calculates time spend on this loop
+        time_spend = round(time.time() - start_time)
+        td["time_spent_trading"]+= time_spend
+        
+        self.save_all_trading_data()
         last_balance = after_close_usd_balance
         
         return last_balance, last_trade
@@ -73,6 +78,13 @@ class TradingThread(threading.Thread):
         else:
             td["bad_trade_count"] +=1
             td["total_loss"] += (last_balance - after_close_usd_balance)
+    def save_all_trading_data(self):
+        print("Saving stats", end="\r") # returns the "cursor" to the same line, so it will be overwritten in the next print
+        for key, value in td.items():
+            # Call the function with unpacked kwargs
+            json_data_handler.update_trading_data(key=key,value= value)
+        print("Finished saving stats")
+        
 def start_trading():
     print("starting trading loop")
     global trading_thread
@@ -82,9 +94,3 @@ def stop_trading():
     print("stopping trading loop")
     trading_thread.stop()
     trading_thread.join()
-def save_all_trading_data():
-    print("Saving stats", end="\r") # returns the "cursor" to the same line, so it will be overwritten in the next print
-    for key, value in td.items():
-        # Call the function with unpacked kwargs
-        json_data_handler.update_trading_data(key=key,value= value)
-    print("Finished saving stats")

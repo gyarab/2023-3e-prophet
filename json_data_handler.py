@@ -36,12 +36,12 @@ def load_trading_data(filename=trade_data_file_name):
 
 def reset_saved_data(filename=trade_data_file_name):
     # Fetch current BTC value
-    btc_value = get_current_btc_value()
+    #btc_value = get_current_btc_value()
     
     # Define trading data with fetched BTC value
     trading_data = {
-        "time_spent_trading": "00:00:00",
-        "BTC_at_close": btc_value,
+        "time_spent_trading": 0,
+        #"BTC_at_close": btc_value,
         "USD_balance": 10000,
         "BTC_balance": 0,
         "long_count": 0,
