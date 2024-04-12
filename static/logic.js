@@ -80,10 +80,27 @@ function updateChart() {
     options: {
       legend: { display: false },
       animation: { duration: 0 },
-      responsive: true 
+      responsive: true
     }
   });
 }
+
+let isTrading = false;
+
+function toggleTrading() {
+  if (isTrading) {
+    stopTrading();
+    document.getElementById('toggleButton').innerText = 'Press to start trading';
+    isTrading = false;
+  }
+
+  else {
+    startTrading();
+    document.getElementById('toggleButton').innerText = 'Press to stop trading';
+    isTrading = true;
+  }
+}
+
 
 function startTrading() {
   fetch('/start_trading', {
@@ -97,7 +114,7 @@ function startTrading() {
   });
 
   loadData();
-  startCounting();
+  //startCounting();
 }
 
 
@@ -114,7 +131,7 @@ function stopTrading() {
 
 
   clearInterval(intervalId); // Stop the counting interval before saving
-  saveData();
+  //saveData();
 }
 
 function loadData() {
@@ -133,12 +150,11 @@ function loadData() {
     })
     .then(data => {
       if (data.trading_data) {
-        //console.log(data.tradingData);
-        // Update the content of the spans with the trading data
         document.getElementById('BTC_balance').textContent = data.trading_data['BTC_balance'];
         document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];
 
-        document.getElementById('timeSpentTrading').innerText = data.trading_data['time_spent_trading'];
+        // Convert the time spent trading from seconds to HH:MM:SS format
+        document.getElementById('timeSpentTrading').innerText = formatTime(data.trading_data['time_spent_trading']);
 
         document.getElementById('money_made').innerText = (data.trading_data['total_profit'] - data.trading_data['total_loss']);
 
@@ -183,7 +199,7 @@ function pad(value) {
 }
 
 
-
+/*
 function saveData() {
   fetch('/load_trading_data')
     .then(response => response.json())
@@ -205,7 +221,7 @@ function saveData() {
         .catch(error => console.error('Error:', error));
     })
     .catch(error => console.error('Error:', error));
-}
+}*/
 
 function resetSavedData() {
   fetch('/reset_saved_data', {
@@ -224,6 +240,11 @@ function resetSavedData() {
 function sliderUpdate(value) {
   document.getElementById('sliderUpdate').textContent = value;
   refreshTime = value;
+}
+
+function sliderLeverageUpdate(value) {
+  document.getElementById('leverage').textContent = value;
+  
 }
 
 
