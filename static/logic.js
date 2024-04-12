@@ -280,7 +280,10 @@ function darkMode() {
   document.documentElement.style.setProperty('--darkerBlue', '#000000')
   document.documentElement.style.setProperty('--yellow', '#fce6bd',)
   document.documentElement.style.setProperty('--orange', '#fcdb9f',)
-  document.documentElement.style.setProperty('--darkCyan', '#04090f',)
+  document.documentElement.style.setProperty('--darkCyan','#04090f',)
+  document.documentElement.style.setProperty('--blobColor', '#e8be87')
+  document.getElementById("img/ProphetLogo2").src = ("img/ProphetLogo2").src.replace("img/LogoProphetWhite.png") 
+  
 }
 
 function lightMode() {
@@ -288,7 +291,7 @@ function lightMode() {
   document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7',)
   document.documentElement.style.setProperty('--yellow', '#000000',)
   document.documentElement.style.setProperty('--orange', '#000000',)
-  document.documentElement.style.setProperty('--darkCyan', '#d3d3d3',)
+  document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
 }
 
 function defaultMode() {
@@ -296,7 +299,7 @@ function defaultMode() {
   document.documentElement.style.setProperty('--darkerBlue', '#021a31',)
   document.documentElement.style.setProperty('--yellow', '#ecb365',)
   document.documentElement.style.setProperty('--orange', '#da9940',)
-  document.documentElement.style.setProperty('--darkCyan', '#04293a',)
+  document.documentElement.style.setProperty('--darkCyan','#04293a',)
 }
 
 
