@@ -85,10 +85,10 @@
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader"> <span data-translation="twallet"> Peněženka</span> <i class="bi bi-wallet2"></i></h2>
           <p class="numbers">
-            0 USD <br>
-            0 BTC
-
-
+           
+            <span id="USD_balance"></span>  USD <br>
+            <span id="BTC_balance"></span>  BTC
+            
           </p>
         </div>
       </div>
@@ -98,7 +98,8 @@
           <p class="numbers">
             <span data-translation="tPriceBTC"> Nynější cena </span>  <span id="btc_value"></span> USD <br>
             <span data-translation="tLastHourBTC"> Poslední hodina </span>   <span id="btcHourDiff"></span>%   <br>
-            <span data-translation="tLastOpened"> Od posledního otevření </span>  ?% <i class="bi bi-arrow-up"></i>
+            <span data-translation="tLastOpened"> Od posledního otevření </span>  <span id="since_close"> </span>% 
+            <!-- <i class="bi bi-arrow-up"></i> -->
           </p>
         </div>
       </div>
@@ -115,16 +116,17 @@
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader"> <span data-translation="tgraph"> Graf </span> <i class="bi bi-graph-up"></i></h2>
-          <p class="numbers">
-            <canvas id="myChart" style="width:120%;max-width:150%"></canvas>
+          
+            <canvas id="myChart" class="wrapper"></canvas>
+          
 
           <p class="underValues numbers">
             <span data-translation="tTradeTime">Celkový čas obchodování:</span>   <span id="timeSpentTrading"></span> <br>
-            <span data-translation="tProfit">Celkový profit:</span>  BTC
+            <span data-translation="tProfit">Celkový profit:</span> <span id="money_made">  </span>  USD
           </p>
 
 
-          </p>
+          
         </div>
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
@@ -133,9 +135,11 @@
           <p class="numbers">
 
             <!--Untranslated-->
-            <span style="color: limegreen;"> koupeno - 23BTC <i class="bi bi-arrow-up"></i> </span> <br>
-            <span style="color: red;"> prodáno - 213BTC <i class="bi bi-arrow-down"></i> </span> <br>
-            <span style="color: limegreen;"> prodáno - 203BTC <i class="bi bi-arrow-up"></i> </span> <br>
+            Number of long trades: <span id="long_count"></span> <i class="bi bi-arrow-up"></i> <br>
+            Number of short trades: <span id="short_count"></span> <i class="bi bi-arrow-down"></i> <br>
+            <span style="color: limegreen;"> Good trades: </span>  <span id="good_trades"></span>   <br>
+            <span style="color: red;"> Bad trades:  </span>   <span id="bad_trades"></span>  <br>
+
 
 
           <p class="underValues numbers">
@@ -157,19 +161,18 @@
           <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
           <p class="numbers">
 
-            <span data-translation= "tActivePortfolio" > Aktivní portfolio: </span> 5% <br>
-            <span data-translation= "tInterval" > Interval obchodování: </span> 1h <br>
-            <span data-translation= "tRisk" > Risk bota: </span> 5% (>55%)  <br>
-            
-            <!--Untranslated-->
-            <button class="btn btn-primary" onclick=saveData()>Save </button>
-            <button class="btn btn-primary" onclick=loadData()>Load </button>            
-            
-              
-              <p id="btcValueInvested"></p>
-          
-             
 
+            <span data-translation= "tLeverage" > Páka: </span> <span id="leverage"></span> <br>
+           
+            
+            
+            <!--Untranslated-->             
+            <button class="btn btn-primary" onclick=resetSavedData()>reset </button>  
+            <button class="btn btn-primary" onclick=startTrading()>start </button>
+            <button class="btn btn-primary" onclick=stopTrading()>stop </button>
+            
+            
+            
           </p>
         </div>
       </div>
@@ -179,7 +182,13 @@
           <p class="numbers">
            
              
-            <span data-translation= "tRefreshTime" > Čas obnovování: </span> 10s <br>
+            
+
+            <label for="Slider" class="form-label">  <span data-translation= "tRefreshTime" > Čas obnovování: </span> 
+            </label> <span id="sliderUpdate"> 10</span>s<br>
+            <input class="slider" type="range" class="form-range" value="10" min="5" max="60" step="5" id="Slider" onchange="sliderUpdate(this.value);"> <br>
+            
+            
             <span data-translation= "tTheme" > Téma: </span>
 
             
@@ -202,8 +211,8 @@
     <h1 class="header" id="links"> <span data-translation= "tlinks"> Odkazy</span> </h1>
     <p class="underValues">
 
-      <a href=""> <span data-translation= "tDocumentation"> Dokumentace projektu </span>  <i class="bi bi-file-earmark-text-fill"></i></a> <br>
-      <a href="https://github.com/gyarab/2023-3e-prophet"> <span data-translation= "tGithub"> Github repozitář </span> <i class="bi bi-github"></i></a> <br>
+      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer"> <span data-translation= "tDocumentation"> Dokumentace projektu </span>  <i class="bi bi-file-earmark-text-fill"></i></a> <br>
+      <a href="https://github.com/gyarab/2023-3e-prophet" target="_blank" rel="noopener noreferrer"> <span data-translation= "tGithub"> Github repozitář </span> <i class="bi bi-github"></i></a> <br>
       <span data-translation= "tCreated"> Vytvořeno 2024 </span> 
     </p>
   </div>

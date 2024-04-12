@@ -113,7 +113,11 @@ def save_model(model, model_path):
 def load_data_model(model, filename):
     print('loading model')
     loaded_model = model #changed
-    loaded_model.load_state_dict(torch.load(filename))
+    # It has to be loaded this way if the device does not have cuda device
+    if device == 'cpu':
+        loaded_model.load_state_dict(torch.load(filename, map_location=torch.device('cpu')))
+    else:
+        loaded_model.load_state_dict(torch.load(filename))
     print(f"Model loaded from {filename}")
     return loaded_model   
 
