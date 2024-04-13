@@ -258,8 +258,6 @@ class LoaderOHLCV():
     def get_absolute_path(self):
         input_file_path = os.path.join(os.path.dirname(__file__), 'datasets', self.input_file)
         return input_file_path
-    def get_scaler(self):
-        return self.scaler
     def prepare_live_data(self, raw_data):
         # Prepares data for prediction
         prepared_data = self.prepare_dataframe_for_lstm3(raw_data, train= False)

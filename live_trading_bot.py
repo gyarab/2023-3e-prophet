@@ -1,6 +1,5 @@
 # This script is for simulating trading on live data (forward testing)
 import time
-from datetime import datetime
 import threading
 import best_brain as bb
 import binance_data_fetcher as bdf
@@ -12,7 +11,7 @@ import csv_data_handler
 symbol = 'BTCUSDT'
 look_back = 9
 # loads trading data
-bb.model = bb.load_data_model(bb.model, bb.model_path)
+bb.load_model()
 bb.model.to(bb.device)
 
 class TradingThread(threading.Thread):
