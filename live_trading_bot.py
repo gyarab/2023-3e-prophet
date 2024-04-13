@@ -1,11 +1,13 @@
 # This script is for simulating trading on live data (forward testing)
 import time
+from datetime import datetime
 import threading
 import best_brain as bb
 import binance_data_fetcher as bdf
 from data_manager import LoaderOHLCV
 import trader
 import json_data_handler
+import csv_data_handler
 
 symbol = 'BTCUSDT'
 look_back = 9
@@ -58,11 +60,13 @@ class TradingThread(threading.Thread):
         self.calculate_stats(last_trade, after_close_usd_balance, last_balance)
         # Calculates time spend on this loop
         time_spend = round(time.time() - start_time)
+        # Saves the time spend
         td["time_spent_trading"]+= time_spend
-        
+        # Saves all stats
         self.save_all_trading_data()
+        # Saves balance history to csv
+        self.save_balance_history(after_close_usd_balance, raw_data["Date"].iloc[-1]) # raw_data["Date"].iloc[-1] = date of the close price we make trade for
         last_balance = after_close_usd_balance
-        
         return last_balance, last_trade
     def calculate_stats(self, last_trade, after_close_usd_balance, last_balance):
         global td
@@ -84,7 +88,11 @@ class TradingThread(threading.Thread):
             # Call the function with unpacked kwargs
             json_data_handler.update_trading_data(key=key,value= value)
         print("Finished saving stats")
-        
+    # Saves usd balance that it would have after closing all trades + saves timestamp in seconds 
+    def save_balance_history(self, usd_balance, timestamp_date):
+        # Converts date timestamp to timestamp of seconds
+        timestamp = timestamp_date.timestamp()
+        csv_data_handler.append_row_to_csv(usd_balance, timestamp)
 def start_trading():
     print("starting trading loop")
     global trading_thread

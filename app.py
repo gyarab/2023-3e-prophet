@@ -1,8 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 from binance_data_fetcher import get_current_btc_value, get_last_hour_values
 from json_data_handler import update_trading_data, load_trading_data, reset_saved_data
+from csv_data_handler import reset_history, read_history
 from live_trading_bot import start_trading, stop_trading
-
 app = Flask(__name__)
 
 # Initial BTC value
@@ -32,9 +32,9 @@ def load_trading_data_endpoint():
 
 @app.route('/reset_saved_data', methods=['POST'])
 def reset_saved_data_endpoint():
-    #stop_trading() # alsto stops trading
-    reset_saved_data()  
-    return jsonify({'message': 'Trading data has been reset.'})
+    reset_saved_data() 
+    reset_history()
+    return jsonify({'message': 'Trading data + history has been reset.'})
 
 @app.route('/update_trading_data', methods=['POST'])
 def update_trading_data_endpoint():
