@@ -2,11 +2,11 @@
 
 :root {  
     --darkBlue: #041c32;  
-    --darkerBlue: #021a31;  
+    --darkerBlue: #021a3170;  
     --yellow: #ecb365;  
     --orange: #da9940;
     --darkCyan: #04293a;
-    --blobColor: #05293a76;
+    --blobColor: #06314576;
   }
   
 
@@ -35,48 +35,46 @@ body
 		movement_one 12s ease-in-out infinite both;
 	opacity:.7;
 	position: fixed;
-	left: 75%;
-	top: 40%;
     filter:blur(4px);
     z-index: -1;
 }
 
 .shape-blob.one{
 	background-color:var(--blobColor);
-	height: 150px;
-	width: 200px;
-	left: 10px;
-	top: 10px;
+	height: 200px;
+	width: 250px;
+	left: 1%;
+	top: 3%;
 	transform: rotate(-180deg);
 	animation: transform 8s ease-in-out infinite both alternate, movement_two 20s ease-in-out infinite both;
 }
 
 .shape-blob.six{
 	background-color:var(--blobColor);
-	height: 70px;
-	width: 100px;
-	left: 260px;
-	top: 200px;
+	height: 170px;
+	width: 200px;
+	left: 45%;
+	top:20%;
 	transform: rotate(-180deg);
 	animation: transform 5s ease-in-out infinite both alternate, movement_two 5s ease-in-out infinite both;
 }
 
 .shape-blob.four{
 	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 450px;
-	top: 60px;
+	height: 200px;
+	width: 180px;
+	left: 50%;
+	top: 60%;
 	transform: rotate(-180deg);
 	animation: transform 17s ease-in-out infinite both alternate, movement_two 13s ease-in-out infinite both;
 }
 
 .shape-blob.five{
 	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 580px;
-	top: 30px;
+	height: 200px;
+	width: 180px;
+	left: 69%;
+	top: 50%;
 	transform: rotate(-180deg);
 	animation: transform 12s ease-in-out infinite both alternate, movement_two 18s ease-in-out infinite both;
 }
@@ -85,18 +83,18 @@ body
 	background-color:var(--blobColor);
 	height: 150px;
 	width: 150px;
-	left: 700px;
-	top: 150px;
+	left: 75%;
+	top: 15%;
 	transform: rotate(-180deg);
 	animation: transform 10s ease-in-out infinite both alternate, movement_two 10s ease-in-out infinite both;
 }
 
 .shape-blob.three{
 	background-color:var(--blobColor);
-	height: 150px;
-	width: 150px;
-	left: 1100px;
-	top: 30px;
+	height: 250px;
+	width: 250px;
+	left: 15%;
+	top: 35%;
 	transform: rotate(-180deg);
 	animation: transform 7s ease-in-out infinite both alternate, movement_two 23s ease-in-out infinite both;
 }
@@ -104,180 +102,38 @@ body
 	background-color:var(--blobColor);
 	height: 150px;
 	width: 200px;
-	left: 210px;
-	top: 310px;
+	left: 15%;
+	top: 80%;
 	transform: rotate(-180deg);
 	animation: transform 10s ease-in-out infinite both alternate, movement_two 22s ease-in-out infinite both;
 }
-
-.shape-blob.twelve{
-	background-color:var(--blobColor);
-	height: 70px;
-	width: 100px;
-	left: 360px;
-	top: 500px;
-	transform: rotate(-180deg);
-	animation: transform 8s ease-in-out infinite both alternate, movement_two 8s ease-in-out infinite both;
-}
-
 .shape-blob.ten{
 	background-color:var(--blobColor);
 	height: 100px;
 	width: 80px;
-	left: 550px;
-	top: 360px;
+	left: 40%;
+	top: 60%;
 	transform: rotate(-180deg);
 	animation: transform 19s ease-in-out infinite both alternate, movement_two 15s ease-in-out infinite both;
 }
-
-.shape-blob.eleven{
-	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 680px;
-	top: 330px;
-	transform: rotate(-180deg);
-	animation: transform 14s ease-in-out infinite both alternate, movement_two 20s ease-in-out infinite both;
-}
-
 .shape-blob.eight{
 	background-color:var(--blobColor);
 	height: 150px;
 	width: 150px;
-	left: 800px;
-	top: 450px;
+	left: 63%;
+	top: 90%;
 	transform: rotate(-180deg);
 	animation: transform 12s ease-in-out infinite both alternate, movement_two 12s ease-in-out infinite both;
 }
-
 .shape-blob.nine{
 	background-color:var(--blobColor);
 	height: 150px;
 	width: 150px;
-	left: 1000px;
-	top: 330px;
+	left: 30%;
+	top: 13%;
 	transform: rotate(-180deg);
 	animation: transform 9s ease-in-out infinite both alternate, movement_two 25s ease-in-out infinite both;
 }
-.shape-blob.thirteen{
-	background-color:var(--blobColor);
-	height: 150px;
-	width: 200px;
-	left: 210px;
-	top: 610px;
-	transform: rotate(-180deg);
-	animation: transform 10s ease-in-out infinite both alternate, movement_two 22s ease-in-out infinite both;
-}
-
-.shape-blob.fourteen{
-	background-color:var(--blobColor);
-	height: 70px;
-	width: 100px;
-	left: 360px;
-	top: 800px;
-	transform: rotate(-180deg);
-	animation: transform 8s ease-in-out infinite both alternate, movement_two 8s ease-in-out infinite both;
-}
-
-.shape-blob.fifteen{
-	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 550px;
-	top: 660px;
-	transform: rotate(-180deg);
-	animation: transform 19s ease-in-out infinite both alternate, movement_two 15s ease-in-out infinite both;
-}
-
-.shape-blob.sixteen{
-	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 680px;
-	top: 630px;
-	transform: rotate(-180deg);
-	animation: transform 14s ease-in-out infinite both alternate, movement_two 20s ease-in-out infinite both;
-}
-
-.shape-blob.seventeen{
-	background-color:var(--blobColor);
-	height: 150px;
-	width: 150px;
-	left: 800px;
-	top: 750px;
-	transform: rotate(-180deg);
-	animation: transform 12s ease-in-out infinite both alternate, movement_two 12s ease-in-out infinite both;
-}
-
-.shape-blob.eighteen{
-	background-color:var(--blobColor);
-	height: 150px;
-	width: 150px;
-	left: 1000px;
-	top: 630px;
-	transform: rotate(-180deg);
-	animation: transform 9s ease-in-out infinite both alternate, movement_two 25s ease-in-out infinite both;
-}
-.shape-blob.nineteen{
-	background-color:var(--blobColor);
-	height: 150px;
-	width: 200px;
-	left: 210px;
-	top: 1010px;
-	transform: rotate(-180deg);
-	animation: transform 10s ease-in-out infinite both alternate, movement_two 22s ease-in-out infinite both;
-}
-
-.shape-blob.twenty{
-	background-color:var(--blobColor);
-	height: 70px;
-	width: 100px;
-	left: 360px;
-	top: 1200px;
-	transform: rotate(-180deg);
-	animation: transform 8s ease-in-out infinite both alternate, movement_two 8s ease-in-out infinite both;
-}
-
-.shape-blob.twentyone{
-	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 550px;
-	top: 1060px;
-	transform: rotate(-180deg);
-	animation: transform 19s ease-in-out infinite both alternate, movement_two 15s ease-in-out infinite both;
-}
-
-.shape-blob.twentytwo{
-	background-color:var(--blobColor);
-	height: 100px;
-	width: 80px;
-	left: 680px;
-	top: 1030px;
-	transform: rotate(-180deg);
-	animation: transform 14s ease-in-out infinite both alternate, movement_two 20s ease-in-out infinite both;
-}
-
-.shape-blob.twentyfour{
-	background-color:var(--blobColor);
-	height: 150px;
-	width: 150px;
-	left: 800px;
-	top: 1150px;
-	transform: rotate(-180deg);
-	animation: transform 12s ease-in-out infinite both alternate, movement_two 12s ease-in-out infinite both;
-}
-
-.shape-blob.twentyfive{
-	background-color:var(--blobColor);
-	height: 150px;
-	width: 150px;
-	left: 1000px;
-	top: 630px;
-	transform: rotate(-180deg);
-	animation: transform 9s ease-in-out infinite both alternate, movement_two 25s ease-in-out infinite both;
-}
-
 @keyframes transform
 {
     0%,
