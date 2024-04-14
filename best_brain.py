@@ -5,7 +5,6 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt # graphs
@@ -48,7 +47,7 @@ def create_batches(train_loader):
         break
     return x_batch, y_batch
 
-def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
+def train_one_epoch(train_loader, epoch, loss_function, optimizer):
     model.train(True)
     print()
     print(f'Epoch: {epoch}')
@@ -70,79 +69,56 @@ def train_one_epoch(model, train_loader, epoch, loss_function, optimizer):
             avg_loss_across_batches = running_loss / 100
             print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
                                                     avg_loss_across_batches))
-            running_loss = 0.0
-# validates results during training process
-def validate_one_epoch(model, test_loader, loss_function):
-    model.train(False)
-    running_loss = 0.0
-    
-    for batch_index, batch in enumerate(test_loader): # ?
-        x_batch, y_batch = batch[0].to(device), batch[1].to(device) # ?
-        
-        with torch.no_grad():
-            output = model(x_batch)
-            loss = loss_function(output, y_batch)
-            running_loss += loss.item() # adss the loss value
-
-    avg_loss_across_batches = running_loss / len(test_loader) # arythmetic avrage
-    
-    print('Val Loss: {0:.3f}'.format(avg_loss_across_batches))
-    #print('***************************************************')
-    #print()    
-    
-
+            running_loss = 0.0  
 # train all data
-def train_model(model, train_loader, test_loader, num_epochs, model_path):
+def train_model(train_loader, num_epochs, learning_rate):
     loss_function = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
-        train_one_epoch(model, train_loader, epoch, loss_function, optimizer)
-        #validate_one_epoch(model, test_loader, loss_function)
+        train_one_epoch(train_loader, epoch, loss_function, optimizer)
         if epoch % 5 == 0:
-            save_model(model, model_path)
-    save_model(model, model_path)
+            save_model()
+    save_model()
 
 # Function to save the trained model
-def save_model(model, model_path):
-    model_path = model_path
+def save_model():
     print('saving model')
     torch.save(model.state_dict(), model_path)
     print(f"Model saved as {model_path}")
 
 # Function to load the trained model
-def load_data_model(model, filename):
+def load_model():
+    global model
     print('loading model')
     loaded_model = model #changed
     # It has to be loaded this way if the device does not have cuda device
     if device == 'cpu':
-        loaded_model.load_state_dict(torch.load(filename, map_location=torch.device('cpu')))
+        loaded_model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     else:
-        loaded_model.load_state_dict(torch.load(filename))
-    print(f"Model loaded from {filename}")
-    return loaded_model   
+        loaded_model.load_state_dict(torch.load(model_path))
+    print(f"Model loaded from {model_path}")
+    model = loaded_model   
 
 # Function to reset models parametres
-def reset_model(model):
+def reset_model():
     print("reseting models parameters")
     for layer in model.children():
         if hasattr(layer, 'reset_parameters'):
             layer.reset_parameters()
 
-def create_train_graph(X_train, y_train, look_back, num_of_data_columns, device):
+def create_train_graph(X_train, y_train):
     print('creating train graph')
-    scaler = DataManager.get_scaler()
+    num_of_data_columns = len(features_columns)
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
 
     dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1)) # !!!!
     dummies[:, 0] = train_predictions
-    #dummies = scaler.inverse_transform(dummies)
     train_predictions = dc(dummies[:, 0])
     
     dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = y_train.flatten()
-    #dummies = scaler.inverse_transform(dummies)
     new_y_train = dc(dummies[:, 0])
     # Add a horizontal line at y=0
     plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
@@ -153,18 +129,16 @@ def create_train_graph(X_train, y_train, look_back, num_of_data_columns, device)
     plt.legend()
     plt.show()
     
-def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
+def create_test_graph(X_test, y_test):
     print('creating test graph')
-    scaler = DataManager.get_scaler()
+    num_of_data_columns = len(features_columns) 
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = test_predictions
-    #dummies = scaler.inverse_transform(dummies)
     test_predictions = dc(dummies[:, 0])
     
     dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
     dummies[:, 0] = y_test.flatten()
-    #dummies = scaler.inverse_transform(dummies)
     new_y_test = dc(dummies[:, 0])
     # Add a horizontal line at y=0
     plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
@@ -175,7 +149,7 @@ def create_test_graph(X_test, y_test, look_back, num_of_data_columns, device):
     plt.legend()
     plt.show()
     
-def create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count,lstm_layers, model_name = 'not_given'):
+def create_model_path(model_name = 'not_given'):
     if model_name == 'not_given':
         # Creates model's name
         inicials_features_columns = ''.join([s[0] for s in features_columns])
@@ -208,35 +182,11 @@ precentage_of_train_data = 0.99 # how much data will be used for training, rest 
 input_file_name = 'not_given'   # this file has to be in /datasets/
 # which columns will be included in training data - X
 features_columns = ['Close']
-num_of_data_columns = len(features_columns) 
 load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 8
 model = LSTM(1, lstm_neuron_count, lstm_layers)
-model_name = 'not_given'
-model_path = create_model_path(load_data_mode, features_columns, look_back, lstm_neuron_count, lstm_layers, model_name)
-if __name__ == '__main__':
-    model.to(device)
-    # Train parameters
-    learning_rate = 0.001
-    num_epochs = 10 # Epoch: Passes the entire training dataset to the model once
-    input_file_name = 'Train_1_minute.csv'    
-    # Load the dataset
-    DataManager = LoaderOHLCV(look_back, features_columns, load_data_mode, input_file=input_file_name)
-    X_train, X_test, y_train, y_test = DataManager.get_data_as_tensor()
-    train_dataset, test_dataset = DataManager.to_dataset(X_train, X_test, y_train, y_test)
-    train_loader, test_loader = DataManager.to_dataLoader(train_dataset, test_dataset, batch_size)
-    train_model(model, train_loader, test_loader, num_epochs, model_path)
-    #Load the trained model
-    #load_data_model(model, model_path)
-    
-    # Resets the trained model
-    #shows graphs
-    create_train_graph(X_train, y_train, look_back,num_of_data_columns, device)
-    create_test_graph(X_test, y_test, look_back, num_of_data_columns, device)
-
-
-#x_batch, y_batch = create_batches(train_loader)
+model_path = create_model_path()
 
     
     

@@ -10,7 +10,7 @@ import trader
 
 device = bb.device
 # Initialize weights values
-bb.model = bb.load_data_model(bb.model, bb.model_path)
+bb.load_model()
 bb.model.to(device)
 # prepares data
 DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode,'Backtest_1_minute.csv')
@@ -115,4 +115,4 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = Tr
     print(f'holds: {hold_count}')
     create_back_test_graph(usd_balance_history, bh_usd_balance_history, sh_usd_balance_history)        
 if __name__ == '__main__':
-    back_test_loop(commission_rate = 0.05)
+    back_test_loop(commission_rate = 0.00)

@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
-# YOUR API KEYS HERE
-# asi by to chtelo fixnout...
 # this is just for fetching public informations - so api_key and api_secret does not have to be filled
 api_key = "lol"    #Enter your own API-key here
 api_secret = "xd" #Enter your own API-secret here
