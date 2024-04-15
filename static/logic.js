@@ -277,7 +277,7 @@ function switchLanguage() {
 
 function darkMode() {
   document.documentElement.style.setProperty('--darkBlue', '#010207')
-  document.documentElement.style.setProperty('--darkerBlue', '#000000')
+  document.documentElement.style.setProperty('--darkerBlue', '#000000bd')
   document.documentElement.style.setProperty('--yellow', '#fce6bd',)
   document.documentElement.style.setProperty('--orange', '#fcdb9f',)
   document.documentElement.style.setProperty('--darkCyan','#04090f',)
@@ -288,7 +288,7 @@ function darkMode() {
 
 function lightMode() {
   document.documentElement.style.setProperty('--darkBlue', '#fcfcfc',)
-  document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7',)
+  document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7bd',)
   document.documentElement.style.setProperty('--yellow', '#000000',)
   document.documentElement.style.setProperty('--orange', '#000000',)
   document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
@@ -298,7 +298,7 @@ function lightMode() {
 
 function defaultMode() {
   document.documentElement.style.setProperty('--darkBlue', '#041c32',)
-  document.documentElement.style.setProperty('--darkerBlue', '#021a31',)
+  document.documentElement.style.setProperty('--darkerBlue', '#021a31bd',)
   document.documentElement.style.setProperty('--yellow', '#ecb365',)
   document.documentElement.style.setProperty('--orange', '#da9940',)
   document.documentElement.style.setProperty('--darkCyan','#04293a',)
