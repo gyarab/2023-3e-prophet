@@ -282,7 +282,7 @@ function darkMode() {
   document.documentElement.style.setProperty('--orange', '#fcdb9f',)
   document.documentElement.style.setProperty('--darkCyan','#04090f',)
   document.documentElement.style.setProperty('--blobColor', '#e8be87')
-  document.getElementById("img/ProphetLogo2").src = ("img/ProphetLogo2").src.replace("img/LogoProphetWhite.png") 
+  document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
   
 }
 
@@ -292,6 +292,7 @@ function lightMode() {
   document.documentElement.style.setProperty('--yellow', '#000000',)
   document.documentElement.style.setProperty('--orange', '#000000',)
   document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
+  document.getElementsByClassName("icon")[0].src = "static/img/White_logo.png";
 }
 
 function defaultMode() {
@@ -300,6 +301,7 @@ function defaultMode() {
   document.documentElement.style.setProperty('--yellow', '#ecb365',)
   document.documentElement.style.setProperty('--orange', '#da9940',)
   document.documentElement.style.setProperty('--darkCyan','#04293a',)
+  document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
 }
 
 
