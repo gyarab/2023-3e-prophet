@@ -9,26 +9,26 @@ let startTime = Date.now();
 
 (function SiteRefresh() {
   loadData();
-
   fetch('/get_last_hour_values')
-    .then(response => response.json())
-    .then(data => {
-      btcVal = Object.values(data)[0];
-
-      // Current btc price
-      document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
-
-      // Last hour diff
-      const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
-      if (btcHourDiff >= 0) {
-        document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
-      } else {
+  .then(response => response.json())
+  .then(data => {
+    btcVal = Object.values(data)[0];
+    
+    // Current btc price
+    document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
+    
+    // Last hour diff
+    const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
+    if (btcHourDiff >= 0) {
+      document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
+    } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
-
+      
       // Chart
       updateChart();
-
+      
+      console.log(btcVal.length)
 
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
@@ -52,41 +52,46 @@ function resetTimePassedInterval() {
 
 
 
-
-document.getElementById('since_close').textContent = btcVal[btcVal.length - 1];
+//UNUSED
+//document.getElementById('since_close').textContent = btcVal[btcVal.length - 1];
 
 
 //Graph
+let myChart;
+
 function updateChart() {
   const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
   const name = ['Bitcoin', 'Bot balance'];
 
-  new Chart("myChart", {
-    type: "line",
-    data: {
-      labels: xValues,
-      datasets: [{
-        data: btcVal,
-        borderColor: "#da9940",
-        fill: false,
-        label: name[0]
-      }, /*{
-      data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-      borderColor: "lime",
-      fill: false,
-      label: name[1]
-    }*/]
-    },
-    options: {
-      legend: { display: false },
-      animation: { duration: 0 },
-      responsive: true
-    }
-  });
+  if (!myChart) {
+    // If the chart doesn't exist, create a new one
+    myChart = new Chart("myChart", {
+      type: "line",
+      data: {
+        labels: xValues,
+        datasets: [{
+          data: btcVal,
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--orange'),
+          fill: false,
+          label: name[0]
+        }]
+      },
+      options: {
+        legend: { display: false },
+        animation: { duration: 0 },
+        responsive: true
+      }
+    });
+  } else {
+    // If the chart exists, update its data
+    myChart.data.labels = xValues;
+    myChart.data.datasets[0].data = btcVal;
+    myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    myChart.update();
+  }
 }
 
 let isTrading = false;
-
 function toggleTrading() {
   if (isTrading) {
     stopTrading();
@@ -294,6 +299,7 @@ function darkMode() {
   document.documentElement.style.setProperty('--darkCyan','#04090f',)
   document.documentElement.style.setProperty('--blobColor', '#e8be87')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
+  updateChart();
   
 }
 
@@ -305,6 +311,7 @@ function lightMode() {
   document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
   document.documentElement.style.setProperty('--blobColor', '#d3d3d3' )
   document.getElementsByClassName("icon")[0].src = "static/img/White_logo.png";
+  updateChart();
 }
 
 function defaultMode() {
@@ -315,6 +322,7 @@ function defaultMode() {
   document.documentElement.style.setProperty('--darkCyan','#04293a',)
   document.documentElement.style.setProperty('--blobColor', '#06314576' )
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
+  updateChart();
 }
 
 
