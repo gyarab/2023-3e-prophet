@@ -27,7 +27,7 @@ class TradingThread(threading.Thread):
         # actions that are needed to calculate upcoming statistics
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = 1)
         current_btc_price = float(raw_data['Close'].iloc[-1])
-        last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
+        last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["commission_rate"])
         DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
         while not self._stop_event.is_set():
             # Meausures starting time 
@@ -56,9 +56,9 @@ class TradingThread(threading.Thread):
         # Models makes prediction
         prediction = bb.make_one_prediction(one_sequence_tensor)
         # Simulates one trade
-        td["USD_balance"], td["BTC_balance"], last_trade = trader.make_one_trade(prediction,td["USD_balance"],td["BTC_balance"],current_btc_price,td["comission_rate"], last_trade, td["leverage"])        
+        td["USD_balance"], td["BTC_balance"], last_trade = trader.make_one_trade(prediction,td["USD_balance"],td["BTC_balance"],current_btc_price,td["commission_rate"], last_trade, td["leverage"])        
         # Calculates how much usd would he have if he closed trade
-        after_close_usd_balance, _ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["comission_rate"])
+        after_close_usd_balance, _ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["commission_rate"])
         # Updates stats
         self.calculate_stats(last_trade, after_close_usd_balance, last_balance)
         # Saves all stats

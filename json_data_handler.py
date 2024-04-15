@@ -52,7 +52,7 @@ def reset_saved_data(filename=trade_data_file_name):
         "total_profit": 0,
         "total_loss": 0,
         "leverage" : 1,
-        "comission_rate" : 0
+        "commission_rate" : 0
     }
     # Ensure that the data directory exists
     os.makedirs(os.path.dirname(filename), exist_ok=True)

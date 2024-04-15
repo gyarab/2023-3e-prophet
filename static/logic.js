@@ -1,3 +1,5 @@
+let leverage = 1;
+let commission_rate = 0;
 
 let refreshTime = 10;
 let btcVal = [];
@@ -28,8 +30,6 @@ let startTime = Date.now();
       // Chart
       updateChart();
       
-      console.log(btcVal.length)
-
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
 
@@ -100,6 +100,8 @@ function toggleTrading() {
   }
 
   else {
+    console.log(leverage);
+    saveData(leverage, commission_rate);
     startTrading();
     document.getElementById('toggleButton').innerText = 'Press to stop trading';
     isTrading = true;
@@ -172,8 +174,8 @@ function loadData() {
         document.getElementById('short_count').textContent = data.trading_data['short_count'];
         document.getElementById('hold_count').textContent = data.trading_data['hold_count'];
 
-        document.getElementById('leverage').textContent = data.trading_data['leverage'];
-        document.getElementById('comission_rate').textContent = (data.trading_data['comission_rate']*100); //Converting from number to %
+        //document.getElementById('leverage').textContent = data.trading_data['leverage'];
+        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']*100); //Converting from number to %
 
       } else {
         console.error('Error: Missing trading data in response:', data);
@@ -214,30 +216,51 @@ function pad(value) {
   return value < 10 ? "0" + value : value;
 }
 
+function saveData(leverage, commissionRate) {
+  const leverageData = {
+    key: 'leverage',
+    value: parseFloat(leverage)
+  };
 
-/*
-function saveData() {
-  fetch('/load_trading_data')
-    .then(response => response.json())
-    .then(data => {
-      var tradingData = {};
-      tradingData['time_spent_trading'] = formatTime(timeSpent);
+  const commissionRateData = {
+    key: 'commission_rate',
+    value: parseFloat(commissionRate)
+  };
 
-      // Update the specific key-value pair you want to update in the trading data
-      // For example, let's update the 'time_spent_trading' key
-      fetch('/update_trading_data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ key: 'time_spent_trading', value: tradingData['time_spent_trading'] })
-      })
-        .then(response => response.json())
-        .then(data => console.log(data.message))
-        .catch(error => console.error('Error:', error));
+  // Send both requests concurrently
+  Promise.all([
+    fetch('/update_trading_data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(leverageData)
+    }),
+    fetch('/update_trading_data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(commissionRateData)
     })
-    .catch(error => console.error('Error:', error));
-}*/
+  ])
+  .then(responses => {
+    // Check if any response is not okay
+    const hasError = responses.some(response => !response.ok);
+    if (hasError) {
+      throw new Error('Network response was not ok');
+    }
+    // Parse response JSON
+    return Promise.all(responses.map(response => response.json()));
+  })
+  .then(data => {
+    // Log success message for both requests
+    //console.log('Leverage:', data[0].message);
+    //console.log('Commission Rate:', data[1].message);
+  })
+  .catch(error => console.error('Error:', error));
+}
+
 
 function resetSavedData() {
   fetch('/reset_saved_data', {
@@ -260,7 +283,7 @@ function sliderUpdate(value) {
 
 function sliderLeverageUpdate(value) {
   document.getElementById('leverage').textContent = value;
-  
+  leverage = value;
 }
 
 
