@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Jiriik css -->
+  <!-- Custom css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <!-- Charts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
@@ -126,12 +126,13 @@
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-percent"></i></h2>
+          <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-arrow-down-up"></i></h2>
           <p class="numbers">
 
             <!--Untranslated-->
             Number of long trades: <span id="long_count"></span> <i class="bi bi-arrow-up"></i> <br>
             Number of short trades: <span id="short_count"></span> <i class="bi bi-arrow-down"></i> <br>
+            Number of holds: <span id="hold_count"></span> <i class="bi bi-arrows-collapse"></i> <br>
             <span style="color: limegreen;"> Good trades: </span>  <span id="good_trades"></span>   <br>
             <span style="color: red;"> Bad trades:  </span>   <span id="bad_trades"></span>  <br>
 
@@ -156,7 +157,8 @@
           <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
           <p class="numbers">
 
-            
+            <span> Commisions:  </span>   <span id="comission_rate"></span> % <br>
+
              <br>
             <label for="Slider" class="form-label">  <span data-translation= "tLeverage" > Páka: </span> 
             </label> <span id="leverage"></span> <br>
@@ -172,7 +174,6 @@
             <br>
             <button id="toggleButton" class="btn btn-primary" onclick="toggleTrading()">Press to start trading</button>
             
-            
           </p>
         </div>
       </div>
@@ -181,9 +182,6 @@
           <h2 class="miniHeader"> <span data-translation= "tsiteOptions" > Nastavení stránky </span>  <i class="bi bi-gear"></i></h2>
           <p class="numbers">
            
-             
-            
-
             <label for="Slider" class="form-label">  <span data-translation= "tRefreshTime" > Čas obnovování: </span> 
             </label> <span id="sliderUpdate"> 10</span>s<br>
             <input class="slider" type="range" class="form-range" value="10" min="5" max="60" step="5" id="Slider" onchange="sliderUpdate(this.value);"> <br>

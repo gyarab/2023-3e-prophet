@@ -150,21 +150,25 @@ function loadData() {
     })
     .then(data => {
       if (data.trading_data) {
-        document.getElementById('BTC_balance').textContent = data.trading_data['BTC_balance'];
-        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];
+        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];        
+        document.getElementById('BTC_balance').textContent = betterRounding((data.trading_data['BTC_balance']), 6)
+
 
         // Convert the time spent trading from seconds to HH:MM:SS format
         document.getElementById('timeSpentTrading').innerText = formatTime(data.trading_data['time_spent_trading']);
 
-        document.getElementById('money_made').innerText = (data.trading_data['total_profit'] - data.trading_data['total_loss']);
+
+        document.getElementById('money_made').innerText = betterRounding((data.trading_data['total_profit'] - data.trading_data['total_loss']), 3);
 
         document.getElementById('good_trades').textContent = data.trading_data['good_trade_count'];
         document.getElementById('bad_trades').textContent = data.trading_data['bad_trade_count'];
 
         document.getElementById('long_count').textContent = data.trading_data['long_count'];
         document.getElementById('short_count').textContent = data.trading_data['short_count'];
+        document.getElementById('hold_count').textContent = data.trading_data['hold_count'];
 
         document.getElementById('leverage').textContent = data.trading_data['leverage'];
+        document.getElementById('comission_rate').textContent = (data.trading_data['comission_rate']*100); //Converting from number to %
 
       } else {
         console.error('Error: Missing trading data in response:', data);
@@ -174,6 +178,13 @@ function loadData() {
       console.error('Error fetching or processing trading data:', error);
     });
 }
+
+function betterRounding(num, decimals)
+{
+  
+  return Math.round((num + Number.EPSILON) * (10** decimals)) / (10** decimals)
+}
+
 
 let intervalId; // Variable to store the interval ID
 let timeSpent = 0; // Variable to store the time spent trading
