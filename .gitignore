@@ -1,9 +1,6 @@
 #
-# python part
+# Python part
 #
-
-# folder for containg large csv files for training
-datasets/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -13,5 +10,10 @@ __pycache__/
 # Flask stuff:
 instance/
 .webassets-cach
-
-data/
+#
+# Project structure
+#
+# Folder for containg large csv files for training models
+datasets/*
+# Folder for containing personal bot stats 
+data/*
