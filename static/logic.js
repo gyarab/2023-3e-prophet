@@ -1,3 +1,5 @@
+let leverage = 1;
+let commission_rate = 0;
 
 let refreshTime = 10;
 let btcVal = [];
@@ -9,27 +11,25 @@ let startTime = Date.now();
 
 (function SiteRefresh() {
   loadData();
-
   fetch('/get_last_hour_values')
-    .then(response => response.json())
-    .then(data => {
-      btcVal = Object.values(data)[0];
-
-      // Current btc price
-      document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
-
-      // Last hour diff
-      const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
-      if (btcHourDiff >= 0) {
-        document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
-      } else {
+  .then(response => response.json())
+  .then(data => {
+    btcVal = Object.values(data)[0];
+    
+    // Current btc price
+    document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
+    
+    // Last hour diff
+    const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
+    if (btcHourDiff >= 0) {
+      document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
+    } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
-
+      
       // Chart
       updateChart();
-
-
+      
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
 
@@ -52,41 +52,46 @@ function resetTimePassedInterval() {
 
 
 
-
-document.getElementById('since_close').textContent = btcVal[btcVal.length - 1];
+//UNUSED
+//document.getElementById('since_close').textContent = btcVal[btcVal.length - 1];
 
 
 //Graph
+let myChart;
+
 function updateChart() {
   const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
   const name = ['Bitcoin', 'Bot balance'];
 
-  new Chart("myChart", {
-    type: "line",
-    data: {
-      labels: xValues,
-      datasets: [{
-        data: btcVal,
-        borderColor: "#da9940",
-        fill: false,
-        label: name[0]
-      }, /*{
-      data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
-      borderColor: "lime",
-      fill: false,
-      label: name[1]
-    }*/]
-    },
-    options: {
-      legend: { display: false },
-      animation: { duration: 0 },
-      responsive: true
-    }
-  });
+  if (!myChart) {
+    // If the chart doesn't exist, create a new one
+    myChart = new Chart("myChart", {
+      type: "line",
+      data: {
+        labels: xValues,
+        datasets: [{
+          data: btcVal,
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--orange'),
+          fill: false,
+          label: name[0]
+        }]
+      },
+      options: {
+        legend: { display: false },
+        animation: { duration: 0 },
+        responsive: true
+      }
+    });
+  } else {
+    // If the chart exists, update its data
+    myChart.data.labels = xValues;
+    myChart.data.datasets[0].data = btcVal;
+    myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    myChart.update();
+  }
 }
 
 let isTrading = false;
-
 function toggleTrading() {
   if (isTrading) {
     stopTrading();
@@ -95,6 +100,8 @@ function toggleTrading() {
   }
 
   else {
+    console.log(leverage);
+    saveData(leverage, commission_rate);
     startTrading();
     document.getElementById('toggleButton').innerText = 'Press to stop trading';
     isTrading = true;
@@ -150,21 +157,25 @@ function loadData() {
     })
     .then(data => {
       if (data.trading_data) {
-        document.getElementById('BTC_balance').textContent = data.trading_data['BTC_balance'];
-        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];
+        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];        
+        document.getElementById('BTC_balance').textContent = betterRounding((data.trading_data['BTC_balance']), 6)
+
 
         // Convert the time spent trading from seconds to HH:MM:SS format
         document.getElementById('timeSpentTrading').innerText = formatTime(data.trading_data['time_spent_trading']);
 
-        document.getElementById('money_made').innerText = (data.trading_data['total_profit'] - data.trading_data['total_loss']);
+
+        document.getElementById('money_made').innerText = betterRounding((data.trading_data['total_profit'] - data.trading_data['total_loss']), 3);
 
         document.getElementById('good_trades').textContent = data.trading_data['good_trade_count'];
         document.getElementById('bad_trades').textContent = data.trading_data['bad_trade_count'];
 
         document.getElementById('long_count').textContent = data.trading_data['long_count'];
         document.getElementById('short_count').textContent = data.trading_data['short_count'];
+        document.getElementById('hold_count').textContent = data.trading_data['hold_count'];
 
-        document.getElementById('leverage').textContent = data.trading_data['leverage'];
+        //document.getElementById('leverage').textContent = data.trading_data['leverage'];
+        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']*100); //Converting from number to %
 
       } else {
         console.error('Error: Missing trading data in response:', data);
@@ -174,6 +185,13 @@ function loadData() {
       console.error('Error fetching or processing trading data:', error);
     });
 }
+
+function betterRounding(num, decimals)
+{
+  
+  return Math.round((num + Number.EPSILON) * (10** decimals)) / (10** decimals)
+}
+
 
 let intervalId; // Variable to store the interval ID
 let timeSpent = 0; // Variable to store the time spent trading
@@ -198,30 +216,51 @@ function pad(value) {
   return value < 10 ? "0" + value : value;
 }
 
+function saveData(leverage, commissionRate) {
+  const leverageData = {
+    key: 'leverage',
+    value: parseFloat(leverage)
+  };
 
-/*
-function saveData() {
-  fetch('/load_trading_data')
-    .then(response => response.json())
-    .then(data => {
-      var tradingData = {};
-      tradingData['time_spent_trading'] = formatTime(timeSpent);
+  const commissionRateData = {
+    key: 'commission_rate',
+    value: parseFloat(commissionRate)
+  };
 
-      // Update the specific key-value pair you want to update in the trading data
-      // For example, let's update the 'time_spent_trading' key
-      fetch('/update_trading_data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ key: 'time_spent_trading', value: tradingData['time_spent_trading'] })
-      })
-        .then(response => response.json())
-        .then(data => console.log(data.message))
-        .catch(error => console.error('Error:', error));
+  // Send both requests concurrently
+  Promise.all([
+    fetch('/update_trading_data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(leverageData)
+    }),
+    fetch('/update_trading_data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(commissionRateData)
     })
-    .catch(error => console.error('Error:', error));
-}*/
+  ])
+  .then(responses => {
+    // Check if any response is not okay
+    const hasError = responses.some(response => !response.ok);
+    if (hasError) {
+      throw new Error('Network response was not ok');
+    }
+    // Parse response JSON
+    return Promise.all(responses.map(response => response.json()));
+  })
+  .then(data => {
+    // Log success message for both requests
+    //console.log('Leverage:', data[0].message);
+    //console.log('Commission Rate:', data[1].message);
+  })
+  .catch(error => console.error('Error:', error));
+}
+
 
 function resetSavedData() {
   fetch('/reset_saved_data', {
@@ -244,7 +283,7 @@ function sliderUpdate(value) {
 
 function sliderLeverageUpdate(value) {
   document.getElementById('leverage').textContent = value;
-  
+  leverage = value;
 }
 
 
@@ -283,6 +322,7 @@ function darkMode() {
   document.documentElement.style.setProperty('--darkCyan','#04090f',)
   document.documentElement.style.setProperty('--blobColor', '#e8be87')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
+  updateChart();
   
 }
 
@@ -294,6 +334,7 @@ function lightMode() {
   document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
   document.documentElement.style.setProperty('--blobColor', '#d3d3d3' )
   document.getElementsByClassName("icon")[0].src = "static/img/White_logo.png";
+  updateChart();
 }
 
 function defaultMode() {
@@ -304,6 +345,7 @@ function defaultMode() {
   document.documentElement.style.setProperty('--darkCyan','#04293a',)
   document.documentElement.style.setProperty('--blobColor', '#06314576' )
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
+  updateChart();
 }
 
 
