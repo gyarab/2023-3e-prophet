@@ -4,12 +4,9 @@ import torch.optim as optim
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
-from data_manager import LoaderOHLCV
 
 class LSTM(nn.Module):# this class inherits from nn.Module
     def __init__(self, input_size, hidden_size, num_stacked_layers):
