@@ -6,7 +6,6 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import binance_data_fetcher
 # class for creating dataset
 class TimeSeriesDataset(Dataset):# this class inherits from Dataset
     def __init__(self, X, y):
