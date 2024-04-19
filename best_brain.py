@@ -39,37 +39,20 @@ def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     print(device)
     return device
-def create_batches(train_loader):
-    print("creating batches")
-    for _, batch in enumerate(train_loader):
-        x_batch, y_batch = batch[0].to(device), batch[1].to(device)
-        # why break ??
-        break
-    return x_batch, y_batch
-
 def train_one_epoch(train_loader, epoch, loss_function, optimizer):
     model.train(True)
-    print()
-    print(f'Epoch: {epoch}')
-    running_loss = 0.0
-    
+    print(f"Epoch: {epoch}")
     for batch_index, batch in enumerate(train_loader):
         x_batch, y_batch = batch[0].to(device), batch[1].to(device)
         
         output = model(x_batch)
         loss = loss_function(output, y_batch) # tensor with 1 value
-        running_loss += loss.item() # gets the 1 value
         # this clears the gradient
         optimizer.zero_grad()
         # gradients are computed for all parameters in nn with respect to the loss
         loss.backward()
         # updates the parameters of the model based on the gradients computed during backpropagation
         optimizer.step()
-        if batch_index % 100 == 99:  # print every 100 batches
-            avg_loss_across_batches = running_loss / 100
-            print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
-                                                    avg_loss_across_batches))
-            running_loss = 0.0  
 # train all data
 def train_model(train_loader, num_epochs, learning_rate):
     loss_function = nn.BCELoss()
@@ -167,9 +150,7 @@ def make_one_prediction(one_sequence_tensor): # to by asi melo byt v best brainu
                 prediction_values = prediction.item()
     return prediction_values
 #
-#
 #Here starts model specific variables
-#
 #
 device = get_device()
 # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage

@@ -28,7 +28,7 @@ class TradingThread(threading.Thread):
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = 1)
         current_btc_price = float(raw_data['Close'].iloc[-1])
         last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["commission_rate"])
-        DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
+        DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED TODO
         while not self._stop_event.is_set():
             # Meausures starting time 
             start_time = time.time()
