@@ -29,6 +29,7 @@ class TradingThread(threading.Thread):
         # actions that are needed to calculate upcoming statistics
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = 1)
         current_btc_price = float(raw_data['Close'].iloc[-1])
+        try:
         last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["commission_rate"])
         DataManager =  LoaderOHLCV(look_back, mode= bb.load_data_mode)
         while not self._stop_event.is_set():
