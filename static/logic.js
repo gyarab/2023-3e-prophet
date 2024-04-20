@@ -31,7 +31,6 @@ let startTime = Date.now();
 
       // Chart
       updateChart();
-      console.log(historyVal);
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
 
@@ -113,9 +112,11 @@ function updateChart() {
 }
 
 
-let isTrading = true;
+let isTrading = false;
+
 function toggleTrading() {
-  if (!isTrading) {
+  waitForLoad();
+  if (isTrading) {
     stopTrading();
     document.getElementById('toggleButton').innerText = 'Press to start trading';
     isTrading = false;
@@ -123,7 +124,7 @@ function toggleTrading() {
   }
 
   else {
-    console.log(leverage);
+    
     saveData(leverage, commission_rate);
     startTrading();
     document.getElementById('toggleButton').innerText = 'Press to stop trading';
@@ -149,7 +150,13 @@ function startTrading() {
 }
 
 
-
+function waitForLoad()
+{
+  document.getElementById("toggleButton").disabled = true;
+  setTimeout(function () {
+    document.getElementById("toggleButton").disabled = false;
+    }, 5000);
+}
 
 
 function stopTrading() {
