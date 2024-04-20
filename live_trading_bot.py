@@ -40,10 +40,10 @@ class TradingThread(threading.Thread):
             while intervals < 60 and not self._stop_event.is_set():
                 intervals += 1 
                 time.sleep(1)
-            # Calculates time spend on this loop
-            time_spend = round(time.time() - start_time)
-            # Saves the time spend
-            self.save_time_spent(time_spend)
+                # Calculates time spend on this loop
+                time_spend = round(time.time() - start_time)
+                # Saves the time spend
+                self.save_time_spent(time_spend)
         # Closes all trades + sets is trading to False 
         self.after_stop(last_balance)
     def stop(self):
