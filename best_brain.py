@@ -18,7 +18,7 @@ class LSTM(nn.Module):# this class inherits from nn.Module
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-        self.tanh = nn.Tanh()
+        self.sigmoid = nn.Sigmoid()
     # function that describes how the data move throgh the model
     def forward(self, x):
         batch_size = x.size(0)
@@ -28,7 +28,7 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        out = self.tanh(out)
+        out = self.sigmoid(out)
         
         return out
     
@@ -101,8 +101,8 @@ def create_train_graph(X_train, y_train):
     new_y_train = dc(dummies[:, 0])
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
-    # Add a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    # Add a horizontal line at y=0.5
+    plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
     plt.xlabel('Day')
     plt.ylabel('Close')
     plt.legend()
@@ -120,8 +120,8 @@ def create_test_graph(X_test, y_test):
     new_y_test = dc(dummies[:, 0])
     plt.plot(new_y_test, label='Actual change')
     plt.plot(test_predictions, label='Predicted change')
-    # Add a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    # Add a horizontal line at y=0.5
+    plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
     plt.xlabel('Day')
     plt.ylabel('Close')
     plt.legend()
