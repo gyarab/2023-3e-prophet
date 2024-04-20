@@ -62,14 +62,14 @@ let startTime = Date.now();
       } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
-
-      history_array();
+      
 
       // Chart
+      history_array();
       updateChart();
+      
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
-
       setTimeout(SiteRefresh, (refreshTime * 1000));
     });
 })();
@@ -243,8 +243,8 @@ function loadData() {
         document.getElementById('hold_count').textContent = data.trading_data['hold_count'];
 
         
-
-
+        document.getElementById('winrate').textContent = betterRounding((data.trading_data['hold_count'] + data.trading_data['short_count'] + data.trading_data['long_count'])/ data.trading_data['total_profit']*100, 2);
+        document.getElementById('win-loss').textContent = betterRounding((data.trading_data['total_profit'] /data.trading_data['good_trade_count'])/(data.trading_data['total_loss']/data.trading_data['bad_trade_count'])*100 ,4);
 
       } else {
         console.error('Error: Missing trading data in response:', data);
