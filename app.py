@@ -60,7 +60,10 @@ def start_trading_route():
 
 @app.route('/stop_trading', methods=['POST'])
 def stop_trading_route():
-    stop_trading()
+    try:
+        stop_trading()
+    except:
+        print("There was nothing to stop")
     return jsonify({'message': 'Trading stopped'})
 
 
