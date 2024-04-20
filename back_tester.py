@@ -10,6 +10,8 @@ import trader
 
 device = bb.device
 # Initialize weights values
+model_name = "CleanupTest.pth"
+bb.create_model_path(model_name)
 bb.load_model()
 bb.model.to(device)
 # prepares data
@@ -50,7 +52,7 @@ def get_btc_price_for_current_sequence(index_of_data_sequence):
     index_of_raw_data = index_of_data_sequence + bb.look_back
     current_btc_price = raw_data.loc[index_of_raw_data, 'Close']
     return float(current_btc_price)
-def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = True):
+def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = 0):
     print('Starting back testing loop')
     usd_balance = start_usd_balance
     btc_balance = 0

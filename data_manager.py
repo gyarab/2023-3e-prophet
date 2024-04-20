@@ -6,7 +6,6 @@ from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
-import binance_data_fetcher
 # class for creating dataset
 class TimeSeriesDataset(Dataset):# this class inherits from Dataset
     def __init__(self, X, y):
@@ -28,41 +27,20 @@ class LoaderOHLCV():
         self.scaler = MinMaxScaler(feature_range=(-1, 1))
     
     def get_data_as_tensor(self):
-        if self.input_file == 'not_given':
-            recent_data = binance_data_fetcher.get_live_minute_datapoints('BTCUSDT', self.look_back)
-            
-            if self.mode == 0:
-                shifted_df = self.prepare_dataframe_for_lstm0(recent_data)
-            if self.mode == 1:
-                shifted_df = self.prepare_dataframe_for_lstm1(recent_data)
-            if self.mode == 2:        
-                shifted_df = self.prepare_dataframe_for_lstm2(recent_data, train= False)
-            if self.mode == 3:
-                shifted_df = self.prepare_dataframe_for_lstm3(recent_data, train= False)
-            #shifted_df_as_np = self.scale_data(shifted_df_as_np)
-            
-            
-            shifted_df = shifted_df.values.reshape((-1, self.look_back * 1 + 1 , 1))
-            input_data_tensor = torch.tensor(shifted_df).float()
-            
-            return input_data_tensor
-        # this is case where there is given file to load from
         # it returns tensors with y and X values and also splits them into to test and train
-        else:
-            raw_data = self.load_data_from_csv()
-            if self.mode == 0:
-                shifted_df = self.prepare_dataframe_for_lstm0(raw_data)
-            if self.mode == 1:
-                shifted_df = self.prepare_dataframe_for_lstm1(raw_data)
-            if self.mode == 2:        
-                shifted_df = self.prepare_dataframe_for_lstm2(raw_data, train= False)
-            if self.mode == 3:
-                shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
-            shifted_df_as_np = shifted_df.to_numpy()
-            #shifted_df_as_np = self.scale_data(shifted_df_as_np)
-            X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
-            X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
-            return X_train, X_test, y_train, y_test    
+        raw_data = self.load_data_from_csv()
+        if self.mode == 0:
+            shifted_df = self.prepare_dataframe_for_lstm0(raw_data)
+        if self.mode == 1:
+            shifted_df = self.prepare_dataframe_for_lstm1(raw_data)
+        if self.mode == 2:        
+            shifted_df = self.prepare_dataframe_for_lstm2(raw_data, train= False)
+        if self.mode == 3:
+            shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
+        shifted_df_as_np = shifted_df.to_numpy()
+        X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
+        X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
+        return X_train, X_test, y_train, y_test    
     
     def split_data(self, shifted_df_as_np, percentage_of_train_data = 0.8):
         print("spliting data")
@@ -127,7 +105,6 @@ class LoaderOHLCV():
             selected_columns = [['Date', 'Close','Open','High','Low','Volume']]
             dataframe = dc(dataframe[selected_columns])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-        print(f"shape of loadet data {dataframe.shape}")
         
         # Add lag features for the entire OHLCV columns
         lag_columns = []
@@ -144,8 +121,6 @@ class LoaderOHLCV():
         
         # removes possible blank lines
         dataframe.dropna(inplace=True)
-        
-        print(f"shape of prepared data{dataframe.shape}")
         return dataframe
     
     # creates sequences of difference in Close values
@@ -159,8 +134,6 @@ class LoaderOHLCV():
             dataframe = dc(dataframe[['Date', 'Close']])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
             
-        print(f"shape of loadet data {dataframe.shape}")
-    
         dataframe['Close_difference'] = dataframe['Close'].diff()
         dataframe['Target_vlaue_difference'] = dataframe['Close'].shift(-1) - dataframe['Close']
         
@@ -176,8 +149,6 @@ class LoaderOHLCV():
         dataframe.dropna(inplace=True)
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
-        print(f"shape of prepared data {dataframe.shape}")
-        #dataframe.to_csv("dataframe_test") # just a debug tool
         return dataframe
     
     # creates sequences of difference in Close values in percentage
@@ -191,8 +162,6 @@ class LoaderOHLCV():
             dataframe = dc(dataframe[['Date', 'Close']])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
             
-        print(f"shape of loadet data {dataframe.shape}")
-        
         # creates the target difference columns
         dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')
         if train == True:
@@ -211,8 +180,6 @@ class LoaderOHLCV():
         dataframe.dropna(inplace=True)
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
-        print(f"shape of prepared data {dataframe.shape}")
-        #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
     def prepare_dataframe_for_lstm3(self, dataframe, train = True):
         try:
@@ -223,7 +190,6 @@ class LoaderOHLCV():
         except:
             dataframe = dc(dataframe[['Date', 'Close']])
             dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-        print(f"shape of loadet data {dataframe.shape}")
         # creates the target difference columns if train
         if train == True:
             target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
@@ -242,18 +208,8 @@ class LoaderOHLCV():
         dataframe.dropna(inplace=True)
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
-        print(f"shape of prepared data {dataframe.shape}")
-        print(dataframe.head())
         #dataframe.to_csv("dataframe_test.csv") # just a debug tool
         return dataframe
-    def absolute_scale_data(self, shifted_df_as_np):
-        shifted_df_as_np = np.where(shifted_df_as_np > 0, 1, -1) # when greater than 0 it will change value to 1 othervise -1
-        return shifted_df_as_np
-    # scales the data
-    def scale_data(self, shifted_df_as_np):
-        print("scaling data to range -1 .. 1")
-        shifted_df_as_np = self.scaler.fit_transform(shifted_df_as_np)
-        return shifted_df_as_np
     # returns whole path to the dataset/data folder
     def get_absolute_path(self):
         input_file_path = os.path.join(os.path.dirname(__file__), 'datasets', self.input_file)
