@@ -42,6 +42,13 @@ class TradingThread(threading.Thread):
             time_spend = round(time.time() - start_time)
             # Saves the time spend
             self.save_time_spent(time_spend)
+        # This is basicaly closing trade but without calling the function (since there are not present the required params)
+        # remembers the last_balance (what balance will it have after close)
+        usd_balance_after_stop = last_balance
+        # Sets the btc balance to 0
+        btc_balance_after_stop = 0
+        json_data_handler.update_trading_data("USD_balance", usd_balance_after_stop)
+        json_data_handler.update_trading_data("BTC_balance", btc_balance_after_stop)
     def stop(self):
         self._stop_event.set()
     def one_trading_loop_iteration(self,last_balance, last_trade, DataManager):
