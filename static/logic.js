@@ -1,3 +1,5 @@
+let isTrading;
+
 let leverage = 1;
 let commission_rate = 0;
 
@@ -8,6 +10,37 @@ let historyVal = [];
 let timePassedInterval;
 let startTime = Date.now();
 //displayTimePassed();
+
+
+
+(function AfterLoad()
+{
+  fetch('/load_trading_data', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.trading_data) {
+        isTrading = data.trading_data['is_trading'];        
+        displayToggleBtn();
+        history_array();
+      } else {
+        console.error('Error: Missing trading data in response:', data);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching or processing trading data:', error);
+    });
+})();
+
 
 
 (function SiteRefresh() {
@@ -27,8 +60,9 @@ let startTime = Date.now();
     } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
-      aa();
-
+      
+      history_array();
+      
       // Chart
       updateChart();
       resetTimePassedInterval();
@@ -37,18 +71,6 @@ let startTime = Date.now();
       setTimeout(SiteRefresh, (refreshTime * 1000));
     });
 })();
-
-function aa()
-{
-  fetch('/prepare_array')
-       .then(response => response.json())
-       .then(data => {
-           historyVal = data.history_values;
-           
-           
-       })
-       .catch(error => console.error('Error fetching prepared array:', error))
-}
 
 function displayTimePassed() {
   const currentTime = Date.now();
@@ -61,7 +83,15 @@ function resetTimePassedInterval() {
   timePassedInterval = setInterval(displayTimePassed, 1000); // Update time every second
 }
 
-
+function history_array()
+{
+  fetch('/prepare_array')
+       .then(response => response.json())
+       .then(data => {
+           historyVal = data.history_values;
+       })
+       .catch(error => console.error('Error fetching prepared array:', error))
+}
 
 
 
@@ -107,30 +137,38 @@ function updateChart() {
     myChart.data.datasets[0].data = btcVal;
     myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
     myChart.data.datasets[1].data = historyVal;
+    myChart.data.datasets[1].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
     myChart.update();
   }
 }
 
 
-let isTrading = false;
+function displayToggleBtn()
+{
+  if (isTrading) {
+    document.getElementById('toggleButton').innerText = 'Press to stop trading';
+    document.getElementById("reset_btn").disabled = true; 
+  }
+
+  else {
+    document.getElementById('toggleButton').innerText = 'Press to start trading';
+    document.getElementById("reset_btn").disabled = false; 
+  }
+}
 
 function toggleTrading() {
   waitForLoad();
   if (isTrading) {
     stopTrading();
-    document.getElementById('toggleButton').innerText = 'Press to start trading';
     isTrading = false;
-    document.getElementById("reset_btn").disabled = false; 
   }
 
   else {
-    
     saveData(leverage, commission_rate);
     startTrading();
-    document.getElementById('toggleButton').innerText = 'Press to stop trading';
     isTrading = true;
-    document.getElementById("reset_btn").disabled = true; 
   }
+  displayToggleBtn();
 }
 
 
@@ -211,6 +249,8 @@ function loadData() {
         //document.getElementById('leverage').textContent = data.trading_data['leverage'];
         document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']*100); //Converting from number to %
 
+        
+
       } else {
         console.error('Error: Missing trading data in response:', data);
       }
@@ -222,9 +262,9 @@ function loadData() {
 
 function betterRounding(num, decimals)
 {
-  
   return Math.round((num + Number.EPSILON) * (10** decimals)) / (10** decimals)
 }
+
 
 
 let intervalId; // Variable to store the interval ID

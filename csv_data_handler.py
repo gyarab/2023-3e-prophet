@@ -45,7 +45,6 @@ def prepare_array():
     balance_array = [0] * 60
 
     if not any(history):
-        print("nig")
         # If history is empty, return balance_array filled with the last known non-zero balance
         last_non_zero_balance = 10000  # You might want to adjust this default value
         balance_array = [last_non_zero_balance] * 60
