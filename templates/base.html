@@ -16,7 +16,9 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <!-- Charts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-  
+  <!--Font - roboto-->  
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
 
 </head>
 
@@ -102,6 +104,7 @@
     
   </div>
 
+  
 
   <!-- Evaluace-->
   <div class="container-fluid separator">
@@ -172,7 +175,7 @@
             
             <!--Untranslated-->             
             
-            <button id="reset_btn" class="btn btn-primary" onclick=resetSavedData()>      Reset values and history    </button>  
+            <button id="reset_btn" class="btn btn-primary .roboto-thin" onclick=resetSavedData()>      Reset values and history    </button>  
             <br>
             <button id="toggleButton" class="btn btn-primary" onclick="toggleTrading()">Press to start trading</button>
             

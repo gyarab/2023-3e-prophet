@@ -379,7 +379,6 @@ function switchLanguage() {
 
       // Set the document language to the target language
       document.documentElement.lang = targetLang;
-      console.log(targetLang);
     })
     .catch(error => console.error('Error fetching translations:', error));
 }
