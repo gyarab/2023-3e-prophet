@@ -18,7 +18,7 @@ class LSTM(nn.Module):# this class inherits from nn.Module
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-        self.sigmoid = nn.Sigmoid()
+        self.tanh = nn.Tanh()
     # function that describes how the data move throgh the model
     def forward(self, x):
         batch_size = x.size(0)
@@ -28,7 +28,7 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        out = self.sigmoid(out)
+        out = self.tanh(out)
         
         return out
     
@@ -138,9 +138,19 @@ def make_one_prediction(one_sequence_tensor): # to by asi melo byt v best brainu
     one_sequence_tensor = one_sequence_tensor.to(device)
     # Model makes prediction
     with torch.no_grad():
-                model.train(False)
-                prediction = model(one_sequence_tensor)
-                prediction_values = prediction.item()
+        model.train(False)
+        prediction = model(one_sequence_tensor)
+        # Here sometimes occures error:
+        # a Tensor with 2 elements cannot be converted to Scalar
+        # don't know how to solve, so expection setted up
+        try:
+            prediction_values = prediction.item()
+        except:
+            print("Prediction ERROR occured:")
+            print("a Tensor with 2 elements cannot be converted to Scalar")
+            print("Unknown solution")
+            print("Setting current prediction to 0.5")
+            prediction_values = 0.5
     return prediction_values
 #
 #Here starts model specific variables
