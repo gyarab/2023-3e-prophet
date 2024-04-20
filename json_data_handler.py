@@ -1,6 +1,7 @@
 import json
 from binance_data_fetcher import get_current_btc_value
 import os
+import time
 trade_data_file_name = 'data/trade_data.json'
 def update_trading_data(key, value, filename=trade_data_file_name):
     # Ensure that the data directory exists
@@ -31,7 +32,11 @@ def load_trading_data(filename=trade_data_file_name):
         return None
     except json.JSONDecodeError:
         print(f"Error decoding JSON in file '{filename}'.")
-        return None
+        # WTF
+        time.sleep(1)
+        with open(filename, 'r') as file:
+            trading_data = json.load(file)
+        return trading_data
     
 
 def reset_saved_data(filename=trade_data_file_name):
