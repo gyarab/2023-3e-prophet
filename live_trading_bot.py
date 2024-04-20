@@ -44,8 +44,8 @@ class TradingThread(threading.Thread):
             time_spend = round(time.time() - start_time)
             # Saves the time spend
             self.save_time_spent(time_spend)
-            # Closes all trades + sets is trading to False 
-            self.after_stop(last_balance)
+        # Closes all trades + sets is trading to False 
+        self.after_stop(last_balance)
     def stop(self):
         self._stop_event.set()
     def one_trading_loop_iteration(self,last_balance, last_trade, DataManager):
