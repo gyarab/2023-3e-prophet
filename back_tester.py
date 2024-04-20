@@ -15,7 +15,7 @@ bb.create_model_path(model_name)
 bb.load_model()
 bb.model.to(device)
 # prepares data
-DataManager = LoaderOHLCV(bb.look_back, bb.features_columns, bb.load_data_mode,'Backtest_1_minute.csv')
+DataManager = LoaderOHLCV(bb.look_back, bb.load_data_mode,'Backtest_1_minute.csv')
 raw_data = DataManager.load_data_from_csv()
 prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
