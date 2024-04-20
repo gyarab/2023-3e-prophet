@@ -32,11 +32,7 @@ def load_trading_data(filename=trade_data_file_name):
         return None
     except json.JSONDecodeError:
         print(f"Error decoding JSON in file '{filename}'.")
-        # WTF
-        time.sleep(1)
-        with open(filename, 'r') as file:
-            trading_data = json.load(file)
-        return trading_data
+        return None
     
 
 def reset_saved_data(filename=trade_data_file_name):
