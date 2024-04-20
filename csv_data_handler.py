@@ -41,9 +41,6 @@ def prepare_array():
     history = read_history()
     current_timestamp = datetime.now()
     
-    
-
-    print("start :------")
     # Initialize an array of 60 values representing each minute
     balance_array = [0] * 60
 

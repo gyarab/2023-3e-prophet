@@ -112,12 +112,14 @@ function updateChart() {
   }
 }
 
-let isTrading = false;
+
+let isTrading = true;
 function toggleTrading() {
-  if (isTrading) {
+  if (!isTrading) {
     stopTrading();
     document.getElementById('toggleButton').innerText = 'Press to start trading';
     isTrading = false;
+    document.getElementById("reset_btn").disabled = false; 
   }
 
   else {
@@ -126,6 +128,7 @@ function toggleTrading() {
     startTrading();
     document.getElementById('toggleButton').innerText = 'Press to stop trading';
     isTrading = true;
+    document.getElementById("reset_btn").disabled = true; 
   }
 }
 
@@ -144,6 +147,9 @@ function startTrading() {
   loadData();
   //startCounting();
 }
+
+
+
 
 
 function stopTrading() {
