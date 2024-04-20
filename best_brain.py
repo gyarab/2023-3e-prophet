@@ -88,22 +88,21 @@ def reset_model():
 
 def create_train_graph(X_train, y_train):
     print('creating train graph')
-    num_of_data_columns = len(features_columns)
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
 
-    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1)) # !!!!
+    dummies = np.zeros((X_train.shape[0], look_back + 2))
     dummies[:, 0] = train_predictions
     train_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
+    dummies = np.zeros((X_train.shape[0], look_back + 2))
     dummies[:, 0] = y_train.flatten()
     new_y_train = dc(dummies[:, 0])
-    # Add a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.xlabel('Day')
     plt.ylabel('Close')
     plt.legend()
@@ -111,19 +110,18 @@ def create_train_graph(X_train, y_train):
     
 def create_test_graph(X_test, y_test):
     print('creating test graph')
-    num_of_data_columns = len(features_columns) 
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
-    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
+    dummies = np.zeros((X_test.shape[0], look_back + 2))
     dummies[:, 0] = test_predictions
     test_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
+    dummies = np.zeros((X_test.shape[0], look_back + 2))
     dummies[:, 0] = y_test.flatten()
     new_y_test = dc(dummies[:, 0])
-    # Add a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.plot(new_y_test, label='Actual change')
     plt.plot(test_predictions, label='Predicted change')
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.xlabel('Day')
     plt.ylabel('Close')
     plt.legend()
@@ -131,9 +129,7 @@ def create_test_graph(X_test, y_test):
     
 def create_model_path(model_name = 'not_given'):
     if model_name == 'not_given':
-        # Creates model's name
-        inicials_features_columns = ''.join([s[0] for s in features_columns])
-        model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
+        model_name = f'model_{load_data_mode}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
         model_name = model_name + '.pth'
     model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
     
@@ -159,7 +155,6 @@ look_back = 9 # how many candles will it look into the past
 precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = 'not_given'   # this file has to be in /datasets/
 # which columns will be included in training data - X
-features_columns = ['Close']
 load_data_mode = 3 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 8
