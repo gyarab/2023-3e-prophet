@@ -2,7 +2,6 @@ import os
 import pandas as pd
 from copy import deepcopy as dc
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
@@ -19,12 +18,10 @@ class TimeSeriesDataset(Dataset):# this class inherits from Dataset
         return self.X[i], self.y[i]
 # class for managing OHLCV data    
 class LoaderOHLCV():
-    def __init__(self, look_back, features_columns, mode, input_file = 'not_given'):
+    def __init__(self, look_back, mode, input_file = 'not_given'):
         self.look_back = look_back
-        self.features_columns = features_columns
         self.mode = mode
         self.input_file = input_file
-        self.scaler = MinMaxScaler(feature_range=(-1, 1))
     
     def get_data_as_tensor(self):
         # it returns tensors with y and X values and also splits them into to test and train
@@ -111,9 +108,9 @@ class LoaderOHLCV():
         
         # adds t-n;look_back (n_steps)> columns of data from previous rows
         for i in range(1, self.look_back + 1):
-            for col in self.features_columns:
-                lag_col_name = f'{col}(t-{i})'
-                lag_columns.append(dataframe[col].shift(i).rename(lag_col_name))
+            col = "Close"
+            lag_col_name = f'{col}(t-{i})'
+            lag_columns.append(dataframe[col].shift(i).rename(lag_col_name))
         
         dataframe['Target_value'] = dataframe['Close'].shift(-1)
         # Concatenate all lag columns to the original dataframe

@@ -1,12 +1,12 @@
-# this is cript that has trading functions in it
+# this is script that has trading functions in it
 def make_one_trade(prediction, usd_balance, btc_balance, current_btc_price, comission_rate, last_trade, leverage):
-    # Opens long position
-    if prediction < 0.5 and btc_balance <= 0: # jsem to chce mean
+    # Opens long position - buys btc
+    if prediction <= 0.5 and btc_balance <= 0:
         usd_balance, btc_balance = close_trade(usd_balance, btc_balance, current_btc_price, comission_rate)
         usd_balance, btc_balance = long_position(usd_balance, btc_balance, leverage, current_btc_price, comission_rate)
         last_trade = 'long'
-    #Opens short position - sells what I dont havem gets negative btc balance
-    elif prediction > 0.5 and btc_balance >= 0: # # jsem to chce mean
+    #Opens short position - sells what I dont have -> gets negative btc balance
+    elif prediction > 0.5 and btc_balance >= 0:
         usd_balance, btc_balance = close_trade(usd_balance,btc_balance,current_btc_price, comission_rate)
         usd_balance, btc_balance = short_position(usd_balance, btc_balance,leverage,current_btc_price, comission_rate)
         last_trade = 'short'
