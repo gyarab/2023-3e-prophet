@@ -31,7 +31,7 @@ let startTime = Date.now();
 
       // Chart
       updateChart();
-      
+      console.log(historyVal);
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
 
@@ -44,8 +44,9 @@ function aa()
   fetch('/prepare_array')
        .then(response => response.json())
        .then(data => {
-           const historyVal = data.history_values;
-           console.log(historyVal);
+           historyVal = data.history_values;
+           
+           
        })
        .catch(error => console.error('Error fetching prepared array:', error))
 }
@@ -87,10 +88,16 @@ function updateChart() {
           borderColor: getComputedStyle(document.documentElement).getPropertyValue('--orange'),
           fill: false,
           label: name[0]
+        },
+        {
+          data: historyVal,
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--yellow'),
+          fill: false,
+          label: name[1]
         }]
       },
       options: {
-        legend: { display: false },
+        legend: { display: true },
         animation: { duration: 0 },
         responsive: true
       }
@@ -100,6 +107,7 @@ function updateChart() {
     myChart.data.labels = xValues;
     myChart.data.datasets[0].data = btcVal;
     myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    myChart.data.datasets[1].data = historyVal;
     myChart.update();
   }
 }
