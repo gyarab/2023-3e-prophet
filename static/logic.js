@@ -3,6 +3,7 @@ let commission_rate = 0;
 
 let refreshTime = 10;
 let btcVal = [];
+let historyVal = [];
 
 let timePassedInterval;
 let startTime = Date.now();
@@ -26,7 +27,8 @@ let startTime = Date.now();
     } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
-      
+      aa();
+
       // Chart
       updateChart();
       
@@ -37,6 +39,16 @@ let startTime = Date.now();
     });
 })();
 
+function aa()
+{
+  fetch('/prepare_array')
+       .then(response => response.json())
+       .then(data => {
+           const historyVal = data.history_values;
+           console.log(historyVal);
+       })
+       .catch(error => console.error('Error fetching prepared array:', error))
+}
 
 function displayTimePassed() {
   const currentTime = Date.now();
@@ -48,6 +60,7 @@ function resetTimePassedInterval() {
   clearInterval(timePassedInterval); // Clear the previous interval
   timePassedInterval = setInterval(displayTimePassed, 1000); // Update time every second
 }
+
 
 
 

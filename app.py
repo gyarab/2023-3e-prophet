@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from binance_data_fetcher import get_current_btc_value, get_last_hour_values
 from json_data_handler import update_trading_data, load_trading_data, reset_saved_data
-from csv_data_handler import reset_history, read_history
+from csv_data_handler import reset_history, prepare_array
 from live_trading_bot import start_trading, stop_trading
 app = Flask(__name__)
 
@@ -21,6 +21,11 @@ def get_btc_value():
 def get_last_hour_values_endpoint():
     last_hour_values = get_last_hour_values()
     return {'last_hour_values': last_hour_values}
+
+@app.route('/prepare_array')
+def prepare_array_endpoint():
+    history_values = prepare_array()
+    return jsonify({'history_values': history_values})
 
 @app.route('/load_trading_data', methods=['GET'])
 def load_trading_data_endpoint():
