@@ -6,6 +6,10 @@
         "tlinks": "Links",
         "trefresh": "Last refresh before ",
 
+        "tModal":"Are you sure you want to reset all saved trading values and trading history? This process can not be undone. ",
+        "tCancel":"Cancel",
+        "tResetYes":"Reset",
+
 
         "twallet": "Wallet",
 
@@ -18,12 +22,18 @@
         "tProfit": "Total profit",
         
         "tlatestTrades": "Latest trades",
+        "tLongs":"Number of long trades:",
+        "tShorts":"Number of short trades:",
+        "tHolds":"Number of holds:",
+        "tGoodTrade":"Good trades:",
+        "tBadTrade":"Bad trades:",
         "tWinRate":"Win rate",
         "tWinLoss":"Win to loss ratio",
 
         "tbotOptions": "Bot options",
         "tLeverage":"Leverage",
         "tCommissions":"Commissions",
+        "tReset":"Reset values and history",
         
         "tsiteOptions": "Site options",
         "tRefreshTime":"Site refresh time",
@@ -33,6 +43,9 @@
         "tDocumentation": "Project documentation",
         "tGithub": "Github repository",
         "tCreated": "Created 2024"
+
+        
+
     
     },
     "cz": {
@@ -42,6 +55,9 @@
         "tlinks": "Odkazy",
         "trefresh": " Poslední obnovení před ",
         
+        "tModal":"Jste si jistý, že chcete obnovit veškerá uložená data a historii obchodování? Tento proces nelze vrátit. ",
+        "tCancel":"Zrušit",
+        "tResetYes":"Obnovit",
 
         "twallet": "Peněženka ",
 
@@ -54,12 +70,18 @@
         "tProfit": "Celkový profit:",
         
         "tlatestTrades": "Poslední obchody",
+        "tLongs":"Počet dlouhých pozic",
+        "tShorts":"Počet krátkých pozic",
+        "tGoodTrade":"Počet dobrých obchodů",
+        "tBadTrade":"Počet špatných obchodů",
+        "tHolds":"Počet držení",
         "tWinRate":"Úspěšnost:",
         "tWinLoss":"Poměr zisku ke ztrátě:",
 
         "tbotOptions": "Nastavení bota",
-        "tLeverage":"Páka:",
+        "tLeverage":"Páka",
         "tCommissions":"Poplatky",
+        "tReset":"Obnovit hodnoty a historii obchodů",
 
         "tsiteOptions": "Nastavení stránky",
         "tRefreshTime":"Čas obnovování:",

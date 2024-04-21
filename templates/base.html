@@ -85,19 +85,20 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class=" modal-header ">
-          <h1 class="modal-title fs-5 " id="exampleModalLabel">Reseting all values</h1>
+          <h1 class="modal-title fs-5 " id="exampleModalLabel"> <span data-translation="tReset"> Obnovit hodnoty a historii obchodů</span></h1>
           
         </div>
         <div class="modal-body">
           <p class>
-            Are you sure you want to reset all the trading values and trading history? <br>
-            This process can not be undone. 
+            <span data-translation="tModal">Jste si jistý, že chcete obnovit veškerá uložená data a historii obchodování? Tento proces nelze vrátit.
+            </span>
+            
           </p>
           
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" style="border-color: red; color: red;" onclick=resetSavedData() >Reset</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> <span data-translation="tCancel">Zrušit</span></button>
+          <button type="button" class="btn btn-primary" style="border-color: red; color: red;" onclick=resetSavedData() data-bs-dismiss="modal" > <span data-translation="tResetYes"> Obnovit</span> </button>
         </div>
       </div>
     </div>
@@ -169,16 +170,16 @@
           <p class="numbers">
 
             <!--Untranslated-->
-            Number of long trades: <span id="long_count"></span> <i class="bi bi-arrow-up"></i> <br>
-            Number of short trades: <span id="short_count"></span> <i class="bi bi-arrow-down"></i> <br>
-            Number of holds: <span id="hold_count"></span> <i class="bi bi-arrows-collapse"></i> <br>
-            <span style="color: limegreen;"> Good trades: </span> <span id="good_trades"></span> <br>
-            <span style="color: red;"> Bad trades: </span> <span id="bad_trades"></span> <br>
+            <span data-translation="tLongs"> Počet dlouhých pozic </span> <span id="long_count"></span> <i class="bi bi-arrow-up"></i> <br>
+            <span data-translation="tShorts"> Počet krátkých pozic </span> <span id="short_count"></span> <i class="bi bi-arrow-down"></i> <br>
+            <span data-translation="tHolds"> Počet držení  </span>  <span id="hold_count"></span> <i class="bi bi-arrows-collapse"></i> <br>
+            <span data-translation="tGoodTrade" style="color: limegreen;"> Počet dobrých obchodů </span> <span id="good_trades"></span> <br>
+            <span data-translation="tBadTrade" style="color: red;"> Počet špatných obchodů </span> <span id="bad_trades"></span> <br>
 
 
 
           <p class="underValues numbers">
-            <span data-translation="tWinrate">Úspěšnost:</span> <span id="winrate"></span> % <br>
+            <span data-translation="tWinRate">Úspěšnost:</span> <span id="winrate"></span> % <br>
             <span data-translation="tWinLoss">Poměr zisku ke ztrátě:</span> <span id="win-loss"></span> %
           </p>
           </p>
@@ -199,7 +200,7 @@
 
 
 
-            <label for="CommissionSlider" class="form-label"> <span data-translation="tCommissions"> Poplatky: </span>
+            <label for="CommissionSlider" class="form-label"> <span data-translation="tCommissions"> Poplatky </span>
             </label> <span id="commission_rate">0</span> % <br>
             <input class="slider" type="range" class="form-range" value="0" min="0" max="5" step="0.01" id="CommissionSlider"
               onchange="sliderCommissionUpdate(this.value);"> <br>
@@ -212,10 +213,9 @@
               onchange="sliderLeverageUpdate(this.value);"> <br>
 
 
-            <!--Untranslated-->
+            
 
-            <button id="reset_btn" class="btn btn-primary" data-bs-target="#exampleModal" data-bs-toggle="modal"> Reset values and
-              history </button>
+            <button id="reset_btn" class="btn btn-primary" data-bs-target="#exampleModal" data-bs-toggle="modal"> <span data-translation="tReset"> Obnovit hodnoty a historii obchodů </span> </button>
             <br>
             <button id="toggleButton" class="btn btn-primary" onclick="toggleTrading()">Press to start trading</button>
 
