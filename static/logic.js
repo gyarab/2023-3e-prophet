@@ -341,6 +341,7 @@ function resetSavedData() {
     .then(data => console.log(data.message))
     .catch(error => console.error('Error:', error));
   timeSpent = 0
+  
 }
 
 

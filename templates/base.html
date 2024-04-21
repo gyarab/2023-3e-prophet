@@ -16,8 +16,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <!-- Charts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-  <!--Font - roboto-->  
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <!--Font - roboto-->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
 
 
 </head>
@@ -29,7 +31,7 @@
       <a class="navbar-brand d-flex align-items-center" href="#home">
         <img src="{{ url_for('static', filename='img/Logo.png') }}" class="icon" alt="Logo" height=40
           class="d-inline-block align-text-top">
-        <span class="flex-fill menuText" style="font-size: 150% ;">  Prophet</span>
+        <span class="flex-fill menuText" style="font-size: 150% ;"> Prophet</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,17 +39,20 @@
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link menuText underL" aria-current="page" href="#home"> <span data-translation = "tmoney"> Peníze</span></a>
+          <a class="nav-link menuText underL" aria-current="page" href="#home"> <span data-translation="tmoney">
+              Peníze</span></a>
           <a class="nav-link menuText underL" href="#evaluation"> <span data-translation="teval">Evaluace</span> </a>
-          <a class="nav-link menuText underL" href="#settings"> <span data-translation= "tsettings" > Nastavení </span> </a>
-          <a class="nav-link menuText underL" href="#links">   <span data-translation= "tlinks"> Odkazy</span> </a>
+          <a class="nav-link menuText underL" href="#settings"> <span data-translation="tsettings"> Nastavení </span>
+          </a>
+          <a class="nav-link menuText underL" href="#links"> <span data-translation="tlinks"> Odkazy</span> </a>
         </div>
       </div>
     </div>
   </nav>
 
   <!-- Fixed Footer -->
-  <div class="footer menuText fixed-bottom container-fluid d-flex;">  <span data-translation= "trefresh"> Poslední obnovení před</span>   <span id="last_refresh"></span>s  
+  <div class="footer menuText fixed-bottom container-fluid d-flex;"> <span data-translation="trefresh"> Poslední
+      obnovení před</span> <span id="last_refresh"></span>s
   </div>
   <div class="container">
     <div class="blob-c"></div>
@@ -72,20 +77,50 @@
     <div class="shape-blob eighteen"></div>
     <div class="shape-blob nineteen"></div>
     <div class="shape-blob twenty"></div>
+  </div>
+
+
+  <!-- Modal for reset -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class=" modal-header ">
+          <h1 class="modal-title fs-5 " id="exampleModalLabel">Reseting all values</h1>
+          
+        </div>
+        <div class="modal-body">
+          <p class>
+            Are you sure you want to reset all the trading values and trading history? <br>
+            This process can not be undone. 
+          </p>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" style="border-color: red; color: red;" onclick=resetSavedData() >Reset</button>
+        </div>
+      </div>
     </div>
+  </div>
+
+
+
+
+
+
   <!-- Money -->
   <div class="container-fluid separator">
-    <h1 class="header" id="home"> <span data-translation = "tmoney">  Peníze </span> </h1>
+    <h1 class="header" id="home"> <span data-translation="tmoney"> Peníze </span> </h1>
 
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-sm-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader"> <span data-translation="twallet"> Peněženka</span> <i class="bi bi-wallet2"></i></h2>
           <p class="numbers">
-           
-            <span id="USD_balance"></span>  USD <br>
-            <span id="BTC_balance"></span>  BTC
-            
+
+            <span id="USD_balance"></span> USD <br>
+            <span id="BTC_balance"></span> BTC
+
           </p>
         </div>
       </div>
@@ -93,18 +128,18 @@
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader">Bitcoin <i class="bi bi-currency-bitcoin"></i></h2>
           <p class="numbers">
-            <span data-translation="tPriceBTC"> Nynější cena </span>  <span id="btc_value"></span> USD <br>
-            <span data-translation="tLastHourBTC"> Poslední hodina </span>   <span id="btcHourDiff"></span>%   <br>
+            <span data-translation="tPriceBTC"> Nynější cena </span> <span id="btc_value"></span> USD <br>
+            <span data-translation="tLastHourBTC"> Poslední hodina </span> <span id="btcHourDiff"></span>% <br>
             <!--<span data-translation="tLastOpened"> Od posledního otevření </span>  <span id="since_close"> </span>% -->
             <!-- <i class="bi bi-arrow-up"></i> -->
           </p>
         </div>
       </div>
     </div>
-    
+
   </div>
 
-  
+
 
   <!-- Evaluace-->
   <div class="container-fluid separator">
@@ -114,35 +149,36 @@
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
           <h2 class="miniHeader"> <span data-translation="tgraph"> Graf </span> <i class="bi bi-graph-up"></i></h2>
-          
-            <canvas id="myChart"></canvas>
-          
+
+          <canvas id="myChart"></canvas>
+
 
           <p class="underValues numbers">
-            <span data-translation="tTradeTime">Celkový čas obchodování:</span>   <span id="timeSpentTrading"></span> <br>
-            <span data-translation="tProfit">Celkový profit:</span> <span id="money_made">  </span>  USD
+            <span data-translation="tTradeTime">Celkový čas obchodování:</span> <span id="timeSpentTrading"></span> <br>
+            <span data-translation="tProfit">Celkový profit:</span> <span id="money_made"> </span> USD
           </p>
 
 
-          
+
         </div>
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader">  <span data-translation="tlatestTrades">Poslední obchody</span>  <i class="bi bi-arrow-down-up"></i></h2>
+          <h2 class="miniHeader"> <span data-translation="tlatestTrades">Poslední obchody</span> <i
+              class="bi bi-arrow-down-up"></i></h2>
           <p class="numbers">
 
             <!--Untranslated-->
             Number of long trades: <span id="long_count"></span> <i class="bi bi-arrow-up"></i> <br>
             Number of short trades: <span id="short_count"></span> <i class="bi bi-arrow-down"></i> <br>
             Number of holds: <span id="hold_count"></span> <i class="bi bi-arrows-collapse"></i> <br>
-            <span style="color: limegreen;"> Good trades: </span>  <span id="good_trades"></span>   <br>
-            <span style="color: red;"> Bad trades:  </span>   <span id="bad_trades"></span>  <br>
+            <span style="color: limegreen;"> Good trades: </span> <span id="good_trades"></span> <br>
+            <span style="color: red;"> Bad trades: </span> <span id="bad_trades"></span> <br>
 
 
 
           <p class="underValues numbers">
-            <span data-translation="tWinrate">Úspěšnost:</span>  <span id="winrate"></span>  % <br>
+            <span data-translation="tWinrate">Úspěšnost:</span> <span id="winrate"></span> % <br>
             <span data-translation="tWinLoss">Poměr zisku ke ztrátě:</span> <span id="win-loss"></span> %
           </p>
           </p>
@@ -153,56 +189,65 @@
 
   <!--Settings-->
   <div class="container-fluid separator">
-    <h1 class="header" id="settings"> <span data-translation= "tsettings" > Nastavení </span> </h1>
+    <h1 class="header" id="settings"> <span data-translation="tsettings"> Nastavení </span> </h1>
     <div class="row mt-5">
       <div class="col-md-6 order-1 order-lg-1 d-flex  justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader"> <span data-translation= "tbotOptions" > Nastavení bota </span>  <i class="bi bi-sliders"></i></h2>
+          <h2 class="miniHeader"> <span data-translation="tbotOptions"> Nastavení bota </span> <i
+              class="bi bi-sliders"></i></h2>
           <p class="numbers">
 
-            
 
-            <label for="Slider" class="form-label">  <span data-translation= "tCommissions" > Poplatky: </span> 
+
+            <label for="Slider" class="form-label"> <span data-translation="tCommissions"> Poplatky: </span>
             </label> <span id="commission_rate">0</span> % <br>
-            <input class="slider" type="range" class="form-range" value="0" min="0" max="5" step="0.01" id="Slider" onchange="sliderCommissionUpdate(this.value);"> <br>
+            <input class="slider" type="range" class="form-range" value="0" min="0" max="5" step="0.01" id="Slider"
+              onchange="sliderCommissionUpdate(this.value);"> <br>
 
 
-             <br>
-            <label for="Slider" class="form-label">  <span data-translation= "tLeverage" > Páka </span> 
+            <br>
+            <label for="Slider" class="form-label"> <span data-translation="tLeverage"> Páka </span>
             </label> <span id="leverage">1</span> <br>
-            <input class="slider" type="range" class="form-range" value="1" min="0.05" max="5" step="0.05" id="Slider" onchange="sliderLeverageUpdate(this.value);"> <br>
-            
-            
-            <!--Untranslated-->             
-            
-            <button id="reset_btn" class="btn btn-primary .roboto-thin" onclick=resetSavedData()>      Reset values and history    </button>  
+            <input class="slider" type="range" class="form-range" value="1" min="0.05" max="5" step="0.05" id="Slider"
+              onchange="sliderLeverageUpdate(this.value);"> <br>
+
+
+            <!--Untranslated-->
+
+            <button id="reset_btn" class="btn btn-primary" data-bs-target="#exampleModal" data-bs-toggle="modal"> Reset values and
+              history </button>
             <br>
             <button id="toggleButton" class="btn btn-primary" onclick="toggleTrading()">Press to start trading</button>
-            
-            
+
+
           </p>
         </div>
       </div>
       <div class="col-md-6 order-2 order-sm-2 d-flex justify-content-center">
         <div class="d-flex flex-column align-items-center">
-          <h2 class="miniHeader"> <span data-translation= "tsiteOptions" > Nastavení stránky </span>  <i class="bi bi-gear"></i></h2>
+          <h2 class="miniHeader"> <span data-translation="tsiteOptions"> Nastavení stránky </span> <i
+              class="bi bi-gear"></i></h2>
           <p class="numbers">
-           
-            <label for="Slider" class="form-label">  <span data-translation= "tRefreshTime" > Čas obnovování: </span> 
-            </label> <span id="sliderUpdate"> 10</span>s<br>
-            <input class="slider" type="range" class="form-range" value="10" min="5" max="60" step="5" id="Slider" onchange="sliderUpdate(this.value);"> <br>
-            
-            
-            <span data-translation= "tTheme" > Téma: </span>
 
-            
-            <a class="btn btn-primary btn btn-lg" onclick="defaultMode()" role="button"> <i class="bi bi-palette"></i> </a>
+            <label for="Slider" class="form-label"> <span data-translation="tRefreshTime"> Čas obnovování: </span>
+            </label> <span id="sliderUpdate"> 10</span>s<br>
+            <input class="slider" type="range" class="form-range" value="10" min="5" max="60" step="5" id="Slider"
+              onchange="sliderUpdate(this.value);"> <br>
+
+
+            <span data-translation="tTheme"> Téma: </span>
+
+
+            <a class="btn btn-primary btn btn-lg" onclick="defaultMode()" role="button"> <i class="bi bi-palette"></i>
+            </a>
             <a class="btn btn-primary btn btn-lg" onclick="lightMode()" role="button"> <i class="bi bi-sun"></i> </a>
-            <a class="btn btn-primary btn btn-lg" onclick="darkMode()" role="button"> <i class="bi bi-moon"></i> </a> <br>
+            <a class="btn btn-primary btn btn-lg" onclick="darkMode()" role="button"> <i class="bi bi-moon"></i> </a>
+            <br>
 
             <!-- Schválně naopak-->
-            <span data-translation= "tLang" > Language: </span> <a class="btn btn-primary btn btn-lg" onclick="switchLanguage()" role="button"> <i class="bi bi-translate"></i> </a>
-            
+            <span data-translation="tLang"> Language: </span> <a class="btn btn-primary btn btn-lg"
+              onclick="switchLanguage()" role="button"> <i class="bi bi-translate"></i> </a>
+
 
           </p>
         </div>
@@ -212,15 +257,19 @@
 
   <!--Site Footer-->
   <div class="bg2 container-fluid fixedFooter">
-    <h1 class="header" id="links"> <span data-translation= "tlinks"> Odkazy</span> </h1>
+    <h1 class="header" id="links"> <span data-translation="tlinks"> Odkazy</span> </h1>
     <p class="underValues">
 
-      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer"> <span data-translation= "tDocumentation"> Dokumentace projektu </span>  <i class="bi bi-file-earmark-text-fill"></i></a> <br>
-      <a href="https://github.com/gyarab/2023-3e-prophet" target="_blank" rel="noopener noreferrer"> <span data-translation= "tGithub"> Github repozitář </span> <i class="bi bi-github"></i></a> <br>
-      <span data-translation= "tCreated"> Vytvořeno 2024 </span> 
+      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer"> <span
+          data-translation="tDocumentation"> Dokumentace projektu </span> <i
+          class="bi bi-file-earmark-text-fill"></i></a> <br>
+      <a href="https://github.com/gyarab/2023-3e-prophet" target="_blank" rel="noopener noreferrer"> <span
+          data-translation="tGithub"> Github repozitář </span> <i class="bi bi-github"></i></a> <br>
+      <span data-translation="tCreated"> Vytvořeno 2024 </span>
     </p>
   </div>
 
   <script src="{{ url_for('static', filename='logic.js') }}"></script>
 </body>
+
 </html>
