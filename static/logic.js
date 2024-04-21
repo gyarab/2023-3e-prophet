@@ -62,7 +62,7 @@ let myChart;
     btcDataset.hidden = true;
     historyDataset.hidden = false;
     holdDataset.hidden = false;
-  }, 2000);
+  }, 3000);
 
 })();
 
@@ -297,8 +297,8 @@ function loadData() {
     })
     .then(data => {
       if (data.trading_data) {
-        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];
-        document.getElementById('BTC_balance').textContent = betterRounding((data.trading_data['BTC_balance']), 6)
+        document.getElementById('USD_balance').textContent = betterRounding(data.trading_data['USD_balance'], 2);
+        document.getElementById('BTC_balance').textContent = betterRounding((data.trading_data['BTC_balance']), 6);
 
 
         // Convert the time spent trading from seconds to HH:MM:SS format
@@ -463,7 +463,7 @@ function darkMode() {
   document.documentElement.style.setProperty('--darkBlue', '#010207')
   document.documentElement.style.setProperty('--darkerBlue', '#000000bd')
   document.documentElement.style.setProperty('--yellow', '#fce6bd',)
-  document.documentElement.style.setProperty('--orange', '#f9c25f',)
+  document.documentElement.style.setProperty('--orange', '#feb025',)
   document.documentElement.style.setProperty('--darkCyan', '#04090f',)
   document.documentElement.style.setProperty('--blobColor', '#04081a')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
