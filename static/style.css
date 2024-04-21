@@ -30,7 +30,7 @@ body
 {
     background-color: var(--darkerBlue);
 }
-.bg3 {
+.bg3 { /* cards */
 	user-select:none;
   margin: 5rem auto;
   padding: 30px;
@@ -44,11 +44,7 @@ body
   overflow: hidden;
   transition: .5s all;
 }
-
-
-
-
-.shape-blob {
+.shape-blob { /* blobs attribute start */
 	background-color:var(--blobColor);
 	height: 60px;
 	width: 80px;
@@ -58,7 +54,6 @@ body
 		movement_one 12s ease-in-out infinite both;
 	opacity:.7;
 	position: fixed;
-    /*filter:blur(4px);*/
     z-index: -1;
 }
 
@@ -157,7 +152,7 @@ body
 	transform: rotate(-180deg);
 	animation: transform 9s ease-in-out infinite both alternate, movement_two 25s ease-in-out infinite both;
 }
-@keyframes transform
+@keyframes transform  /* blobs transform */
 {
     0%,
   100% { border-radius: 33% 67% 70% 30% / 30% 40% 70% 70%; } 
@@ -168,7 +163,7 @@ body
 }
 
 
-@keyframes movement_one
+@keyframes movement_one /* blobs movement */
 {
     0%,
   100% { transform: none; }
@@ -180,9 +175,7 @@ body
     0%,
   500% { transform: none; }
    50% { transform: translate(50%, 20%) rotate(-200deg) scale(1.3);}
-}
-
-
+}	/* blobs attribute end */ 
 .footer
 {
     font-family: var(--font);
@@ -239,7 +232,7 @@ body
 .menuText {
     color: var(--orange);
 }
-.underL
+.underL 				/* underLine in Navbar start*/
 {
     position: relative;
     color: var(--orange); 
@@ -265,7 +258,7 @@ body
     width: 100%;
     transition: 0.3s;
     scale: 1 1;
-}
+}			/* underLine in Navbar end */
 .underValues
 {
     color: var(--orange);
@@ -318,9 +311,9 @@ body
     background-color: var(--darkCyan); 
     color: var(--orange);
     border-color: var(--orange); 
-	transition: background-color .17s ease,color .17s ease;
+	transition: background-color .17s ease,color .17s ease; 
 }
-.btn:hover 
+.btn:hover  /* change color while hovering*/
 {
     background-color: var(--orange);
     color:var(--darkCyan);
@@ -330,7 +323,7 @@ body
 {
     padding-bottom: 500px;
 }
-.slider
+.slider		/* slider settings*/
 {
     width: 100%;
 	height: 2px;
@@ -338,7 +331,7 @@ body
 	outline: none;
 	opacity: 0.7;
 }
-.slider::-moz-range-thumb {
+.slider::-moz-range-thumb { /* color of the dot */
 	width: 10px;
 	height: 10px;
 	background: var(--orange);
