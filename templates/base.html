@@ -136,7 +136,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
 
@@ -150,10 +149,11 @@
         <div class="bg3 d-flex flex-column align-items-center">
           <h2 class="miniHeader"> <span data-translation="tgraph"> Graf </span> <i class="bi bi-graph-up"></i></h2>
 
-          <canvas id="myChart"></canvas>
-
-
+         
+            <canvas id="myChart" ></canvas>
+                   
           <p class="underValues numbers">
+            <button id="toggleButtonBTC" class="btn btn-primary" onclick="toggleBtcVal()"> Toggle </button> <br>
             <span data-translation="tTradeTime">Celkový čas obchodování:</span> <span id="timeSpentTrading"></span> <br>
             <span data-translation="tProfit">Celkový profit:</span> <span id="money_made"> </span> USD
           </p>

@@ -10,12 +10,14 @@ let holdVal = [];
 
 let timePassedInterval;
 let startTime = Date.now();
-//displayTimePassed();
+let myChart;
+
 
 
 
 (function AfterLoad() {
   history_array();
+
   fetch('/load_trading_data', {
     method: 'GET',
     headers: {
@@ -31,18 +33,37 @@ let startTime = Date.now();
     .then(data => {
       if (data.trading_data) {
         isTrading = data.trading_data['is_trading'];
+        
         displayToggleBtn();
-
+        
+        
+        
 
         document.getElementById('leverage').textContent = data.trading_data['leverage'];
-        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']); //Converting from number to %
+        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']); 
       } else {
         console.error('Error: Missing trading data in response:', data);
       }
     })
     .catch(error => {
       console.error('Error fetching or processing trading data:', error);
+
     });
+    
+    
+    
+    setTimeout(function () {
+      
+      const btcDataset = myChart.data.datasets[0];
+      const historyDataset = myChart.data.datasets[1];
+      const holdDataset = myChart.data.datasets[2];
+      
+      
+      btcDataset.hidden =true;
+      historyDataset.hidden = false;
+      holdDataset.hidden = false;
+    }, 2000);
+  
 })();
 
 
@@ -69,6 +90,7 @@ let startTime = Date.now();
 
       // Chart
       updateChart();
+        
       
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
@@ -102,17 +124,13 @@ function history_array() {
     })
     .catch(error => console.error('Error fetching prepared array:', error))
     
+
+    
 }
 
 
 
-//UNUSED
-//document.getElementById('since_close').textContent = btcVal[btcVal.length - 1];
-
-
 //Graph
-let myChart;
-
 function updateChart() {
   const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
   const name = ['Bitcoin', 'Bot balance', 'Buy & Hold'];
@@ -145,21 +163,57 @@ function updateChart() {
       options: {
         legend: { display: true },
         animation: { duration: 0 },
-        responsive: true
+        responsive: true,
+        elements: {
+          point:{
+              radius: 1.5
+          }
+      }
       }
     });
+  myChart.data.datasets[0].hidden = true;
+  updateChart();
   } else {
     // If the chart exists, update its data
-    myChart.data.labels = xValues;
+    //myChart.data.labels = xValues;
     myChart.data.datasets[0].data = btcVal;
     myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
     myChart.data.datasets[1].data = historyVal;
     myChart.data.datasets[1].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
     myChart.data.datasets[2].data = holdVal;
-    myChart.data.datasets[2].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
+    myChart.data.datasets[2].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    
     myChart.update();
   }
 }
+
+let hideBtc = true;
+function toggleBtcVal() {
+  
+  const btcDataset = myChart.data.datasets[0];
+const historyDataset = myChart.data.datasets[1];
+const holdDataset = myChart.data.datasets[2];
+  
+  if(hideBtc)
+  {
+    btcDataset.hidden = hideBtc;
+  historyDataset.hidden = !hideBtc;
+  holdDataset.hidden = !hideBtc;
+  document.getElementById('toggleButtonBTC').innerText = 'Show bitcoin ';
+  }
+  else
+  {
+    btcDataset.hidden = hideBtc; 
+  historyDataset.hidden = !hideBtc;
+  holdDataset.hidden = !hideBtc;
+  
+  document.getElementById('toggleButtonBTC').innerText = 'Show bot trading';
+  }
+  hideBtc = !hideBtc; 
+  
+  myChart.update();
+}
+
 
 
 function displayToggleBtn() {
