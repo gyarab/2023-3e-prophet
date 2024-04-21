@@ -152,6 +152,8 @@ function displayToggleBtn() {
     document.getElementById('toggleButton').innerText = 'Press to start trading';
   }
   document.getElementById("reset_btn").disabled = isTrading;
+  document.getElementById("CommissionSlider").disabled = isTrading;
+  document.getElementById("LeverageSlider").disabled = isTrading;
 }
 
 function toggleTrading() {
