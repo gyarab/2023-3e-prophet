@@ -4,12 +4,9 @@ import torch.optim as optim
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
 import os
 import matplotlib.pyplot as plt # graphs
 from copy import deepcopy as dc
-from data_manager import LoaderOHLCV
 
 class LSTM(nn.Module):# this class inherits from nn.Module
     def __init__(self, input_size, hidden_size, num_stacked_layers):
@@ -21,7 +18,8 @@ class LSTM(nn.Module):# this class inherits from nn.Module
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-        self.sigmoid = nn.Sigmoid()
+        if load_data_mode == 3:
+            self.sigmoid = nn.Sigmoid()
     # function that describes how the data move throgh the model
     def forward(self, x):
         batch_size = x.size(0)
@@ -31,7 +29,8 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        out = self.sigmoid(out)
+        if load_data_mode == 3:
+            out = self.sigmoid(out)
         
         return out
     
@@ -39,40 +38,26 @@ def get_device():
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     print(device)
     return device
-def create_batches(train_loader):
-    print("creating batches")
-    for _, batch in enumerate(train_loader):
-        x_batch, y_batch = batch[0].to(device), batch[1].to(device)
-        # why break ??
-        break
-    return x_batch, y_batch
-
 def train_one_epoch(train_loader, epoch, loss_function, optimizer):
     model.train(True)
-    print()
-    print(f'Epoch: {epoch}')
-    running_loss = 0.0
-    
+    print(f"Epoch: {epoch}")
     for batch_index, batch in enumerate(train_loader):
         x_batch, y_batch = batch[0].to(device), batch[1].to(device)
         
         output = model(x_batch)
         loss = loss_function(output, y_batch) # tensor with 1 value
-        running_loss += loss.item() # gets the 1 value
         # this clears the gradient
         optimizer.zero_grad()
         # gradients are computed for all parameters in nn with respect to the loss
         loss.backward()
         # updates the parameters of the model based on the gradients computed during backpropagation
         optimizer.step()
-        if batch_index % 100 == 99:  # print every 100 batches
-            avg_loss_across_batches = running_loss / 100
-            print('Batch {0}, Loss: {1:.3f}'.format(batch_index+1,
-                                                    avg_loss_across_batches))
-            running_loss = 0.0  
 # train all data
 def train_model(train_loader, num_epochs, learning_rate):
-    loss_function = nn.BCELoss()
+    if load_data_mode == 3:
+        loss_function = nn.BCELoss()
+    else:
+        loss_function = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(train_loader, epoch, loss_function, optimizer)
@@ -108,52 +93,56 @@ def reset_model():
 
 def create_train_graph(X_train, y_train):
     print('creating train graph')
-    num_of_data_columns = len(features_columns)
     with torch.no_grad():
         predicted = model(X_train.to(device)).to('cpu').numpy()
     train_predictions = predicted.flatten()
 
-    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1)) # !!!!
+    dummies = np.zeros((X_train.shape[0], look_back + 2))
     dummies[:, 0] = train_predictions
     train_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_train.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
+    dummies = np.zeros((X_train.shape[0], look_back + 2))
     dummies[:, 0] = y_train.flatten()
     new_y_train = dc(dummies[:, 0])
-    # Add a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
-    plt.xlabel('Day')
-    plt.ylabel('Close')
+    if load_data_mode == 3:
+        # Add a horizontal line at y=0.5
+        plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
+    else:
+        # Add a horizontal line at y=0
+        plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    plt.xlabel('Minute')
+    plt.ylabel('Prediction')
     plt.legend()
     plt.show()
     
 def create_test_graph(X_test, y_test):
     print('creating test graph')
-    num_of_data_columns = len(features_columns) 
     test_predictions = model(X_test.to(device)).detach().cpu().numpy().flatten() # asi tohle
-    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
+    dummies = np.zeros((X_test.shape[0], look_back + 2))
     dummies[:, 0] = test_predictions
     test_predictions = dc(dummies[:, 0])
     
-    dummies = np.zeros((X_test.shape[0], look_back * num_of_data_columns + num_of_data_columns + 1))
+    dummies = np.zeros((X_test.shape[0], look_back + 2))
     dummies[:, 0] = y_test.flatten()
     new_y_test = dc(dummies[:, 0])
-    # Add a horizontal line at y=0
-    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.plot(new_y_test, label='Actual change')
     plt.plot(test_predictions, label='Predicted change')
-    plt.xlabel('Day')
-    plt.ylabel('Close')
+    if load_data_mode == 3:
+        # Add a horizontal line at y=0.5
+        plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
+    else:
+        # Add a horizontal line at y=0
+        plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    plt.xlabel('Minute')
+    plt.ylabel('Prediction')
     plt.legend()
     plt.show()
     
 def create_model_path(model_name = 'not_given'):
     if model_name == 'not_given':
-        # Creates model's name
-        inicials_features_columns = ''.join([s[0] for s in features_columns])
-        model_name = f'model_{load_data_mode}_{inicials_features_columns}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
+        model_name = f'model_{load_data_mode}_{look_back}LookB_{lstm_neuron_count}neurons_{lstm_layers}L'
         model_name = model_name + '.pth'
     model_path = os.path.join(os.path.dirname(__file__), 'models', model_name)
     
@@ -162,14 +151,22 @@ def make_one_prediction(one_sequence_tensor): # to by asi melo byt v best brainu
     one_sequence_tensor = one_sequence_tensor.to(device)
     # Model makes prediction
     with torch.no_grad():
-                model.train(False)
-                prediction = model(one_sequence_tensor)
-                prediction_values = prediction.item()
+        model.train(False)
+        prediction = model(one_sequence_tensor)
+        # Here sometimes occures error:
+        # a Tensor with 2 elements cannot be converted to Scalar
+        # don't know how to solve, so expection setted up
+        try:
+            prediction_values = prediction.item()
+        except:
+            print("Prediction ERROR occured:")
+            print("a Tensor with 2 elements cannot be converted to Scalar")
+            print("Unknown solution")
+            print("Setting current prediction to 0.5")
+            prediction_values = 0.5
     return prediction_values
 #
-#
 #Here starts model specific variables
-#
 #
 device = get_device()
 # batch = how muany data points at once will be loaded to the model - increases learning speed, decreases the gpu usage
@@ -178,11 +175,9 @@ device = get_device()
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
 look_back = 9 # how many candles will it look into the past
-precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = 'not_given'   # this file has to be in /datasets/
 # which columns will be included in training data - X
-features_columns = ['Close']
-load_data_mode = 3 # modes of loading the data, starts with 0
+load_data_mode = 2 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 8
 model = LSTM(1, lstm_neuron_count, lstm_layers)

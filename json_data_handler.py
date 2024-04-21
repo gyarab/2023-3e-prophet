@@ -1,6 +1,7 @@
 import json
 from binance_data_fetcher import get_current_btc_value
 import os
+import time
 trade_data_file_name = 'data/trade_data.json'
 def update_trading_data(key, value, filename=trade_data_file_name):
     # Ensure that the data directory exists
@@ -41,7 +42,6 @@ def reset_saved_data(filename=trade_data_file_name):
     # Define trading data with fetched BTC value
     trading_data = {
         "time_spent_trading": 0,
-        #"BTC_at_close": btc_value,
         "USD_balance": 10000,
         "BTC_balance": 0,
         "long_count": 0,
@@ -52,7 +52,8 @@ def reset_saved_data(filename=trade_data_file_name):
         "total_profit": 0,
         "total_loss": 0,
         "leverage" : 1,
-        "commission_rate" : 0
+        "commission_rate" : 0,
+        "is_trading" : False
     }
     # Ensure that the data directory exists
     os.makedirs(os.path.dirname(filename), exist_ok=True)

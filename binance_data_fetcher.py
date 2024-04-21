@@ -117,4 +117,4 @@ if __name__ == '__main__':
 
     # current_btc_value = get_current_btc_value()
     
-    print(get_last_hour_values())
+    # print(get_last_hour_values())

@@ -1,42 +1,80 @@
+let isTrading;
+
 let leverage = 1;
 let commission_rate = 0;
 
 let refreshTime = 10;
 let btcVal = [];
+let historyVal = [];
+let holdVal = [];
 
 let timePassedInterval;
 let startTime = Date.now();
 //displayTimePassed();
 
 
+
+(function AfterLoad() {
+  history_array();
+  fetch('/load_trading_data', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.trading_data) {
+        isTrading = data.trading_data['is_trading'];
+        displayToggleBtn();
+
+
+        document.getElementById('leverage').textContent = data.trading_data['leverage'];
+        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']); //Converting from number to %
+      } else {
+        console.error('Error: Missing trading data in response:', data);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching or processing trading data:', error);
+    });
+})();
+
+
+
 (function SiteRefresh() {
+  history_array();
   loadData();
   fetch('/get_last_hour_values')
-  .then(response => response.json())
-  .then(data => {
-    btcVal = Object.values(data)[0];
-    
-    // Current btc price
-    document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
-    
-    // Last hour diff
-    const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
-    if (btcHourDiff >= 0) {
-      document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
-    } else {
+    .then(response => response.json())
+    .then(data => {
+      btcVal = Object.values(data)[0];
+
+      // Current btc price
+      document.getElementById('btc_value').textContent = btcVal[btcVal.length - 1];
+
+      // Last hour diff
+      const btcHourDiff = (100 - ((100 / btcVal[btcVal.length - 1]) * btcVal[0])).toFixed(4);
+      if (btcHourDiff >= 0) {
+        document.getElementById('btcHourDiff').textContent = " +" + btcHourDiff;
+      } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
       
+
       // Chart
       updateChart();
       
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
-
       setTimeout(SiteRefresh, (refreshTime * 1000));
     });
 })();
-
 
 function displayTimePassed() {
   const currentTime = Date.now();
@@ -49,6 +87,22 @@ function resetTimePassedInterval() {
   timePassedInterval = setInterval(displayTimePassed, 1000); // Update time every second
 }
 
+function history_array() {
+  fetch('/prepare_array')
+    .then(response => response.json())
+    .then(data => {
+      historyVal = data.history_values;
+    })
+    .catch(error => console.error('Error fetching prepared array:', error))
+  
+  fetch('/prepare_hold_array')
+    .then(response => response.json())
+    .then(data => {
+      holdVal = data.hold_values;
+    })
+    .catch(error => console.error('Error fetching prepared array:', error))
+    
+}
 
 
 
@@ -61,7 +115,7 @@ let myChart;
 
 function updateChart() {
   const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
-  const name = ['Bitcoin', 'Bot balance'];
+  const name = ['Bitcoin', 'Bot balance', 'Buy & Hold'];
 
   if (!myChart) {
     // If the chart doesn't exist, create a new one
@@ -74,10 +128,22 @@ function updateChart() {
           borderColor: getComputedStyle(document.documentElement).getPropertyValue('--orange'),
           fill: false,
           label: name[0]
+        },
+        {
+          data: historyVal,
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--yellow'),
+          fill: false,
+          label: name[1]
+        },
+        {
+          data: holdVal,
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--orange'),
+          fill: false,
+          label: name[2]
         }]
       },
       options: {
-        legend: { display: false },
+        legend: { display: true },
         animation: { duration: 0 },
         responsive: true
       }
@@ -87,25 +153,39 @@ function updateChart() {
     myChart.data.labels = xValues;
     myChart.data.datasets[0].data = btcVal;
     myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    myChart.data.datasets[1].data = historyVal;
+    myChart.data.datasets[1].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
+    myChart.data.datasets[2].data = holdVal;
+    myChart.data.datasets[2].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
     myChart.update();
   }
 }
 
-let isTrading = false;
+
+function displayToggleBtn() {
+  if (isTrading) {
+    document.getElementById('toggleButton').innerText = 'Press to stop trading';
+  }
+  else {
+    document.getElementById('toggleButton').innerText = 'Press to start trading';
+  }
+  document.getElementById("reset_btn").disabled = isTrading;
+  document.getElementById("CommissionSlider").disabled = isTrading;
+  document.getElementById("LeverageSlider").disabled = isTrading;
+}
+
 function toggleTrading() {
+  waitForLoad();
   if (isTrading) {
     stopTrading();
-    document.getElementById('toggleButton').innerText = 'Press to start trading';
     isTrading = false;
   }
-
   else {
-    console.log(leverage);
     saveData(leverage, commission_rate);
     startTrading();
-    document.getElementById('toggleButton').innerText = 'Press to stop trading';
     isTrading = true;
   }
+  displayToggleBtn();
 }
 
 
@@ -122,6 +202,14 @@ function startTrading() {
 
   loadData();
   //startCounting();
+}
+
+
+function waitForLoad() {
+  document.getElementById("toggleButton").disabled = true;
+  setTimeout(function () {
+    document.getElementById("toggleButton").disabled = false;
+  }, 5000);
 }
 
 
@@ -157,7 +245,7 @@ function loadData() {
     })
     .then(data => {
       if (data.trading_data) {
-        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];        
+        document.getElementById('USD_balance').textContent = data.trading_data['USD_balance'];
         document.getElementById('BTC_balance').textContent = betterRounding((data.trading_data['BTC_balance']), 6)
 
 
@@ -174,8 +262,9 @@ function loadData() {
         document.getElementById('short_count').textContent = data.trading_data['short_count'];
         document.getElementById('hold_count').textContent = data.trading_data['hold_count'];
 
-        //document.getElementById('leverage').textContent = data.trading_data['leverage'];
-        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']*100); //Converting from number to %
+        
+        document.getElementById('winrate').textContent = betterRounding(data.trading_data['good_trade_count'] / (data.trading_data['hold_count'] + data.trading_data['short_count'] + data.trading_data['long_count'])*100, 2);
+        document.getElementById('win-loss').textContent = betterRounding((data.trading_data['total_profit'] /data.trading_data['good_trade_count'])/(data.trading_data['total_loss']/data.trading_data['bad_trade_count'])*100 ,4);
 
       } else {
         console.error('Error: Missing trading data in response:', data);
@@ -186,11 +275,10 @@ function loadData() {
     });
 }
 
-function betterRounding(num, decimals)
-{
-  
-  return Math.round((num + Number.EPSILON) * (10** decimals)) / (10** decimals)
+function betterRounding(num, decimals) {
+  return Math.round((num + Number.EPSILON) * (10 ** decimals)) / (10 ** decimals)
 }
+
 
 
 let intervalId; // Variable to store the interval ID
@@ -244,21 +332,21 @@ function saveData(leverage, commissionRate) {
       body: JSON.stringify(commissionRateData)
     })
   ])
-  .then(responses => {
-    // Check if any response is not okay
-    const hasError = responses.some(response => !response.ok);
-    if (hasError) {
-      throw new Error('Network response was not ok');
-    }
-    // Parse response JSON
-    return Promise.all(responses.map(response => response.json()));
-  })
-  .then(data => {
-    // Log success message for both requests
-    //console.log('Leverage:', data[0].message);
-    //console.log('Commission Rate:', data[1].message);
-  })
-  .catch(error => console.error('Error:', error));
+    .then(responses => {
+      // Check if any response is not okay
+      const hasError = responses.some(response => !response.ok);
+      if (hasError) {
+        throw new Error('Network response was not ok');
+      }
+      // Parse response JSON
+      return Promise.all(responses.map(response => response.json()));
+    })
+    .then(data => {
+      // Log success message for both requests
+      //console.log('Leverage:', data[0].message);
+      //console.log('Commission Rate:', data[1].message);
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 
@@ -273,19 +361,25 @@ function resetSavedData() {
     .then(data => console.log(data.message))
     .catch(error => console.error('Error:', error));
   timeSpent = 0
+  
 }
 
 
-function sliderUpdate(value) {
-  document.getElementById('sliderUpdate').textContent = value;
-  refreshTime = value;
+function sliderCommissionUpdate(value) {
+  document.getElementById('commission_rate').textContent = value;
+  commission_rate = value;
 }
+
 
 function sliderLeverageUpdate(value) {
   document.getElementById('leverage').textContent = value;
   leverage = value;
 }
 
+function sliderUpdate(value) {
+  document.getElementById('sliderUpdate').textContent = value;
+  refreshTime = value;
+}
 
 //Language
 function switchLanguage() {
@@ -306,7 +400,6 @@ function switchLanguage() {
 
       // Set the document language to the target language
       document.documentElement.lang = targetLang;
-      console.log(targetLang);
     })
     .catch(error => console.error('Error fetching translations:', error));
 }
@@ -320,10 +413,10 @@ function darkMode() {
   document.documentElement.style.setProperty('--yellow', '#fce6bd',)
   document.documentElement.style.setProperty('--orange', '#fcdb9f',)
   document.documentElement.style.setProperty('--darkCyan','#04090f',)
-  document.documentElement.style.setProperty('--blobColor', '#b8915e')
+  document.documentElement.style.setProperty('--blobColor','#e8be87')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
   updateChart();
-  
+
 }
 
 function lightMode() {
@@ -331,8 +424,8 @@ function lightMode() {
   document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7bd',)
   document.documentElement.style.setProperty('--yellow', '#000000',)
   document.documentElement.style.setProperty('--orange', '#000000',)
-  document.documentElement.style.setProperty('--darkCyan','#d3d3d3',)
-  document.documentElement.style.setProperty('--blobColor', '#d3d3d3' )
+  document.documentElement.style.setProperty('--darkCyan', '#d3d3d3',)
+  document.documentElement.style.setProperty('--blobColor', '#d3d3d3')
   document.getElementsByClassName("icon")[0].src = "static/img/White_logo.png";
   updateChart();
 }
@@ -342,8 +435,8 @@ function defaultMode() {
   document.documentElement.style.setProperty('--darkerBlue', '#021a31bd',)
   document.documentElement.style.setProperty('--yellow', '#ecb365',)
   document.documentElement.style.setProperty('--orange', '#da9940',)
-  document.documentElement.style.setProperty('--darkCyan','#04293a',)
-  document.documentElement.style.setProperty('--blobColor', '#06314576' )
+  document.documentElement.style.setProperty('--darkCyan', '#04293a',)
+  document.documentElement.style.setProperty('--blobColor', '#06314576')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
   updateChart();
 }

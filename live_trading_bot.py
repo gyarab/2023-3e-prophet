@@ -9,7 +9,7 @@ import json_data_handler
 import csv_data_handler
 
 symbol = 'BTCUSDT'
-look_back = 9
+look_back = bb.look_back
 # loads trading data
 bb.load_model()
 bb.model.to(bb.device)
@@ -20,15 +20,17 @@ class TradingThread(threading.Thread):
         self._stop_event = threading.Event()
 
     def run(self):
-        global td, start_time
+        global td
         td = json_data_handler.load_trading_data()
+        # saves to json : is_trading = True
+        json_data_handler.update_trading_data("is_trading", True)
         # sets the initial value, so it can make the first trade properly
         last_trade = 'hold'
         # actions that are needed to calculate upcoming statistics
         raw_data = bdf.get_live_minute_datapoints(symbol, lookback = 1)
         current_btc_price = float(raw_data['Close'].iloc[-1])
         last_balance,_ = trader.close_trade(td["USD_balance"], td["BTC_balance"], current_btc_price, td["commission_rate"])
-        DataManager =  LoaderOHLCV(look_back,['Close'], mode= 3) # !!! HARDCODED
+        DataManager =  LoaderOHLCV(look_back, mode= bb.load_data_mode)
         while not self._stop_event.is_set():
             # Meausures starting time 
             start_time = time.time()
@@ -38,10 +40,13 @@ class TradingThread(threading.Thread):
             while intervals < 60 and not self._stop_event.is_set():
                 intervals += 1 
                 time.sleep(1)
-            # Calculates time spend on this loop
-            time_spend = round(time.time() - start_time)
-            # Saves the time spend
-            self.save_time_spent(time_spend)
+                if intervals % 5 == 0 :
+                    # Calculates time from begging of the oone iteration of trading loop
+                    time_spend = round(time.time() - start_time)
+                    # Saves the time spend
+                    self.save_time_spent(time_spend)
+        # Closes all trades + sets is trading to False 
+        self.after_stop(last_balance)
     def stop(self):
         self._stop_event.set()
     def one_trading_loop_iteration(self,last_balance, last_trade, DataManager):
@@ -75,7 +80,7 @@ class TradingThread(threading.Thread):
             td["short_count"] += 1
         else:
             td["hold_count"] +=1
-        if after_close_usd_balance > last_balance:
+        if after_close_usd_balance >= last_balance:
             td["good_trade_count"] +=1
             td["total_profit"] += (after_close_usd_balance - last_balance)        
         else:
@@ -96,6 +101,18 @@ class TradingThread(threading.Thread):
         # Converts date timestamp to timestamp of seconds
         timestamp = timestamp_date.timestamp()
         csv_data_handler.append_row_to_csv(usd_balance, timestamp)
+    # Function that is called after stopping a trading loop
+    # It closes last trade
+    def after_stop(self, las_balance_after_close):
+        # This is basicaly closing trade but without calling the function (since there are not present the required params)
+        # remembers the last_balance (what balance will it have after close)
+        usd_balance_after_stop = las_balance_after_close
+        # Sets the btc balance to 0
+        btc_balance_after_stop = 0
+        json_data_handler.update_trading_data("USD_balance", usd_balance_after_stop)
+        json_data_handler.update_trading_data("BTC_balance", btc_balance_after_stop)
+        # Saves to json: is_trading = False
+        json_data_handler.update_trading_data("is_trading", False)
 def start_trading():
     print("starting trading loop")
     global trading_thread

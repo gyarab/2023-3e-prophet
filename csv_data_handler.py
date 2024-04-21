@@ -2,7 +2,12 @@
 
 import csv
 import os
+from datetime import datetime
+import json
+from binance_data_fetcher import get_last_hour_values
+
 filename = "balance_history.csv"
+json_filename = "trade_data.json"
 data_folder = "data"
 file_path = os.path.join(data_folder, filename)
 # Check if the data folder exists and create it if it doesn't
@@ -18,7 +23,7 @@ def append_row_to_csv(usd_balance, timestamp):
         # Write the new row to the CSV file
         csv_writer.writerow([usd_balance, timestamp])
         
-def read_history(filename):
+def read_history():
     data_folder = "data"
     filepath = os.path.join(data_folder, filename)
     
@@ -30,10 +35,110 @@ def read_history(filename):
     with open(filepath, 'r', newline='') as csvfile:
         csv_reader = csv.reader(csvfile)
         lines = list(csv_reader)
-    
     return lines
+
+
+def prepare_array():
+    history = read_history()
+    current_timestamp = datetime.now()
+    
+    # Initialize an array of 60 values representing each minute
+    balance_array = [0] * 60
+
+    if not any(history):
+        # If history is empty, return balance_array filled with the last known non-zero balance
+        last_non_zero_balance = 10000  
+        balance_array = [last_non_zero_balance] * 60
+        return balance_array
+
+
+    for line in history:
+        timestamp = datetime.fromtimestamp(float(line[1]))
+        balance = float(line[0])
+        # Calculate the difference in minutes between the current timestamp and the timestamp from history
+        minutes_diff = (current_timestamp - timestamp).total_seconds() // 60
+        # If the difference is within the last hour
+        if 0 <= minutes_diff < 60:
+            # Set the balance at the corresponding minute index
+            minute_index = int(59 - minutes_diff)  # reverse index since we start from 60th minute
+            balance_array[minute_index] = balance
+    
+
+    #No trading in last 60 mins and csv not empty
+    if all(val == 0 for val in balance_array):
+        balance_array = [float(history[-1][0])] * 60
+        return balance_array
+    
+    # Find the index of the first non-zero value
+    first_non_zero_index = next((i for i, val in enumerate(balance_array) if val != 0), None)
+
+    # Replace zeros from start until the first non-zero value with that value
+    if first_non_zero_index is not None:
+        for i in range(first_non_zero_index):
+            balance_array[i] = balance_array[first_non_zero_index]   
+
+    # Replace every remaining zero with the last non-zero value
+    last_non_zero = None
+    for i in range(len(balance_array)):
+        if balance_array[i] != 0:
+            last_non_zero = balance_array[i]
+        else:
+            balance_array[i] = last_non_zero    
+
+    return balance_array
+
+
+def prepare_hold_array():
+    hold_array = [0] * 60
+    history = read_history()
+    minute_index = 0
+    current_timestamp = datetime.now()
+
+    if not any(history):
+        balance = 10000  
+    else:
+        for line in history:
+            timestamp = datetime.fromtimestamp(float(line[1]))
+            balance = float(line[0])
+            # Calculate the difference in minutes between the current timestamp and the timestamp from history
+            minutes_diff = (current_timestamp - timestamp).total_seconds() // 60
+            # If the difference is within the last hour
+            if 0 <= minutes_diff < 60:
+                # Set the balance at the corresponding minute index
+                minute_index = int(59 - minutes_diff)  # reverse index since we start from 60th minute
+                break
+
+    bitcoin_array = get_last_hour_values()
+    start_btc = balance / bitcoin_array[minute_index]    
+
+    for i in range(len(hold_array)-minute_index):
+        hold_array[i+minute_index] = (start_btc*bitcoin_array[i+minute_index] )
+    
+    for i in range(len(hold_array)-(60-minute_index)):
+        hold_array[i] = (balance)
+    
+    return hold_array
+
+
+
+
+def dummy_numbers():
+    now = datetime.now()
+    timestamp_float = now.timestamp()
+    formatted_timestamp = "{:.0f}".format(timestamp_float)
+    return "99999999999," + formatted_timestamp
+
+    
+
 # Creates new blank csv file (not reseting)
 def reset_history():
     # Open the CSV file in write mode
     with open(file_path, 'w', newline='') as csvfile:
         pass  # Simply open and close the file to create an empty CSV file
+
+if __name__ == '__main__':
+    #print(dummy_numbers()) 
+    #print(datetime.now())
+    print(prepare_array()) 
+    #reset_history()
+    print(prepare_hold_array())

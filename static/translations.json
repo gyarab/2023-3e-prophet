@@ -23,7 +23,8 @@
 
         "tbotOptions": "Bot options",
         "tLeverage":"Leverage",
-
+        "tCommissions":"Commissions",
+        
         "tsiteOptions": "Site options",
         "tRefreshTime":"Site refresh time",
         "tTheme": "Theme:",
@@ -53,12 +54,12 @@
         "tProfit": "Celkový profit:",
         
         "tlatestTrades": "Poslední obchody",
-        "tWinRate":"Míra zisku:",
+        "tWinRate":"Úspěšnost:",
         "tWinLoss":"Poměr zisku ke ztrátě:",
 
         "tbotOptions": "Nastavení bota",
-        "tLeverage":" Páka:",
-        
+        "tLeverage":"Páka:",
+        "tCommissions":"Poplatky",
 
         "tsiteOptions": "Nastavení stránky",
         "tRefreshTime":"Čas obnovování:",

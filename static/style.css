@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,900');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 
 :root {  
     --darkBlue: #041c32;  
@@ -7,13 +9,16 @@
     --orange: #da9940;
     --darkCyan: #04293a;
     --blobColor: #06314576;
+	--font: "Roboto", sans-serif, monospace;
   }
   
 
 
 .navbar 
 {
-    background-color: var(--darkCyan);  
+    font-family: var(--font);
+	font-style: italic;
+	background-color: var(--darkCyan);  
 }
 
 body
@@ -25,6 +30,10 @@ body
 {
     background-color: var(--darkerBlue);
 }
+
+
+
+
 .shape-blob {
 	background-color:var(--blobColor);
 	height: 60px;
@@ -162,7 +171,9 @@ body
 
 .footer
 {
-    height: auto; 
+    font-family: var(--font);
+	
+	height: auto; 
     text-align: right; 
     background-color: var(--darkCyan);
 }
@@ -170,7 +181,8 @@ body
 
 .header
 {
-    text-align: center;
+    font-family: var(--font);
+	text-align: center;
     color: var(--orange);
     text-decoration: underline;
     /* "Fixed top" fix*/
@@ -179,11 +191,13 @@ body
 
 .miniHeader
 {
-    text-align: center;
+    font-family: var(--font);
+	
+	text-align: center;
     padding-top: 40px;
     color: var(--yellow);
     font-size: 300%;
-
+	font-weight: 700;
     margin: 0; /* Reset margin */
     line-height: 1.5; /* Adjust line height */
 }
@@ -194,6 +208,8 @@ body
     text-align: center;
     color: var(--yellow);
     font-size: 200%;
+	font-family: var(--font);
+	font-weight: 300;
 
     margin: 0; /* Reset margin */
     line-height: 1.5; /* Adjust line height */
@@ -238,7 +254,9 @@ body
 }
 .underValues
 {
-    padding-top: 40px;
+    color: var(--orange);
+	font-family: var(--font);
+	padding-top: 40px;
 }
 
 .fixedFooter
@@ -249,10 +267,40 @@ body
     font-size: 200%;
 }
 
+.modal-content
+{
+	background-color: transparent;
+	font-family: var(--font);
+}
+
+.modal-header
+{
+	color: var(--orange);
+	border-bottom-color: var(--yellow);
+	background-color: var(--darkCyan);
+	border-top-left-radius: .8rem;
+	border-top-right-radius: .8rem;
+	
+}
+.modal-body
+{
+	background-color: var(--darkCyan);
+	border-color: var(--darkerBlue);
+	color: var(--orange);
+	font-family: var(--font);
+	font-weight: 300;
+}
+
+.modal-footer
+{
+	border-top-color: var(--yellow);
+	background-color: var(--darkCyan);
+	border-bottom-left-radius: .8rem;
+	border-bottom-right-radius: .8rem;
+}
 
 .btn
 {
-	font-family: 'Comic Sans MS';
     background-color: var(--darkCyan); 
     color: var(--orange);
     border-color: var(--orange); 
