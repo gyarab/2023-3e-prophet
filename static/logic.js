@@ -267,7 +267,7 @@ function displayToggleBtn() {
 
 
   }
-  document.getElementById("reset_btn").disabled = isTrading;
+  document.getElementById("reset_btn").disabled = isTrading  && document.documentElement.style.setProperty('#04293a');
   document.getElementById("CommissionSlider").disabled = isTrading;
   document.getElementById("LeverageSlider").disabled = isTrading;
 }
