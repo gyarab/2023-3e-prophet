@@ -30,6 +30,20 @@ body
 {
     background-color: var(--darkerBlue);
 }
+.bg3 {
+	user-select:none;
+  margin: 5rem auto;
+  padding: 30px;
+  border: 1px solid var(--orange);
+  background-color: #021a3139;
+  background: linear-gradient(0deg,  #0c273f3d 0%,  #041c323d 100%);
+  box-shadow: 0 7px 20px 5px #00000088;
+  border-radius: .7rem;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  overflow: hidden;
+  transition: .5s all;
+}
 
 
 
@@ -44,7 +58,7 @@ body
 		movement_one 12s ease-in-out infinite both;
 	opacity:.7;
 	position: fixed;
-    filter:blur(4px);
+    /*filter:blur(4px);*/
     z-index: -1;
 }
 
@@ -186,7 +200,7 @@ body
     color: var(--orange);
     text-decoration: underline;
     /* "Fixed top" fix*/
-    padding-top: 100px; 
+    padding-top: 80px;
 }
 
 .miniHeader
@@ -194,7 +208,7 @@ body
     font-family: var(--font);
 	
 	text-align: center;
-    padding-top: 40px;
+	padding-bottom: 0px;
     color: var(--yellow);
     font-size: 300%;
 	font-weight: 700;
