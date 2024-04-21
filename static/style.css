@@ -16,7 +16,9 @@
 
 .navbar 
 {
-    background-color: var(--darkCyan);  
+    font-family: var(--font);
+	font-style: italic;
+	background-color: var(--darkCyan);  
 }
 
 body
@@ -28,6 +30,10 @@ body
 {
     background-color: var(--darkerBlue);
 }
+
+
+
+
 .shape-blob {
 	background-color:var(--blobColor);
 	height: 60px;
@@ -165,7 +171,9 @@ body
 
 .footer
 {
-    height: auto; 
+    font-family: var(--font);
+	
+	height: auto; 
     text-align: right; 
     background-color: var(--darkCyan);
 }
@@ -246,7 +254,8 @@ body
 }
 .underValues
 {
-    font-family: var(--font);
+    color: var(--orange);
+	font-family: var(--font);
 	padding-top: 40px;
 }
 
@@ -258,6 +267,37 @@ body
     font-size: 200%;
 }
 
+.modal-content
+{
+	background-color: transparent;
+	font-family: var(--font);
+}
+
+.modal-header
+{
+	color: var(--orange);
+	border-bottom-color: var(--yellow);
+	background-color: var(--darkCyan);
+	border-top-left-radius: .8rem;
+	border-top-right-radius: .8rem;
+	
+}
+.modal-body
+{
+	background-color: var(--darkCyan);
+	border-color: var(--darkerBlue);
+	color: var(--orange);
+	font-family: var(--font);
+	font-weight: 300;
+}
+
+.modal-footer
+{
+	border-top-color: var(--yellow);
+	background-color: var(--darkCyan);
+	border-bottom-left-radius: .8rem;
+	border-bottom-right-radius: .8rem;
+}
 
 .btn
 {
