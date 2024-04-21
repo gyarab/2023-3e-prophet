@@ -33,14 +33,14 @@ let myChart;
     .then(data => {
       if (data.trading_data) {
         isTrading = data.trading_data['is_trading'];
-        
+
         displayToggleBtn();
-        
-        
-        
+
+
+
 
         document.getElementById('leverage').textContent = data.trading_data['leverage'];
-        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']); 
+        document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']);
       } else {
         console.error('Error: Missing trading data in response:', data);
       }
@@ -49,21 +49,21 @@ let myChart;
       console.error('Error fetching or processing trading data:', error);
 
     });
-    
-    
-    
-    setTimeout(function () {
-      
-      const btcDataset = myChart.data.datasets[0];
-      const historyDataset = myChart.data.datasets[1];
-      const holdDataset = myChart.data.datasets[2];
-      
-      
-      btcDataset.hidden =true;
-      historyDataset.hidden = false;
-      holdDataset.hidden = false;
-    }, 2000);
-  
+
+
+
+  setTimeout(function () {
+
+    const btcDataset = myChart.data.datasets[0];
+    const historyDataset = myChart.data.datasets[1];
+    const holdDataset = myChart.data.datasets[2];
+
+
+    btcDataset.hidden = true;
+    historyDataset.hidden = false;
+    holdDataset.hidden = false;
+  }, 2000);
+
 })();
 
 
@@ -86,12 +86,12 @@ let myChart;
       } else {
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
-      
+
 
       // Chart
       updateChart();
-        
-      
+
+
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
       setTimeout(SiteRefresh, (refreshTime * 1000));
@@ -116,16 +116,16 @@ function history_array() {
       historyVal = data.history_values;
     })
     .catch(error => console.error('Error fetching prepared array:', error))
-  
+
   fetch('/prepare_hold_array')
     .then(response => response.json())
     .then(data => {
       holdVal = data.hold_values;
     })
     .catch(error => console.error('Error fetching prepared array:', error))
-    
 
-    
+
+
 }
 
 
@@ -165,14 +165,14 @@ function updateChart() {
         animation: { duration: 0 },
         responsive: true,
         elements: {
-          point:{
-              radius: 1.5
+          point: {
+            radius: 1.5
           }
-      }
+        }
       }
     });
-  myChart.data.datasets[0].hidden = true;
-  updateChart();
+    myChart.data.datasets[0].hidden = true;
+    updateChart();
   } else {
     // If the chart exists, update its data
     //myChart.data.labels = xValues;
@@ -182,35 +182,33 @@ function updateChart() {
     myChart.data.datasets[1].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
     myChart.data.datasets[2].data = holdVal;
     myChart.data.datasets[2].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
-    
+
     myChart.update();
   }
 }
 
-let hideBtc = true;
+let hideBtc = false;
 function toggleBtcVal() {
-  
+
   const btcDataset = myChart.data.datasets[0];
-const historyDataset = myChart.data.datasets[1];
-const holdDataset = myChart.data.datasets[2];
-  
-  if(hideBtc)
-  {
+  const historyDataset = myChart.data.datasets[1];
+  const holdDataset = myChart.data.datasets[2];
+
+  if (hideBtc) {
     btcDataset.hidden = hideBtc;
-  historyDataset.hidden = !hideBtc;
-  holdDataset.hidden = !hideBtc;
-  document.getElementById('toggleButtonBTC').innerText = 'Show bitcoin ';
+    historyDataset.hidden = !hideBtc;
+    holdDataset.hidden = !hideBtc;
+    document.getElementById('toggleButtonBTC').innerText = 'Show bitcoin';
   }
-  else
-  {
-    btcDataset.hidden = hideBtc; 
-  historyDataset.hidden = !hideBtc;
-  holdDataset.hidden = !hideBtc;
-  
-  document.getElementById('toggleButtonBTC').innerText = 'Show bot trading';
+  else {
+    btcDataset.hidden = hideBtc;
+    historyDataset.hidden = !hideBtc;
+    holdDataset.hidden = !hideBtc;
+
+    document.getElementById('toggleButtonBTC').innerText = 'Show bot trading';
   }
-  hideBtc = !hideBtc; 
-  
+  hideBtc = !hideBtc;
+
   myChart.update();
 }
 
@@ -316,9 +314,9 @@ function loadData() {
         document.getElementById('short_count').textContent = data.trading_data['short_count'];
         document.getElementById('hold_count').textContent = data.trading_data['hold_count'];
 
-        
-        document.getElementById('winrate').textContent = betterRounding(data.trading_data['good_trade_count'] / (data.trading_data['hold_count'] + data.trading_data['short_count'] + data.trading_data['long_count'])*100, 2);
-        document.getElementById('win-loss').textContent = betterRounding((data.trading_data['total_profit'] /data.trading_data['good_trade_count'])/(data.trading_data['total_loss']/data.trading_data['bad_trade_count'])*100 ,4);
+
+        document.getElementById('winrate').textContent = betterRounding(data.trading_data['good_trade_count'] / (data.trading_data['hold_count'] + data.trading_data['short_count'] + data.trading_data['long_count']) * 100, 2);
+        document.getElementById('win-loss').textContent = betterRounding((data.trading_data['total_profit'] / data.trading_data['good_trade_count']) / (data.trading_data['total_loss'] / data.trading_data['bad_trade_count']) * 100, 4);
 
       } else {
         console.error('Error: Missing trading data in response:', data);
@@ -415,7 +413,7 @@ function resetSavedData() {
     .then(data => console.log(data.message))
     .catch(error => console.error('Error:', error));
   timeSpent = 0
-  
+
 }
 
 
@@ -465,9 +463,9 @@ function darkMode() {
   document.documentElement.style.setProperty('--darkBlue', '#010207')
   document.documentElement.style.setProperty('--darkerBlue', '#000000bd')
   document.documentElement.style.setProperty('--yellow', '#fce6bd',)
-  document.documentElement.style.setProperty('--orange', '#fcdb9f',)
-  document.documentElement.style.setProperty('--darkCyan','#04090f',)
-  document.documentElement.style.setProperty('--blobColor','#04081a')
+  document.documentElement.style.setProperty('--orange', '#f9c25f',)
+  document.documentElement.style.setProperty('--darkCyan', '#04090f',)
+  document.documentElement.style.setProperty('--blobColor', '#04081a')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
   updateChart();
 
@@ -476,7 +474,7 @@ function darkMode() {
 function lightMode() {
   document.documentElement.style.setProperty('--darkBlue', '#fcfcfc',)
   document.documentElement.style.setProperty('--darkerBlue', '#f7f7f7bd',)
-  document.documentElement.style.setProperty('--yellow', '#000000',)
+  document.documentElement.style.setProperty('--yellow', '#676767',)
   document.documentElement.style.setProperty('--orange', '#000000',)
   document.documentElement.style.setProperty('--darkCyan', '#d3d3d3',)
   document.documentElement.style.setProperty('--blobColor', '#d3d3d3')
