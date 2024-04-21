@@ -466,8 +466,8 @@ function darkMode() {
   document.documentElement.style.setProperty('--darkerBlue', '#000000bd')
   document.documentElement.style.setProperty('--yellow', '#fce6bd',)
   document.documentElement.style.setProperty('--orange', '#fcdb9f',)
-  document.documentElement.style.setProperty('--darkCyan', '#04090f',)
-  document.documentElement.style.setProperty('--blobColor', '#e8be87')
+  document.documentElement.style.setProperty('--darkCyan','#04090f',)
+  document.documentElement.style.setProperty('--blobColor','#04081a')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
   updateChart();
 

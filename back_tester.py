@@ -10,22 +10,33 @@ import trader
 
 device = bb.device
 # Initialize weights values
-model_name = "CleanupTest.pth"
-bb.create_model_path(model_name)
+model_name = "GoodLDM2.pth"
+bb.model_path = bb.create_model_path(model_name)
 bb.load_model()
 bb.model.to(device)
 # prepares data
 DataManager = LoaderOHLCV(bb.look_back, bb.load_data_mode,'Backtest_1_minute.csv')
 raw_data = DataManager.load_data_from_csv()
-prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
+#TODO Hardcoded lstm3
+if bb.load_data_mode == 3:
+    prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
+else :
+    prepared_data = DataManager.prepare_dataframe_for_lstm2(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
 # converts the data to correct chronological order
 prepared_data_as_np = dc(np.flip(prepared_data_as_np, axis= 1))
 def create_back_test_graph(algo_usd_balance_history, bh_usd_balance_history, sh_usd_balance_history): #bh = buy and hold
     print('Creating graph')
-    plt.plot(bh_usd_balance_history, color = 'blue')
-    plt.plot(sh_usd_balance_history, color = 'green')
-    plt.plot(algo_usd_balance_history,color = 'red')
+    # Plots portfolios
+    plt.plot(bh_usd_balance_history, color = 'blue', label = 'Buy and Hold Balance')
+    plt.plot(sh_usd_balance_history, color = 'green', label = 'Short and Hold Balance')
+    plt.plot(algo_usd_balance_history,color = 'red', label = 'Bot Balance' )
+    # Adding labels and title
+    plt.xlabel('Minute')
+    plt.ylabel('USD Balance')
+    plt.title('Balance Over Time')
+    plt.legend()  # Show legend with labels
+    plt.grid(True)  # Add grid
     plt.show()
 def calculate_win_rate(bad_trade_count, amount_of_trades):
     loose_ratio = bad_trade_count / amount_of_trades
@@ -117,4 +128,4 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = 0)
     print(f'holds: {hold_count}')
     create_back_test_graph(usd_balance_history, bh_usd_balance_history, sh_usd_balance_history)        
 if __name__ == '__main__':
-    back_test_loop(commission_rate = 0.00)
+    back_test_loop(commission_rate = 0.05, leverage= 1)
