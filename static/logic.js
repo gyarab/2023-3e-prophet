@@ -6,6 +6,7 @@ let commission_rate = 0;
 let refreshTime = 10;
 let btcVal = [];
 let historyVal = [];
+let holdVal = [];
 
 let timePassedInterval;
 let startTime = Date.now();
@@ -14,6 +15,7 @@ let startTime = Date.now();
 
 
 (function AfterLoad() {
+  history_array();
   fetch('/load_trading_data', {
     method: 'GET',
     headers: {
@@ -30,7 +32,7 @@ let startTime = Date.now();
       if (data.trading_data) {
         isTrading = data.trading_data['is_trading'];
         displayToggleBtn();
-        history_array();
+
 
         document.getElementById('leverage').textContent = data.trading_data['leverage'];
         document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']); //Converting from number to %
@@ -46,6 +48,7 @@ let startTime = Date.now();
 
 
 (function SiteRefresh() {
+  history_array();
   loadData();
   fetch('/get_last_hour_values')
     .then(response => response.json())
@@ -65,7 +68,6 @@ let startTime = Date.now();
       
 
       // Chart
-      history_array();
       updateChart();
       
       resetTimePassedInterval();
@@ -92,6 +94,14 @@ function history_array() {
       historyVal = data.history_values;
     })
     .catch(error => console.error('Error fetching prepared array:', error))
+  
+  fetch('/prepare_hold_array')
+    .then(response => response.json())
+    .then(data => {
+      holdVal = data.hold_values;
+    })
+    .catch(error => console.error('Error fetching prepared array:', error))
+    
 }
 
 
@@ -105,7 +115,7 @@ let myChart;
 
 function updateChart() {
   const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
-  const name = ['Bitcoin', 'Bot balance'];
+  const name = ['Bitcoin', 'Bot balance', 'Buy & Hold'];
 
   if (!myChart) {
     // If the chart doesn't exist, create a new one
@@ -124,6 +134,12 @@ function updateChart() {
           borderColor: getComputedStyle(document.documentElement).getPropertyValue('--yellow'),
           fill: false,
           label: name[1]
+        },
+        {
+          data: holdVal,
+          borderColor: getComputedStyle(document.documentElement).getPropertyValue('--orange'),
+          fill: false,
+          label: name[2]
         }]
       },
       options: {
@@ -139,6 +155,8 @@ function updateChart() {
     myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
     myChart.data.datasets[1].data = historyVal;
     myChart.data.datasets[1].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
+    myChart.data.datasets[2].data = holdVal;
+    myChart.data.datasets[2].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
     myChart.update();
   }
 }

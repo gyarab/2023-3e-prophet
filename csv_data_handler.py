@@ -4,6 +4,7 @@ import csv
 import os
 from datetime import datetime
 import json
+from binance_data_fetcher import get_last_hour_values
 
 filename = "balance_history.csv"
 json_filename = "trade_data.json"
@@ -46,7 +47,7 @@ def prepare_array():
 
     if not any(history):
         # If history is empty, return balance_array filled with the last known non-zero balance
-        last_non_zero_balance = 10000  # You might want to adjust this default value
+        last_non_zero_balance = 10000  
         balance_array = [last_non_zero_balance] * 60
         return balance_array
 
@@ -87,6 +88,39 @@ def prepare_array():
     return balance_array
 
 
+def prepare_hold_array():
+    hold_array = [0] * 60
+    history = read_history()
+    minute_index = 0
+    current_timestamp = datetime.now()
+
+    if not any(history):
+        balance = 10000  
+    else:
+        for line in history:
+            timestamp = datetime.fromtimestamp(float(line[1]))
+            balance = float(line[0])
+            # Calculate the difference in minutes between the current timestamp and the timestamp from history
+            minutes_diff = (current_timestamp - timestamp).total_seconds() // 60
+            # If the difference is within the last hour
+            if 0 <= minutes_diff < 60:
+                # Set the balance at the corresponding minute index
+                minute_index = int(59 - minutes_diff)  # reverse index since we start from 60th minute
+                break
+
+    bitcoin_array = get_last_hour_values()
+    start_btc = balance / bitcoin_array[minute_index]    
+
+    for i in range(len(hold_array)-minute_index):
+        hold_array[i+minute_index] = (start_btc*bitcoin_array[i+minute_index] )
+    
+    for i in range(len(hold_array)-(60-minute_index)):
+        hold_array[i] = (balance)
+    
+    return hold_array
+
+
+
 
 def dummy_numbers():
     now = datetime.now()
@@ -103,7 +137,8 @@ def reset_history():
         pass  # Simply open and close the file to create an empty CSV file
 
 if __name__ == '__main__':
-    print(dummy_numbers()) 
+    #print(dummy_numbers()) 
     #print(datetime.now())
     print(prepare_array()) 
     #reset_history()
+    print(prepare_hold_array())
