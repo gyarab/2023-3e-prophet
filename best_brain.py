@@ -18,7 +18,8 @@ class LSTM(nn.Module):# this class inherits from nn.Module
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-        self.sigmoid = nn.Sigmoid()
+        if load_data_mode == 3:
+            self.sigmoid = nn.Sigmoid()
     # function that describes how the data move throgh the model
     def forward(self, x):
         batch_size = x.size(0)
@@ -28,7 +29,8 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        out = self.sigmoid(out)
+        if load_data_mode == 3:
+            out = self.sigmoid(out)
         
         return out
     
@@ -52,7 +54,10 @@ def train_one_epoch(train_loader, epoch, loss_function, optimizer):
         optimizer.step()
 # train all data
 def train_model(train_loader, num_epochs, learning_rate):
-    loss_function = nn.BCELoss()
+    if load_data_mode == 3:
+        loss_function = nn.BCELoss()
+    else:
+        loss_function = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(train_loader, epoch, loss_function, optimizer)
@@ -101,10 +106,14 @@ def create_train_graph(X_train, y_train):
     new_y_train = dc(dummies[:, 0])
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
-    # Add a horizontal line at y=0.5
-    plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
-    plt.xlabel('Day')
-    plt.ylabel('Close')
+    if load_data_mode == 3:
+        # Add a horizontal line at y=0.5
+        plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
+    else:
+        # Add a horizontal line at y=0
+        plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    plt.xlabel('Minute')
+    plt.ylabel('Prediction')
     plt.legend()
     plt.show()
     
@@ -120,10 +129,14 @@ def create_test_graph(X_test, y_test):
     new_y_test = dc(dummies[:, 0])
     plt.plot(new_y_test, label='Actual change')
     plt.plot(test_predictions, label='Predicted change')
-    # Add a horizontal line at y=0.5
-    plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
-    plt.xlabel('Day')
-    plt.ylabel('Close')
+    if load_data_mode == 3:
+        # Add a horizontal line at y=0.5
+        plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
+    else:
+        # Add a horizontal line at y=0
+        plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    plt.xlabel('Minute')
+    plt.ylabel('Prediction')
     plt.legend()
     plt.show()
     
@@ -162,10 +175,9 @@ device = get_device()
 # we have: min-batch gradient descent
 batch_size = 16 # size of 16 means that 16 datapoints will be loaded at once
 look_back = 9 # how many candles will it look into the past
-precentage_of_train_data = 0.99 # how much data will be used for training, rest will be used for testing
 input_file_name = 'not_given'   # this file has to be in /datasets/
 # which columns will be included in training data - X
-load_data_mode = 3 # modes of loading the data, starts with 0
+load_data_mode = 2 # modes of loading the data, starts with 0
 lstm_layers = 1
 lstm_neuron_count = 8
 model = LSTM(1, lstm_neuron_count, lstm_layers)
