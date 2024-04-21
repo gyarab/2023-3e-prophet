@@ -319,6 +319,20 @@ body
     color:var(--darkCyan);
     border-color:var(--darkCyan);
 }
+
+#reset_btn:disabled {
+    background-color: var(--darkerBlue);
+    cursor: not-allowed; 
+	border-color: var(--yellow);
+  }
+
+  #toggleButton:disabled {
+    background-color: var(--darkerBlue);
+    cursor: not-allowed; 
+	border-color: var(--yellow);
+  }
+
+
 .separator
 {
     padding-bottom: 500px;
