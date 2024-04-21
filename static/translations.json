@@ -18,6 +18,8 @@
         "tLastOpened":"Since last open",
 
         "tgraph": "Graph",
+        "tShowBot":"Show bot trading graph",
+        "tShowBtc":"Show Bitcoin graph",
         "tTradeTime":"Total trading time:",
         "tProfit": "Total profit",
         
@@ -34,7 +36,9 @@
         "tLeverage":"Leverage",
         "tCommissions":"Commissions",
         "tReset":"Reset values and history",
-        
+        "tStartTrade":"Press to start trading",
+        "tStopTrade":"Press to stop trading",
+
         "tsiteOptions": "Site options",
         "tRefreshTime":"Site refresh time",
         "tTheme": "Theme:",
@@ -66,6 +70,8 @@
         "tLastOpened":"Od posledního otevření",
 
         "tgraph": "Graf ",
+        "tShowBot":"Ukázat graf obchodování bota",
+        "tShowBtc":"Ukázat graf Bitcoin",
         "tTradeTime":"Celkový čas obchodování:",
         "tProfit": "Celkový profit:",
         
@@ -81,6 +87,9 @@
         "tbotOptions": "Nastavení bota",
         "tLeverage":"Páka",
         "tCommissions":"Poplatky",
+        "tStartTrade":"Začít obchodování",
+        "tStopTrade":"Přerušit obchodování",
+
         "tReset":"Obnovit hodnoty a historii obchodů",
 
         "tsiteOptions": "Nastavení stránky",
