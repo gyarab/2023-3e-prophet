@@ -161,7 +161,7 @@ function updateChart() {
         }]
       },
       options: {
-        legend: { display: true },
+        legend: { display: true, onClick: null },
         animation: { duration: 0 },
         responsive: true,
         elements: {
