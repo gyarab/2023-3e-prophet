@@ -217,7 +217,7 @@ body
     font-size: 200%;
 	font-family: var(--font);
 	font-weight: 300;
-
+	text-shadow: 1px 1px 1px  rgb(0, 0, 0);
     margin: 0; /* Reset margin */
     line-height: 1.5; /* Adjust line height */
 }
@@ -264,6 +264,7 @@ body
     color: var(--orange);
 	font-family: var(--font);
 	padding-top: 40px;
+	text-shadow: none;
 }
 
 .fixedFooter
@@ -308,7 +309,8 @@ body
 
 .btn
 {
-    background-color: var(--darkCyan); 
+    text-shadow: none;
+	background-color: var(--darkCyan); 
     color: var(--orange);
     border-color: var(--orange); 
 	transition: background-color .17s ease,color .17s ease; 
