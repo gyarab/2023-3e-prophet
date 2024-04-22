@@ -193,7 +193,7 @@ function updateChart() {
 }
 
 function displayBtcBtn() {
-  if (hideBtc) {
+  if (!hideBtc) {
     fetch('/static/translations.json')
       .then(response => response.json())
       .then(translations => {
@@ -219,13 +219,12 @@ function displayBtcBtn() {
 
 let hideBtc = false;
 function toggleBtcVal() {
-  displayBtcBtn();
   const btcDataset = myChart.data.datasets[0];
   const historyDataset = myChart.data.datasets[1];
   const holdDataset = myChart.data.datasets[2];
-
+  
   if (hideBtc) {
-
+    
     btcDataset.hidden = hideBtc;
     historyDataset.hidden = !hideBtc;
     holdDataset.hidden = !hideBtc;
@@ -236,7 +235,8 @@ function toggleBtcVal() {
     holdDataset.hidden = !hideBtc;
   }
   hideBtc = !hideBtc;
-
+  displayBtcBtn();
+  
   myChart.update();
 }
 
