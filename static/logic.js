@@ -133,7 +133,9 @@ function history_array() {
 //Graph
 function updateChart() {
   const xValues = Array.from({ length: 60 }, (_, i) => 60 - i); // Creating an array from 60 to 1
-  const name = ['Bitcoin', 'Bot balance', 'Buy & Hold'];
+  let name = [];
+  if (currentLanguage == "cz") { name = ['Cena Bitcoinu', 'Celkové finance', 'Nákup & držení'] }
+  else name = ['Bitcoin price', 'Total balance', 'Buy & Hold'];
 
   if (!myChart) {
     // If the chart doesn't exist, create a new one
@@ -178,32 +180,32 @@ function updateChart() {
     //myChart.data.labels = xValues;
     myChart.data.datasets[0].data = btcVal;
     myChart.data.datasets[0].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    myChart.data.datasets[0].label = name[0];
     myChart.data.datasets[1].data = historyVal;
     myChart.data.datasets[1].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--yellow');
+    myChart.data.datasets[1].label = name[1];
     myChart.data.datasets[2].data = holdVal;
     myChart.data.datasets[2].borderColor = getComputedStyle(document.documentElement).getPropertyValue('--orange');
+    myChart.data.datasets[2].label = name[2];
 
     myChart.update();
   }
 }
 
-function displayBtcBtn()
-{
-if(hideBtc)
-{
-  fetch('/static/translations.json')
-  .then(response => response.json())
-  .then(translations => {
-    // Get the translation for the selected language and key 'tmoney'
-    const translation = translations[currentLanguage.toLowerCase()].tShowBtc;
-    // Set the inner text of the toggleButton element
-    document.getElementById('toggleButtonBTC').innerText = translation;
-  })
-  .catch(error => console.error('Error fetching translations:', error));
-}
-else
-{
-  fetch('/static/translations.json')
+function displayBtcBtn() {
+  if (hideBtc) {
+    fetch('/static/translations.json')
+      .then(response => response.json())
+      .then(translations => {
+        // Get the translation for the selected language and key 'tmoney'
+        const translation = translations[currentLanguage.toLowerCase()].tShowBtc;
+        // Set the inner text of the toggleButton element
+        document.getElementById('toggleButtonBTC').innerText = translation;
+      })
+      .catch(error => console.error('Error fetching translations:', error));
+  }
+  else {
+    fetch('/static/translations.json')
       .then(response => response.json())
       .then(translations => {
         // Get the translation for the selected language and key 'tmoney'
@@ -212,7 +214,7 @@ else
         document.getElementById('toggleButtonBTC').innerText = translation;
       })
       .catch(error => console.error('Error fetching translations:', error));
-}
+  }
 }
 
 let hideBtc = false;
@@ -223,10 +225,10 @@ function toggleBtcVal() {
   const holdDataset = myChart.data.datasets[2];
 
   if (hideBtc) {
-    
+
     btcDataset.hidden = hideBtc;
     historyDataset.hidden = !hideBtc;
-    holdDataset.hidden = !hideBtc;    
+    holdDataset.hidden = !hideBtc;
   }
   else {
     btcDataset.hidden = hideBtc;
@@ -241,7 +243,7 @@ function toggleBtcVal() {
 
 
 function displayToggleBtn() {
-  
+
   if (isTrading) {
     fetch('/static/translations.json')
       .then(response => response.json())
@@ -267,7 +269,7 @@ function displayToggleBtn() {
 
 
   }
-  document.getElementById("reset_btn").disabled = isTrading  
+  document.getElementById("reset_btn").disabled = isTrading
   document.getElementById("CommissionSlider").disabled = isTrading;
   document.getElementById("LeverageSlider").disabled = isTrading;
 }
@@ -485,9 +487,10 @@ function switchLanguage() {
   var currentLang = document.documentElement.lang;
   var targetLang = currentLang === "en" ? "cz" : "en";
   currentLanguage = targetLang;
-  
+
   displayToggleBtn();
   displayBtcBtn();
+  updateChart();
 
   fetch('/static/translations.json')
     .then(response => response.json())
