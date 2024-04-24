@@ -15,7 +15,6 @@ Pro stáhnutí všech potřebných závislostí:
 - torch
 - tqdm
 - pandas
-- ta
 - scikit-learn
 - matplotlib
 - python-binance
