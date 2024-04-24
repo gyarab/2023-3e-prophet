@@ -16,7 +16,6 @@ def get_absolute_path(input_file):
     input_file_path = os.path.join(os.path.dirname(__file__),'datasets', input_file)
     return input_file_path
 # saves a csv file with historical data
-# Date is hard coded !!!
 def get_historical_data(symbol, interval, start_date_string, end_date_string = 'not_given', ouput_file = 'not_given'):
     print('downloading historical data from Binance...')
     filename = get_absolute_path(ouput_file)
