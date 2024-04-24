@@ -14,6 +14,5 @@ Pro stáhnutí všech potřebných závislostí:
 - numpy
 - torch
 - pandas
-- scikit-learn
 - matplotlib
 - python-binance
