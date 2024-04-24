@@ -2,6 +2,5 @@ flask
 numpy
 torch
 pandas
-scikit-learn
 matplotlib
 python-binance
