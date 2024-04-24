@@ -1,6 +1,5 @@
 # Thi scripts is for testing the trading algorythm on historical data
 import best_brain as bb
-import binance_data_fetcher
 from data_manager import LoaderOHLCV
 import torch
 import matplotlib.pyplot as plt
@@ -17,11 +16,8 @@ bb.model.to(device)
 # prepares data
 DataManager = LoaderOHLCV(bb.look_back, bb.load_data_mode,'Backtest_1_minute.csv')
 raw_data = DataManager.load_data_from_csv()
-#TODO Hardcoded lstm3
-if bb.load_data_mode == 3:
-    prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
-else :
-    prepared_data = DataManager.prepare_dataframe_for_lstm2(raw_data, train= False)
+
+prepared_data = DataManager.prepare_dataframe_for_lstm2(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
 # converts the data to correct chronological order
 prepared_data_as_np = dc(np.flip(prepared_data_as_np, axis= 1))
@@ -69,7 +65,6 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = 0)
     btc_balance = 0
     last_usd_balance = 0
     print (f'Starting with usd balance: {usd_balance}')
-    # Create tqdm instance
     current_btc_price = 0
     bh_usd_balance, bh_btc_balance = initialize_bh_balance(get_btc_price_for_current_sequence(0), usd_balance= usd_balance) # gets starting price of btc
     sh_usd_balance, sh_btc_balance = initialize_sh_balance(get_btc_price_for_current_sequence(0), usd_balance= usd_balance)

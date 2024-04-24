@@ -32,8 +32,6 @@ class LoaderOHLCV():
             shifted_df = self.prepare_dataframe_for_lstm1(raw_data)
         if self.mode == 2:        
             shifted_df = self.prepare_dataframe_for_lstm2(raw_data, train= True)
-        if self.mode == 3:
-            shifted_df = self.prepare_dataframe_for_lstm3(raw_data, train= True)
         shifted_df_as_np = shifted_df.to_numpy()
         X_train, X_test, y_train, y_test = self.split_data(shifted_df_as_np)
         X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
@@ -178,46 +176,7 @@ class LoaderOHLCV():
         # removes Close column
         dataframe = dataframe.drop('Close', axis=1)
         return dataframe
-    def prepare_dataframe_for_lstm3(self, dataframe, train = True):
-        try:
-            dataframe = dc(dataframe[['Timestamp', 'Close']])
-            dataframe['Date'] = pd.to_datetime(dataframe['Timestamp'], unit='ms')
-            dataframe = dataframe.drop('Timestamp', axis=1)
-            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-        except:
-            dataframe = dc(dataframe[['Date', 'Close']])
-            dataframe.set_index('Date', inplace=True) # inplace means it will edit the dataframe
-        # creates the target difference columns if train
-        if train == True:
-            target_difference = dataframe['Close'].shift(-1) - dataframe['Close']
-            dataframe['Target_vlaue_difference'] = np.where(target_difference > 0, 1, 0)
-        dataframe['Close'] = pd.to_numeric(dataframe['Close'], errors='coerce')
-        dataframe['Close_difference'] = (dataframe['Close'] - dataframe['Close'].shift(1) ) / dataframe['Close'].shift(1) * 100
-        # adds sequneces of Close differences in percentage - 1 sequnece will have legnth of n_steps
-        lag_columns = []
-        for i in range(1, self.look_back + 1):
-            lag_col_name = f'Close_difference(t-{i})'
-            lag_columns.append(dataframe['Close_difference'].shift(i).rename(lag_col_name))
-        # Concatenate all lag columns to the original dataframe
-        dataframe = pd.concat([dataframe] + lag_columns, axis=1)
-        
-        # removes possible blank lines
-        dataframe.dropna(inplace=True)
-        # removes Close column
-        dataframe = dataframe.drop('Close', axis=1)
-        #dataframe.to_csv("dataframe_test.csv") # just a debug tool
-        return dataframe
     # returns whole path to the dataset/data folder
     def get_absolute_path(self):
         input_file_path = os.path.join(os.path.dirname(__file__), 'datasets', self.input_file)
         return input_file_path
-    def prepare_live_data(self, raw_data):
-        # Prepares data for prediction
-        prepared_data = self.prepare_dataframe_for_lstm3(raw_data, train= False)
-        prepared_data_as_np = prepared_data.to_numpy()
-        # Converts the data to correct chronological order
-        prepared_data_as_np = dc(np.flip(prepared_data_as_np, axis= 1))
-        # Tranforms sequence to correct form
-        one_sequence = prepared_data_as_np.reshape((-1, self.look_back * 1 + 1 , 1))
-        one_sequence_tensor = torch.tensor(one_sequence).float()
-        return one_sequence_tensor

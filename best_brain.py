@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
 import numpy as np
 import os
 import matplotlib.pyplot as plt # graphs
@@ -13,13 +11,10 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         super().__init__()
         self.hidden_size = hidden_size
         self.num_stacked_layers = num_stacked_layers
-
         self.lstm = nn.LSTM(input_size, hidden_size, num_stacked_layers, 
                             batch_first=True)
         # defines linear function with single ouput neuron 
         self.fc = nn.Linear(hidden_size, 1)
-        if load_data_mode == 3:
-            self.sigmoid = nn.Sigmoid()
     # function that describes how the data move throgh the model
     def forward(self, x):
         batch_size = x.size(0)
@@ -29,9 +24,6 @@ class LSTM(nn.Module):# this class inherits from nn.Module
         # "_" means that we will denote tuple that contains hidden and cell state at the last step
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
-        if load_data_mode == 3:
-            out = self.sigmoid(out)
-        
         return out
     
 def get_device():
@@ -54,10 +46,7 @@ def train_one_epoch(train_loader, epoch, loss_function, optimizer):
         optimizer.step()
 # train all data
 def train_model(train_loader, num_epochs, learning_rate):
-    if load_data_mode == 3:
-        loss_function = nn.BCELoss()
-    else:
-        loss_function = nn.MSELoss()
+    loss_function = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     for epoch in range(num_epochs):
         train_one_epoch(train_loader, epoch, loss_function, optimizer)
@@ -106,12 +95,8 @@ def create_train_graph(X_train, y_train):
     new_y_train = dc(dummies[:, 0])
     plt.plot(new_y_train, label='Actual Close')
     plt.plot(train_predictions, label='Predicted Close')
-    if load_data_mode == 3:
-        # Add a horizontal line at y=0.5
-        plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
-    else:
-        # Add a horizontal line at y=0
-        plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.xlabel('Minute')
     plt.ylabel('Prediction')
     plt.legend()
@@ -129,12 +114,8 @@ def create_test_graph(X_test, y_test):
     new_y_test = dc(dummies[:, 0])
     plt.plot(new_y_test, label='Actual change')
     plt.plot(test_predictions, label='Predicted change')
-    if load_data_mode == 3:
-        # Add a horizontal line at y=0.5
-        plt.axhline(y=0.5, color='black', linestyle='-', label='Zero Line')
-    else:
-        # Add a horizontal line at y=0
-        plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
+    # Add a horizontal line at y=0
+    plt.axhline(y=0, color='black', linestyle='-', label='Zero Line')
     plt.xlabel('Minute')
     plt.ylabel('Prediction')
     plt.legend()
