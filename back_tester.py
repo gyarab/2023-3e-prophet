@@ -1,6 +1,5 @@
 # Thi scripts is for testing the trading algorythm on historical data
 import best_brain as bb
-import binance_data_fetcher
 from data_manager import LoaderOHLCV
 import torch
 import matplotlib.pyplot as plt
@@ -69,7 +68,6 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = 0)
     btc_balance = 0
     last_usd_balance = 0
     print (f'Starting with usd balance: {usd_balance}')
-    # Create tqdm instance
     current_btc_price = 0
     bh_usd_balance, bh_btc_balance = initialize_bh_balance(get_btc_price_for_current_sequence(0), usd_balance= usd_balance) # gets starting price of btc
     sh_usd_balance, sh_btc_balance = initialize_sh_balance(get_btc_price_for_current_sequence(0), usd_balance= usd_balance)
