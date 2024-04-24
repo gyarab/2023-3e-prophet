@@ -74,4 +74,4 @@ def stop_trading_route():
 
 # if this script is being run directly, run it in debug mode (detailed errors + some other features)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
