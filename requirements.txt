@@ -1,7 +1,6 @@
 flask
 numpy
 torch
-tqdm
 pandas
 scikit-learn
 matplotlib
