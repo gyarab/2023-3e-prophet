@@ -13,7 +13,6 @@ Pro stáhnutí všech potřebných závislostí:
 - flask
 - numpy
 - torch
-- tqdm
 - pandas
 - scikit-learn
 - matplotlib
