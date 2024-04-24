@@ -30,7 +30,7 @@
         "tGoodTrade":"Good trades:",
         "tBadTrade":"Bad trades:",
         "tWinRate":"Win rate",
-        "tWinLoss":"Win to loss ratio",
+        "tGainLoss":"Gain to loss ratio",
 
         "tbotOptions": "Bot options",
         "tLeverage":"Leverage",
@@ -82,7 +82,7 @@
         "tBadTrade":"Počet špatných obchodů",
         "tHolds":"Počet držení",
         "tWinRate":"Úspěšnost:",
-        "tWinLoss":"Poměr zisku ke ztrátě:",
+        "tGainLoss":"Poměr zisku ke ztrátě:",
 
         "tbotOptions": "Nastavení bota",
         "tLeverage":"Páka",
