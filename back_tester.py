@@ -16,11 +16,8 @@ bb.model.to(device)
 # prepares data
 DataManager = LoaderOHLCV(bb.look_back, bb.load_data_mode,'Backtest_1_minute.csv')
 raw_data = DataManager.load_data_from_csv()
-#TODO Hardcoded lstm3
-if bb.load_data_mode == 3:
-    prepared_data = DataManager.prepare_dataframe_for_lstm3(raw_data, train= False)
-else :
-    prepared_data = DataManager.prepare_dataframe_for_lstm2(raw_data, train= False)
+
+prepared_data = DataManager.prepare_dataframe_for_lstm2(raw_data, train= False)
 prepared_data_as_np = prepared_data.to_numpy()
 # converts the data to correct chronological order
 prepared_data_as_np = dc(np.flip(prepared_data_as_np, axis= 1))
