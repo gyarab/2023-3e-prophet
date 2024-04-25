@@ -56,7 +56,7 @@ def initialize_sh_balance (current_btc_price, usd_balance = 10000):
     usd_balance += btc_sold * current_btc_price 
     return usd_balance, btc_balance
 def get_btc_price_for_current_sequence(index_of_data_sequence):
-    index_of_raw_data = index_of_data_sequence + bb.look_back
+    index_of_raw_data = index_of_data_sequence + bb.look_back + 1
     current_btc_price = raw_data.loc[index_of_raw_data, 'Close']
     return float(current_btc_price)
 def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = 0):
@@ -123,4 +123,4 @@ def back_test_loop(start_usd_balance = 10000, leverage = 1, commission_rate = 0)
     print(f'holds: {hold_count}')
     create_back_test_graph(usd_balance_history, bh_usd_balance_history, sh_usd_balance_history)        
 if __name__ == '__main__':
-    back_test_loop(commission_rate = 0.05, leverage= 1)
+    back_test_loop(commission_rate = 0.00, leverage= 1)
