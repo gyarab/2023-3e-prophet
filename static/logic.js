@@ -37,8 +37,6 @@ let currentLanguage = document.documentElement.lang;
         displayToggleBtn();
         displayBtcBtn();
 
-
-
         document.getElementById('leverage').textContent = data.trading_data['leverage'];
         document.getElementById('commission_rate').textContent = (data.trading_data['commission_rate']);
       } else {
@@ -87,10 +85,8 @@ let currentLanguage = document.documentElement.lang;
         document.getElementById('btcHourDiff').textContent = btcHourDiff;
       }
 
-
       // Chart
       updateChart();
-
 
       resetTimePassedInterval();
       startTime = Date.now(); // Reset the start time
@@ -522,7 +518,6 @@ function darkMode() {
   document.documentElement.style.setProperty('--blobColor', '#04081a')
   document.getElementsByClassName("icon")[0].src = "static/img/Logo.png";
   updateChart();
-
 }
 
 function lightMode() {
