@@ -289,9 +289,7 @@ function startTrading() {
   fetch('/start_trading', {
     method: 'POST',
   }).then(response => {
-    if (response.ok) {
-      console.log('Trading started');
-    } else {
+    if (!response.ok) {
       console.error('Failed to start trading');
     }
   });
@@ -313,9 +311,7 @@ function stopTrading() {
   fetch('/stop_trading', {
     method: 'POST',
   }).then(response => {
-    if (response.ok) {
-      console.log('Trading stopped');
-    } else {
+    if (!response.ok) {
       console.error('Failed to stop trading');
     }
   });
