@@ -9,7 +9,7 @@ import trader
 
 device = bb.device
 # Initialize weights values
-model_name = "GoodLDM2.pth"
+model_name = "historical_model.pth"
 bb.model_path = bb.create_model_path(model_name)
 bb.load_model()
 bb.model.to(device)

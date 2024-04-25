@@ -109,9 +109,9 @@ if __name__ == '__main__':
     #print(type(get_last_102_datapoints('BTCUSDT')))
     symbol = 'BTCUSDT'
     start_date_string = '1 Jan 2022'
-    end_date_string = '1 Feb 2024'
+    end_date_string = 'not_given'
     interval = Client.KLINE_INTERVAL_1MINUTE
-    get_historical_data(symbol,interval, start_date_string, ouput_file='Train_1_minute.csv')
+    get_historical_data(symbol,interval, start_date_string, ouput_file='Full_train_1_minute.csv')
 
 
     # current_btc_value = get_current_btc_value()

@@ -37,7 +37,7 @@ class LoaderOHLCV():
         X_train, X_test, y_train, y_test = self.to_train_tensor(X_train, X_test, y_train, y_test)
         return X_train, X_test, y_train, y_test    
     
-    def split_data(self, shifted_df_as_np, percentage_of_train_data = 0.8):
+    def split_data(self, shifted_df_as_np, percentage_of_train_data = 0.99):
         print("spliting data")
         # splits the data into the target value - y and the data based on which y is predicted X
         X = shifted_df_as_np[:, 1:] # upper scale X is correct
