@@ -11,7 +11,7 @@ import csv_data_handler
 symbol = 'BTCUSDT'
 look_back = bb.look_back
 # loads trading data
-model_name = "GoodLDM2.pth"
+model_name = "actual_model.pth"
 bb.model_path = bb.create_model_path(model_name)
 bb.load_model()
 bb.model.to(bb.device)
