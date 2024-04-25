@@ -30,7 +30,7 @@ body
 {
     background-color: var(--darkerBlue);
 }
-.bg3 { /* cards */
+.card {
 	user-select:none;
   margin: 5rem auto;
   padding: 30px;
@@ -44,6 +44,7 @@ body
   overflow: hidden;
   transition: .5s all;
 }
+
 .shape-blob { /* blobs attribute start */
 	background-color:var(--blobColor);
 	height: 60px;
@@ -64,7 +65,9 @@ body
 	left: 1%;
 	top: 3%;
 	transform: rotate(-180deg);
-	animation: transform 8s ease-in-out infinite both alternate, movement_two 20s ease-in-out infinite both;
+	animation: 
+		transform 8s ease-in-out infinite both alternate, 
+		movement_two 20s ease-in-out infinite both;
 }
 
 .shape-blob.six{
@@ -152,6 +155,7 @@ body
 	transform: rotate(-180deg);
 	animation: transform 9s ease-in-out infinite both alternate, movement_two 25s ease-in-out infinite both;
 }
+
 @keyframes transform  /* blobs transform */
 {
     0%,
@@ -175,7 +179,8 @@ body
     0%,
   500% { transform: none; }
    50% { transform: translate(50%, 20%) rotate(-200deg) scale(1.3);}
-}	/* blobs attribute end */ 
+}	
+
 .footer
 {
     font-family: var(--font);
