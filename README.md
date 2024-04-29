@@ -12,7 +12,7 @@ Cílem tohoto projektu bylo vytvořit Python desktop aplikaci, která má přís
 3. Spusťte soubor app.py / napište do terminálnu ``` python helloworld.py ```
 4. Otevřete v prohlížeči lokální server [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
-## Knihovny projektu
+## Použité knihovny projektu
 Pro stáhnutí všech potřebných závislostí:
 ```  pip3 install -r requirements.txt  ``` 
 
@@ -22,3 +22,8 @@ Pro stáhnutí všech potřebných závislostí:
 - pandas
 - matplotlib
 - python-binance
+
+## Struktura 
+-  Frontend - HTML s  [Bootstrapem](https://getbootstrap.com/docs/5.0), CSS & JavaScript
+-  Backend - Python
+-  Framework - [Flask](https://flask.palletsprojects.com/en/3.0.x/)
