@@ -9,7 +9,7 @@ Cílem tohoto projektu bylo vytvořit Python desktop aplikaci, která má přís
 ## Spuštění projektu:
 1. Klonujte tento repozitář
 2. Stáhněte si požadované knihovny (doporučuji udělat si virtuální prostředí)
-3. Spusťte soubor app.py / napište do terminálnu ``` python helloworld.py ```
+3. Spusťte soubor app.py / napište do terminálnu ``` python app.py ```
 4. Otevřete v prohlížeči lokální server [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ## Použité knihovny projektu
