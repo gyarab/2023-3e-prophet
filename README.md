@@ -7,9 +7,9 @@ Ročníkový projekt 2023/2024 3E Procházka, Petřík, Trávníček
 Cílem tohoto projektu bylo vytvořit Python desktop aplikaci, která má přístup k online krypto burze a komunikuje s ní. V jádru aplikace bude AI, které sleduje různá reálná data z online krypto burzy. Na základě rozhodnutí tohoto AI bude aplikace hospodařit se simulovaným portfoliem. Aplikace poběží lokálně a bude mít plně funkční webové uživatelské rozhraní.
 
 ## Spuštění projektu:
-1. git clone https://github.com/gyarab/2023-3e-prophet.git
-2. py -3 -m venv venv
-3. source ./venv/Scripts/activate
+1. ```git clone https://github.com/gyarab/2023-3e-prophet.git```
+2. ```py -3 -m venv venv```
+3. ```source ./venv/Scripts/activate```
 4. Spusťte soubor app.py / napište do terminálnu ``` python app.py ```
 5. Otevřete v prohlížeči lokální server [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
