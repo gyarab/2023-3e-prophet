@@ -8,9 +8,10 @@ Cílem tohoto projektu bylo vytvořit Python desktop aplikaci, která má přís
 
 ## Spuštění projektu:
 1. git clone https://github.com/gyarab/2023-3e-prophet.git
-2. Stáhněte si požadované knihovny (doporučuji udělat si virtuální prostředí)
-3. Spusťte soubor app.py / napište do terminálnu ``` python app.py ```
-4. Otevřete v prohlížeči lokální server [http://127.0.0.1:5000](http://127.0.0.1:5000)
+2. py -3 -m venv venv
+3. source ./venv/Scripts/activate
+4. Spusťte soubor app.py / napište do terminálnu ``` python app.py ```
+5. Otevřete v prohlížeči lokální server [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ## Použité knihovny projektu
 Pro stáhnutí všech potřebných závislostí:
